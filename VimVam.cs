@@ -1,12 +1,35 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class VimVam : MVRScript
 {
+    private class Binding : List<KeyValuePair<KeyCode, Binding>>
+    {
+        public string action;
+
+        public void Add(KeyCode key, Binding binding)
+        {
+            Add(new KeyValuePair<KeyCode, Binding>(key, binding));
+        }
+    };
+    private Binding _rootBindings = new Binding();
+    private Binding _current;
+    private readonly Queue<KeyCode> _keysToProcess = new Queue<KeyCode>();
+
     public override void Init()
     {
         try
         {
-            SuperController.LogMessage($"{nameof(VimVam)} initialized");
+            _rootBindings = new Binding { action = null };
+            _rootBindings.Add(KeyCode.Alpha1, new Binding
+            {
+                action = "print.1"
+            });
+            _rootBindings.Add(KeyCode.Alpha2, new Binding
+            {
+                action = "print.2"
+            });
         }
         catch (Exception e)
         {
@@ -14,39 +37,35 @@ public class VimVam : MVRScript
         }
     }
 
-    public void OnEnable()
+    public void Update()
     {
         try
         {
-            SuperController.LogMessage($"{nameof(VimVam)} enabled");
+            if (Input.anyKeyDown)
+                _current = Process(_current ?? _rootBindings);
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(OnEnable)}: {e}");
+            SuperController.LogError($"{nameof(VimVam)}.{nameof(Update)}: {e}");
         }
     }
 
-    public void OnDisable()
+    private static Binding Process(Binding current)
     {
-        try
+        for (var i = 0; i < current.Count; i++)
         {
-            SuperController.LogMessage($"{nameof(VimVam)} disabled");
+            var binding = current[i];
+            if (!Input.GetKeyDown(binding.Key)) continue;
+            return binding.Value;
         }
-        catch (Exception e)
+        if (current.action != null)
         {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(OnDisable)}: {e}");
+            SuperController.LogMessage($"{current.action}");
         }
+        return null;
     }
+}
 
-    public void OnDestroy()
-    {
-        try
-        {
-            SuperController.LogMessage($"{nameof(VimVam)} destroyed");
-        }
-        catch (Exception e)
-        {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(OnDestroy)}: {e}");
-        }
-    }
+public class Dictionary<T>
+{
 }
