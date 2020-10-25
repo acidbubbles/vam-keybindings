@@ -1,15 +1,15 @@
 { 
    "licenseType" : "CC BY-SA", 
-   "creatorName" : "Author", 
-   "packageName" : "MyPlugin", 
+   "creatorName" : "AcidBubbles", 
+   "packageName" : "VimVam", 
    "includeVersionsInReferences" : "true", 
-   "description" : "v0.0.0 MyPlugin Description", 
+   "description" : "v0.0.0 Create keybindings for triggers and plugins", 
    "credits" : "", 
    "instructions" : "", 
-   "promotionalLink" : "https://github.com/Author/MyPlugin", 
-   "programVersion" : "1.19.0.5", 
+   "promotionalLink" : "https://github.com/AcidBubbles/VimVam", 
+   "programVersion" : "1.20.0.10", 
    "contentList" : [ 
-      "Custom\\Scripts\\Author\\MyPlugin\\MyPlugin.cs"
+      "Custom\\Scripts\\AcidBubbles\\VimVam\\VimVam.cs"
    ], 
    "dependencies" : { 
    }
