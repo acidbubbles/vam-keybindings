@@ -7,38 +7,25 @@ public class VimVam : MVRScript
 {
     public const float TimeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
 
-    private class Binding : List<KeyValuePair<KeyCode, Binding>>
-    {
-        public KeyCode key;
-        public string action;
-
-        public Binding Add(Binding binding)
-        {
-            Add(new KeyValuePair<KeyCode, Binding>(binding.key, binding));
-            return binding;
-        }
-
-        public Binding FromInput()
-        {
-            for (var i = 0; i < Count; i++)
-            {
-                var binding = this[i];
-                if (Input.GetKeyDown(binding.Key)) return binding.Value;
-            }
-            return null;
-        }
-    };
-
     private Binding _rootBindings = new Binding();
     private Binding _current;
     private Coroutine _coroutine;
     private readonly Queue<Binding> _keysToProcess = new Queue<Binding>();
+    private readonly Dictionary<string, IAction> _actions = new Dictionary<string, IAction>();
+    private TriggerUI _ui;
 
     public override void Init()
     {
         try
         {
-            _rootBindings = new Binding { action = null };
+            _ui = new TriggerUI();
+            StartCoroutine(_ui.LoadUIAssets());
+            SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
+
+            _actions.Add("print.1", new TriggerAction(_ui));
+            _actions.Add("print.2", new PrintAction(() => "print.2"));
+
+            _rootBindings = new Binding {action = null};
             _rootBindings.Add(new Binding
             {
                 key = KeyCode.Alpha1,
@@ -64,10 +51,21 @@ public class VimVam : MVRScript
                 key = KeyCode.Alpha5,
                 action = "print.3.5"
             });
+
+            CreateButton("Edit print.1").button.onClick.AddListener(() => { _actions["print.1"].Edit(); });
         }
         catch (Exception e)
         {
             SuperController.LogError($"{nameof(VimVam)}.{nameof(Init)}: {e}");
+        }
+    }
+
+    public override void InitUI()
+    {
+        base.InitUI();
+        if (UITransform != null)
+        {
+            _ui.triggerActionsParent = UITransform;
         }
     }
 
@@ -123,6 +121,7 @@ public class VimVam : MVRScript
                 Execute(_current);
                 _current = _rootBindings;
             }
+
             _coroutine = null;
         }
         catch (Exception e)
@@ -131,8 +130,45 @@ public class VimVam : MVRScript
         }
     }
 
-    private static void Execute(Binding current)
+    public override void Validate()
     {
-        SuperController.LogMessage($"{current.action}");
+        base.Validate();
+        foreach (var kvp in _actions)
+            kvp.Value.Validate();
     }
+
+    public void OnAtomRename(string oldid, string newid)
+    {
+        foreach (var kvp in _actions)
+            kvp.Value.SyncAtomNames();
+    }
+
+    public void OnDestroy()
+    {
+        if (SuperController.singleton != null)
+        {
+            SuperController.singleton.onAtomUIDRenameHandlers -= OnAtomRename;
+        }
+    }
+
+    private void Execute(Binding current)
+    {
+        IAction action;
+        if (!_actions.TryGetValue(current.action, out action))
+        {
+            SuperController.LogError(
+                $"Binding was mapped to {current.action} but there was no action matching this name available.");
+            return;
+        }
+
+        action.Invoke();
+    }
+}
+
+public interface IAction
+{
+    void Validate();
+    void SyncAtomNames();
+    void Invoke();
+    void Edit();
 }
