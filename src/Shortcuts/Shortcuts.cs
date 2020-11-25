@@ -13,6 +13,7 @@ public class Shortcuts : MVRScript
     private Coroutine _coroutine;
     private readonly Dictionary<string, IBoundAction> _actions = new Dictionary<string, IBoundAction>();
     private PrefabManager _prefabManager;
+    private bool _loaded;
 
     public override void Init()
     {
@@ -20,6 +21,7 @@ public class Shortcuts : MVRScript
         {
             _prefabManager = new PrefabManager();
             StartCoroutine(_prefabManager.LoadUIAssets());
+            SuperController.singleton.StartCoroutine(DeferredInit());
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
             _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager));
@@ -58,6 +60,13 @@ public class Shortcuts : MVRScript
         {
             SuperController.LogError($"{nameof(Shortcuts)}.{nameof(Init)}: {e}");
         }
+    }
+
+    private IEnumerator DeferredInit()
+    {
+        yield return new WaitForEndOfFrame();
+        if(this == null) yield break;
+        if(!_loaded) containingAtom.RestoreFromLast(this);
     }
 
     public override void InitUI()
@@ -193,6 +202,7 @@ public class Shortcuts : MVRScript
                 action.RestoreFromJSON(actionJSON);
                 _actions.Add(key, action);
             }
+            _loaded = true;
         }
         catch (Exception exc)
         {
