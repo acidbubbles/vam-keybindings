@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Binding : List<KeyValuePair<KeyCode, Binding>>
 {
+    public KeyCode modifier;
     public KeyCode key;
     public string action;
 
@@ -12,14 +13,22 @@ public class Binding : List<KeyValuePair<KeyCode, Binding>>
         return binding;
     }
 
-    public Binding FromInput()
+    public Binding DoMatch()
     {
         for (var i = 0; i < Count; i++)
         {
             var binding = this[i];
-            if (Input.GetKeyDown(binding.Key)) return binding.Value;
+            if (binding.Value.IsMatch())
+                return binding.Value;
         }
 
         return null;
+    }
+
+    public bool IsMatch()
+    {
+        if (!Input.GetKeyDown(key)) return false;
+        if (modifier != KeyCode.None && !Input.GetKey(modifier)) return false;
+        return true;
     }
 };

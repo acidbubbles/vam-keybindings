@@ -25,6 +25,7 @@ public class Shortcuts : MVRScript
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
             // TODO: Replace by a dynamically generated list
+            _actions.Add("save", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
             _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
             _actions.Add("print.2", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
             _actions.Add("print.3", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
@@ -33,6 +34,12 @@ public class Shortcuts : MVRScript
 
             // TODO: Build from a key mappings JSON
             _rootBindings = new Binding {action = null};
+            _rootBindings.Add(new Binding
+            {
+                modifier = KeyCode.LeftControl,
+                key = KeyCode.S,
+                action = "save"
+            });
             _rootBindings.Add(new Binding
             {
                 key = KeyCode.Alpha1,
@@ -99,34 +106,33 @@ public class Shortcuts : MVRScript
     {
         try
         {
-            // TODO: Ignore when in a text field except when CTRL is pressed
-            if (Input.anyKeyDown)
+            if (!Input.anyKeyDown) return;
+            if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
+
+            if (_coroutine != null)
+                StopCoroutine(_coroutine);
+
+            var next = (_current ?? _rootBindings).DoMatch();
+
+            if (next == null)
             {
-                if (_coroutine != null)
-                    StopCoroutine(_coroutine);
-
-                var next = (_current ?? _rootBindings).FromInput();
-
+                if (_current != _rootBindings)
+                    next = _rootBindings.DoMatch();
+                _current = null;
                 if (next == null)
-                {
-                    if (_current != _rootBindings)
-                        next = _rootBindings.FromInput();
-                    _current = null;
-                    if (next == null)
-                        return;
-                }
-
-                if (next.Count == 0)
-                {
-                    if (next.action != null)
-                        Execute(next);
-                    _current = null;
                     return;
-                }
-
-                _current = next;
-                _coroutine = StartCoroutine(TimeoutCoroutine());
             }
+
+            if (next.Count == 0)
+            {
+                if (next.action != null)
+                    Execute(next);
+                _current = null;
+                return;
+            }
+
+            _current = next;
+            _coroutine = StartCoroutine(TimeoutCoroutine());
         }
         catch (Exception e)
         {
