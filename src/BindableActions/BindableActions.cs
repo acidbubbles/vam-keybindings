@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public class BindableActions : MVRScript
 {
@@ -15,15 +16,14 @@ public class BindableActions : MVRScript
         // Main menu
         CreateAction("SaveScene", SuperController.singleton.SaveSceneDialog);
         CreateAction("LoadScene", SuperController.singleton.LoadSceneDialog);
+        CreateAction("MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
         CreateAction("Exit", SuperController.singleton.Quit);
 
         // Selection
-        CreateActionWithParam("SelectAtom", val =>
-        {
-            var atom = SuperController.singleton.GetAtomByUid(val);
-            if (atom == null) return;
-            SuperController.singleton.SelectController(atom.freeControllers[0]);
-        });
+        CreateActionWithChoice("SelectAtom",
+            val => SuperController.singleton.SelectController(SuperController.singleton.GetAtomByUid(val).freeControllers[0]),
+            () => SuperController.singleton.GetAtomUIDs()
+        );
     }
 
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
@@ -45,5 +45,22 @@ public class BindableActions : MVRScript
             fn(val);
             jss.valNoCallback = null;
         };
+    }
+
+    private void CreateActionWithChoice(string jssName, Action<string> fn, Func<List<string>> genChoices)
+    {
+        var choices = genChoices();
+        var jss = new JSONStorableStringChooser(jssName, choices, null, jssName)
+        {
+            isStorable = false,
+            isRestorable = false
+        };
+        RegisterStringChooser(jss);
+        jss.setCallbackFunction = val =>
+        {
+            fn(val);
+            jss.valNoCallback = null;
+        };
+        jss.popupOpenCallback += () => jss.choices = genChoices();
     }
 }
