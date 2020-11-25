@@ -25,8 +25,11 @@ public class Shortcuts : MVRScript
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
             // TODO: Replace by a dynamically generated list
-            _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager));
-            _actions.Add("print.2", new DebugBoundAction("print.2"));
+            _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
+            _actions.Add("print.2", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
+            _actions.Add("print.3", new DiscreteTriggerBoundAction(_prefabManager, containingAtom));
+            _actions.Add("print.3.4", new DebugBoundAction("debug 3.4"));
+            _actions.Add("print.3.5", new DebugBoundAction("debug 3.5"));
 
             // TODO: Build from a key mappings JSON
             _rootBindings = new Binding {action = null};
@@ -56,7 +59,19 @@ public class Shortcuts : MVRScript
                 action = "print.3.5"
             });
 
-            CreateButton("Edit print.1").button.onClick.AddListener(() => { _actions["print.1"].Edit(); });
+            CreateTextField(new JSONStorableString("", "Actions"), false);
+            foreach (var action in _actions)
+            {
+                var a = action;
+                CreateButton($"Edit {a.Key}", false).button.onClick.AddListener(() => { a.Value.Edit(); });
+            }
+
+            CreateTextField(new JSONStorableString("", "Bindings"), true);
+            foreach (var action in _actions)
+            {
+                var a = action;
+                CreateButton($"Map {a.Key}", true).button.onClick.AddListener(() => { SuperController.LogMessage("Not implemented"); });
+            }
         }
         catch (Exception e)
         {
@@ -184,8 +199,10 @@ public class Shortcuts : MVRScript
 
         try
         {
+            _loaded = true;
+            var actionsJSON = jc["actions"]?.AsObject;
+            if ((actionsJSON?.Count ?? 0) == 0) return;
             _actions.Clear();
-            var actionsJSON = jc["actions"];
             foreach (var key in actionsJSON.AsObject.Keys)
             {
                 var actionJSON = actionsJSON[key].AsObject;
@@ -198,7 +215,7 @@ public class Shortcuts : MVRScript
                         action = new DebugBoundAction();
                         break;
                     case DiscreteTriggerBoundAction.Type:
-                        action = new DiscreteTriggerBoundAction(_prefabManager);
+                        action = new DiscreteTriggerBoundAction(_prefabManager, containingAtom);
                         break;
                     default:
                         SuperController.LogError($"Unknown action type {actionType}");
@@ -207,7 +224,6 @@ public class Shortcuts : MVRScript
                 action.RestoreFromJSON(actionJSON);
                 _actions.Add(key, action);
             }
-            _loaded = true;
         }
         catch (Exception exc)
         {

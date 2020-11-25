@@ -1,4 +1,5 @@
-﻿using SimpleJSON;
+﻿using System.Linq;
+using SimpleJSON;
 
 public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
 {
@@ -7,10 +8,17 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
 
     private readonly TriggerActionDiscrete _triggerAction;
 
-    public DiscreteTriggerBoundAction(IPrefabManager prefabManager)
+    public DiscreteTriggerBoundAction(IPrefabManager prefabManager, Atom defaultAtom)
         : base(prefabManager)
     {
         _triggerAction = trigger.CreateDiscreteActionStartInternal();
+        if (_triggerAction.receiverAtom == null) _triggerAction.receiverAtom = defaultAtom;
+        if (_triggerAction.receiver == null)
+        {
+            var defaultStorableId = defaultAtom.GetStorableIDs().FirstOrDefault(s => s.EndsWith("BindableActions"));
+            if (defaultStorableId != null)
+                _triggerAction.receiver = defaultAtom.GetStorableByID(defaultStorableId);
+        }
     }
 
     public void Invoke()
