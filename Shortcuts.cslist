@@ -5,3 +5,5 @@ src/Shortcuts/Actions/TriggerBoundAction.cs
 src/Shortcuts/Binding.cs
 src/Shortcuts/PrefabManager.cs
 src/Shortcuts/Shortcuts.cs
+src/Shortcuts/ShortcutsManager.cs
+src/Shortcuts/UserInterface/BindingsScreen.cs

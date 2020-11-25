@@ -5,7 +5,8 @@ public class BindableActions : MVRScript
 {
     public override void Init()
     {
-        CreateTextField(new JSONStorableString("Description", "This plugin is used for bindings. It offers additional shortcuts not otherwise available using Virt-A-Mate triggers."));
+        CreateTextField(new JSONStorableString("Description",
+            "This plugin is used for bindings. It offers additional shortcuts not otherwise available using Virt-A-Mate triggers."));
 
         // Logging
         CreateActionWithParam("LogMessage", SuperController.LogMessage);
@@ -21,7 +22,8 @@ public class BindableActions : MVRScript
 
         // Selection
         CreateActionWithChoice("SelectAtom",
-            val => SuperController.singleton.SelectController(SuperController.singleton.GetAtomByUid(val).freeControllers[0]),
+            val => SuperController.singleton.SelectController(SuperController.singleton.GetAtomByUid(val)
+                .freeControllers[0]),
             () => SuperController.singleton.GetAtomUIDs()
         );
     }

@@ -66,8 +66,10 @@
     <Compile Include="src\Shortcuts\Actions\IBoundAction.cs" />
     <Compile Include="src\Shortcuts\Actions\TriggerBoundAction.cs" />
     <Compile Include="src\Shortcuts\Binding.cs" />
+    <Compile Include="src\Shortcuts\ShortcutsManager.cs" />
     <Compile Include="src\Shortcuts\PrefabManager.cs" />
     <Compile Include="src\Shortcuts\Shortcuts.cs" />
+    <Compile Include="src\Shortcuts\UserInterface\BindingsScreen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

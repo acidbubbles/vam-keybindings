@@ -46,13 +46,15 @@ public abstract class TriggerBoundAction : TriggerHandler
 
     public RectTransform CreateTriggerActionsUI()
     {
-        if (_prefabManager.triggerActionsPrefab == null) throw new NullReferenceException(nameof(_prefabManager.triggerActionsPrefab));
+        if (_prefabManager.triggerActionsPrefab == null)
+            throw new NullReferenceException(nameof(_prefabManager.triggerActionsPrefab));
         return UnityObject.Instantiate(_prefabManager.triggerActionsPrefab);
     }
 
     public RectTransform CreateTriggerActionMiniUI()
     {
-        if (_prefabManager.triggerActionMiniPrefab == null) throw new NullReferenceException(nameof(_prefabManager.triggerActionMiniPrefab));
+        if (_prefabManager.triggerActionMiniPrefab == null)
+            throw new NullReferenceException(nameof(_prefabManager.triggerActionMiniPrefab));
         return UnityObject.Instantiate(_prefabManager.triggerActionMiniPrefab);
     }
 
