@@ -1,7 +1,8 @@
 ﻿src/BindableActions.cs
 src/Binding.cs
+src/DebugBoundAction.cs
 src/DiscreteTriggerBoundAction.cs
+src/IBoundAction.cs
 src/PrefabManager.cs
-src/PrintBoundAction.cs
+src/Shortcuts.cs
 src/TriggerBoundAction.cs
-src/VimVam.cs

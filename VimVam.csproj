@@ -61,11 +61,12 @@
   <ItemGroup>
     <Compile Include="src\BindableActions.cs" />
     <Compile Include="src\Binding.cs" />
-    <Compile Include="src\PrintBoundAction.cs" />
+    <Compile Include="src\IBoundAction.cs" />
+    <Compile Include="src\DebugBoundAction.cs" />
     <Compile Include="src\TriggerBoundAction.cs" />
     <Compile Include="src\DiscreteTriggerBoundAction.cs" />
     <Compile Include="src\PrefabManager.cs" />
-    <Compile Include="src\VimVam.cs" />
+    <Compile Include="src\Shortcuts.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

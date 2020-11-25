@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SimpleJSON;
 using UnityEngine;
 
-public class VimVam : MVRScript
+public class Shortcuts : MVRScript
 {
     private const float _timeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
 
@@ -22,7 +23,7 @@ public class VimVam : MVRScript
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
             _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager));
-            _actions.Add("print.2", new PrintBoundAction(() => "print.2"));
+            _actions.Add("print.2", new DebugBoundAction("print.2"));
 
             _rootBindings = new Binding {action = null};
             _rootBindings.Add(new Binding
@@ -55,7 +56,7 @@ public class VimVam : MVRScript
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(Init)}: {e}");
+            SuperController.LogError($"{nameof(Shortcuts)}.{nameof(Init)}: {e}");
         }
     }
 
@@ -102,7 +103,7 @@ public class VimVam : MVRScript
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(Update)}: {e}");
+            SuperController.LogError($"{nameof(Shortcuts)}.{nameof(Update)}: {e}");
         }
     }
 
@@ -123,7 +124,7 @@ public class VimVam : MVRScript
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(VimVam)}.{nameof(TimeoutCoroutine)}: {e}");
+            SuperController.LogError($"{nameof(Shortcuts)}.{nameof(TimeoutCoroutine)}: {e}");
         }
     }
 
@@ -138,6 +139,65 @@ public class VimVam : MVRScript
     {
         foreach (var kvp in _actions)
             kvp.Value.SyncAtomNames();
+    }
+
+    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
+    {
+        var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
+
+        try
+        {
+            var actionsJSON = new JSONClass();
+            foreach (var action in _actions)
+            {
+                var actionJSON = action.Value.GetJSON();
+                if (actionJSON == null) continue;
+                actionJSON["__type"] = action.Value.type;
+                actionsJSON[action.Key] = actionJSON;
+            }
+
+            json["actions"] = actionsJSON;
+            needsStore = true;
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"{nameof(Shortcuts)}.{nameof(GetJSON)} (Serialize): {exc}");
+        }
+
+        return json;
+    }
+
+    public override void RestoreFromJSON(JSONClass jc, bool restorePhysical = true, bool restoreAppearance = true, JSONArray presetAtoms = null, bool setMissingToDefault = true)
+    {
+        base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
+
+        try
+        {
+            var actionsJSON = jc["actions"];
+            foreach (var key in actionsJSON.AsObject.Keys)
+            {
+                var actionJSON = actionsJSON[key].AsObject;
+                IBoundAction action;
+                switch (actionJSON["__type"])
+                {
+                    case DebugBoundAction.Type:
+                        action = new DebugBoundAction();
+                        break;
+                    case DiscreteTriggerBoundAction.Type:
+                        action = new DiscreteTriggerBoundAction(_prefabManager);
+                        break;
+                    default:
+                        SuperController.LogError($"Unknown action type {actionJSON["__type"]}");
+                        continue;
+                }
+                action.RestoreFromJSON(actionJSON);
+                _actions.Add(key, action);
+            }
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"{nameof(Shortcuts)}.{nameof(RestoreFromJSON)}: {exc}");
+        }
     }
 
     public void OnDestroy()
@@ -160,12 +220,4 @@ public class VimVam : MVRScript
 
         boundAction.Invoke();
     }
-}
-
-public interface IBoundAction
-{
-    void Validate();
-    void SyncAtomNames();
-    void Invoke();
-    void Edit();
 }

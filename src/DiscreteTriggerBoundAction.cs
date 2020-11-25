@@ -1,5 +1,10 @@
-﻿public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
+﻿using SimpleJSON;
+
+public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
 {
+    public const string Type = "discreteTrigger";
+    public string type => Type;
+
     private readonly TriggerActionDiscrete _triggerAction;
 
     public DiscreteTriggerBoundAction(IPrefabManager prefabManager)
@@ -16,6 +21,5 @@
     protected override void Open()
     {
         _triggerAction.OpenDetailPanel();
-
     }
 }

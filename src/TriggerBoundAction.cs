@@ -1,4 +1,5 @@
 ﻿using System;
+using SimpleJSON;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
@@ -75,5 +76,15 @@ public abstract class TriggerBoundAction : TriggerHandler
         {
             UnityObject.Destroy(rt.gameObject);
         }
+    }
+
+    public JSONClass GetJSON()
+    {
+        return trigger.GetJSON();
+    }
+
+    public void RestoreFromJSON(JSONClass json)
+    {
+        trigger.RestoreFromJSON(json);
     }
 }
