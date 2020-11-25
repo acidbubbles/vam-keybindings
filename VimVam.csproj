@@ -59,6 +59,7 @@
     <Content Include="VimVam.cslist" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\BindableActions.cs" />
     <Compile Include="src\Binding.cs" />
     <Compile Include="src\PrintBoundAction.cs" />
     <Compile Include="src\TriggerBoundAction.cs" />

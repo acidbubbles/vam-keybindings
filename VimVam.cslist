@@ -1,4 +1,5 @@
-﻿src/Binding.cs
+﻿src/BindableActions.cs
+src/Binding.cs
 src/DiscreteTriggerBoundAction.cs
 src/PrefabManager.cs
 src/PrintBoundAction.cs
