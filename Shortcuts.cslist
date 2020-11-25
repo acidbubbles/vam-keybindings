@@ -1,8 +1,7 @@
-﻿src/BindableActions.cs
-src/Binding.cs
-src/DebugBoundAction.cs
-src/DiscreteTriggerBoundAction.cs
-src/IBoundAction.cs
-src/PrefabManager.cs
-src/Shortcuts.cs
-src/TriggerBoundAction.cs
+﻿src/Shortcuts/Actions/DebugBoundAction.cs
+src/Shortcuts/Actions/DiscreteTriggerBoundAction.cs
+src/Shortcuts/Actions/IBoundAction.cs
+src/Shortcuts/Actions/TriggerBoundAction.cs
+src/Shortcuts/Binding.cs
+src/Shortcuts/PrefabManager.cs
+src/Shortcuts/Shortcuts.cs

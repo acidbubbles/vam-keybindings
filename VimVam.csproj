@@ -56,17 +56,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="VimVam.cslist" />
+    <Content Include="BindableActions.cslist" />
+    <Content Include="Shortcuts.cslist" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\BindableActions.cs" />
-    <Compile Include="src\Binding.cs" />
-    <Compile Include="src\IBoundAction.cs" />
-    <Compile Include="src\DebugBoundAction.cs" />
-    <Compile Include="src\TriggerBoundAction.cs" />
-    <Compile Include="src\DiscreteTriggerBoundAction.cs" />
-    <Compile Include="src\PrefabManager.cs" />
-    <Compile Include="src\Shortcuts.cs" />
+    <Compile Include="src\BindableActions\BindableActions.cs" />
+    <Compile Include="src\Shortcuts\Actions\DebugBoundAction.cs" />
+    <Compile Include="src\Shortcuts\Actions\DiscreteTriggerBoundAction.cs" />
+    <Compile Include="src\Shortcuts\Actions\IBoundAction.cs" />
+    <Compile Include="src\Shortcuts\Actions\TriggerBoundAction.cs" />
+    <Compile Include="src\Shortcuts\Binding.cs" />
+    <Compile Include="src\Shortcuts\PrefabManager.cs" />
+    <Compile Include="src\Shortcuts\Shortcuts.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

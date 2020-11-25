@@ -78,12 +78,12 @@ public abstract class TriggerBoundAction : TriggerHandler
         }
     }
 
-    public JSONClass GetJSON()
+    public virtual JSONClass GetJSON()
     {
         return trigger.GetJSON();
     }
 
-    public void RestoreFromJSON(JSONClass json)
+    public virtual void RestoreFromJSON(JSONClass json)
     {
         trigger.RestoreFromJSON(json);
     }

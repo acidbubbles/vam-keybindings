@@ -22,4 +22,14 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
     {
         _triggerAction.OpenDetailPanel();
     }
+
+    public override JSONClass GetJSON()
+    {
+        return _triggerAction.GetJSON();
+    }
+
+    public override void RestoreFromJSON(JSONClass json)
+    {
+        _triggerAction.RestoreFromJSON(json);
+    }
 }

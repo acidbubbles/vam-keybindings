@@ -24,9 +24,11 @@ public class Shortcuts : MVRScript
             SuperController.singleton.StartCoroutine(DeferredInit());
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
+            // TODO: Replace by a dynamically generated list
             _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager));
             _actions.Add("print.2", new DebugBoundAction("print.2"));
 
+            // TODO: Build from a key mappings JSON
             _rootBindings = new Binding {action = null};
             _rootBindings.Add(new Binding
             {
@@ -82,6 +84,7 @@ public class Shortcuts : MVRScript
     {
         try
         {
+            // TODO: Ignore when in a text field except when CTRL is pressed
             if (Input.anyKeyDown)
             {
                 if (_coroutine != null)
@@ -118,7 +121,6 @@ public class Shortcuts : MVRScript
 
     private IEnumerator TimeoutCoroutine()
     {
-        SuperController.LogMessage($"Waiting...");
         yield return new WaitForSecondsRealtime(_timeoutLen);
         if (_current == null) yield break;
         try
@@ -182,12 +184,15 @@ public class Shortcuts : MVRScript
 
         try
         {
+            _actions.Clear();
             var actionsJSON = jc["actions"];
             foreach (var key in actionsJSON.AsObject.Keys)
             {
                 var actionJSON = actionsJSON[key].AsObject;
                 IBoundAction action;
-                switch (actionJSON["__type"])
+                var actionType = actionJSON["__type"];
+                SuperController.LogMessage($"{key} = {actionType}: {actionJSON}");
+                switch (actionType)
                 {
                     case DebugBoundAction.Type:
                         action = new DebugBoundAction();
@@ -196,7 +201,7 @@ public class Shortcuts : MVRScript
                         action = new DiscreteTriggerBoundAction(_prefabManager);
                         break;
                     default:
-                        SuperController.LogError($"Unknown action type {actionJSON["__type"]}");
+                        SuperController.LogError($"Unknown action type {actionType}");
                         continue;
                 }
                 action.RestoreFromJSON(actionJSON);
