@@ -60,9 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Binding.cs" />
-    <Compile Include="src\PrintAction.cs" />
-    <Compile Include="src\TriggerAction.cs" />
-    <Compile Include="src\TriggerUI.cs" />
+    <Compile Include="src\PrintBoundAction.cs" />
+    <Compile Include="src\TriggerBoundAction.cs" />
+    <Compile Include="src\DiscreteTriggerBoundAction.cs" />
+    <Compile Include="src\PrefabManager.cs" />
     <Compile Include="src\VimVam.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,6 @@
-﻿src/VimVam.cs
-src/Binding.cs
-src/TriggerUI.cs
-src/TriggerAction.cs
-src/PrintAction.cs
+﻿src/Binding.cs
+src/DiscreteTriggerBoundAction.cs
+src/PrefabManager.cs
+src/PrintBoundAction.cs
+src/TriggerBoundAction.cs
+src/VimVam.cs

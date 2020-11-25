@@ -1,10 +1,10 @@
 ﻿using System;
 
-public class PrintAction : IAction
+public class PrintBoundAction : IBoundAction
 {
     private readonly Func<string> _getMessage;
 
-    public PrintAction(Func<string> getMessage)
+    public PrintBoundAction(Func<string> getMessage)
     {
         _getMessage = getMessage;
     }

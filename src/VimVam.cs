@@ -5,25 +5,24 @@ using UnityEngine;
 
 public class VimVam : MVRScript
 {
-    public const float TimeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
+    private const float _timeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
 
     private Binding _rootBindings = new Binding();
     private Binding _current;
     private Coroutine _coroutine;
-    private readonly Queue<Binding> _keysToProcess = new Queue<Binding>();
-    private readonly Dictionary<string, IAction> _actions = new Dictionary<string, IAction>();
-    private TriggerUI _ui;
+    private readonly Dictionary<string, IBoundAction> _actions = new Dictionary<string, IBoundAction>();
+    private PrefabManager _prefabManager;
 
     public override void Init()
     {
         try
         {
-            _ui = new TriggerUI();
-            StartCoroutine(_ui.LoadUIAssets());
+            _prefabManager = new PrefabManager();
+            StartCoroutine(_prefabManager.LoadUIAssets());
             SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
 
-            _actions.Add("print.1", new TriggerAction(_ui));
-            _actions.Add("print.2", new PrintAction(() => "print.2"));
+            _actions.Add("print.1", new DiscreteTriggerBoundAction(_prefabManager));
+            _actions.Add("print.2", new PrintBoundAction(() => "print.2"));
 
             _rootBindings = new Binding {action = null};
             _rootBindings.Add(new Binding
@@ -65,7 +64,7 @@ public class VimVam : MVRScript
         base.InitUI();
         if (UITransform != null)
         {
-            _ui.triggerActionsParent = UITransform;
+            _prefabManager.triggerActionsParent = UITransform;
         }
     }
 
@@ -96,11 +95,9 @@ public class VimVam : MVRScript
                     _current = null;
                     return;
                 }
-                else
-                {
-                    _current = next;
-                    _coroutine = StartCoroutine(TimeoutCoroutine());
-                }
+
+                _current = next;
+                _coroutine = StartCoroutine(TimeoutCoroutine());
             }
         }
         catch (Exception e)
@@ -112,7 +109,7 @@ public class VimVam : MVRScript
     private IEnumerator TimeoutCoroutine()
     {
         SuperController.LogMessage($"Waiting...");
-        yield return new WaitForSecondsRealtime(TimeoutLen);
+        yield return new WaitForSecondsRealtime(_timeoutLen);
         if (_current == null) yield break;
         try
         {
@@ -153,19 +150,19 @@ public class VimVam : MVRScript
 
     private void Execute(Binding current)
     {
-        IAction action;
-        if (!_actions.TryGetValue(current.action, out action))
+        IBoundAction boundAction;
+        if (!_actions.TryGetValue(current.action, out boundAction))
         {
             SuperController.LogError(
                 $"Binding was mapped to {current.action} but there was no action matching this name available.");
             return;
         }
 
-        action.Invoke();
+        boundAction.Invoke();
     }
 }
 
-public interface IAction
+public interface IBoundAction
 {
     void Validate();
     void SyncAtomNames();
