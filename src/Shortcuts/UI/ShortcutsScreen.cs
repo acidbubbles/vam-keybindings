@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class ShortcutsScreen : MonoBehaviour
 {
-    public IBindingsManager bindingsManager { get; set; }
     public IPrefabManager prefabManager { get; set; }
+    public IBindingsManager bindingsManager { get; set; }
+    public RemoteActionsManager remoteActionsManager { get; set; }
 
     public void OnEnable()
     {
+        foreach (var item in remoteActionsManager.ToList())
+        {
+            SuperController.LogMessage(item);
+        }
+
         // TODO: Write this!
         /*
             CreateTextField(new JSONStorableString("", "Actions"), false);

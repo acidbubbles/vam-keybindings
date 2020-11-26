@@ -1,15 +1,17 @@
 using System;
 using System.Collections;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
-public class ShortcutsPlugin : MVRScript
+public class ShortcutsPlugin : MVRScript, IActionsInvoker
 {
     private const float _timeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
 
     private Binding _current;
     private PrefabManager _prefabManager;
     private BindingsManager _bindingsManager;
+    private RemoteActionsManager _remoteActionsManager;
     private ShortcutsScreen _ui;
     private Coroutine _coroutine;
     private bool _loaded;
@@ -18,6 +20,7 @@ public class ShortcutsPlugin : MVRScript
     {
         _prefabManager = new PrefabManager();
         _bindingsManager = new BindingsManager();
+        _remoteActionsManager = new RemoteActionsManager();
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
 
@@ -53,6 +56,8 @@ public class ShortcutsPlugin : MVRScript
             key = KeyCode.Alpha5,
             action = "print.3.5"
         });
+
+        AcquireAllAvailableBroadcastingPlugins();
     }
 
     private IEnumerator DeferredInit()
@@ -75,9 +80,22 @@ public class ShortcutsPlugin : MVRScript
             var active = go.activeInHierarchy;
             if (active) go.SetActive(false);
             _ui = go.AddComponent<ShortcutsScreen>();
-            _ui.bindingsManager = _bindingsManager;
             _ui.prefabManager = _prefabManager;
+            _ui.bindingsManager = _bindingsManager;
+            _ui.remoteActionsManager = _remoteActionsManager;
             if (active) go.SetActive(true);
+        }
+    }
+
+    public void AcquireAllAvailableBroadcastingPlugins()
+    {
+        foreach (var atom in SuperController.singleton.GetAtoms())
+        {
+            foreach (var storable in atom.GetStorableIDs().Select(id => atom.GetStorableByID(id))
+                .Where(s => s is MVRScript))
+            {
+                _remoteActionsManager.TryRegister(storable);
+            }
         }
     }
 
@@ -142,7 +160,8 @@ public class ShortcutsPlugin : MVRScript
     private void Execute(string action)
     {
         // TODO: Find the matching action and execute it (build and maintain a list)
-        SuperController.LogMessage($"Shortcut: Action '{action}' does not exist. Maybe it was assigned to a destroyed atom storable.");
+        SuperController.LogMessage(
+            $"Shortcut: Action '{action}' does not exist. Maybe it was assigned to a destroyed atom storable.");
     }
 
     public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true,
@@ -177,5 +196,10 @@ public class ShortcutsPlugin : MVRScript
         {
             SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(RestoreFromJSON)}: {exc}");
         }
+    }
+
+    public void OnActionsProviderAvailable(JSONStorable storable)
+    {
+        _remoteActionsManager.TryRegister(storable);
     }
 }

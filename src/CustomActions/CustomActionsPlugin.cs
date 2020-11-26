@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using CustomActions;
 using SimpleJSON;
 using UnityEngine;
 
-public class CustomActionsPlugin : MVRScript
+public class CustomActionsPlugin : MVRScript, IActionsProvider
 {
     private ActionsRepository _actions;
     private PrefabManager _prefabManager;
@@ -25,6 +26,8 @@ public class CustomActionsPlugin : MVRScript
         _actions.Add("print.3", new DiscreteTriggerBoundAction(containingAtom, _prefabManager));
         _actions.Add("print.3.4", new DebugBoundAction("debug 3.4"));
         _actions.Add("print.3.5", new DebugBoundAction("debug 3.5"));
+
+        BroadcastingUtil.BroadcastActionsAvailable(this);
     }
 
     private IEnumerator DeferredInit()
@@ -95,5 +98,9 @@ public class CustomActionsPlugin : MVRScript
         {
             SuperController.LogError($"{nameof(CustomActions)}.{nameof(RestoreFromJSON)}: {exc}");
         }
+    }
+
+    public void OnBindingsListRequested(List<object> bindings)
+    {
     }
 }
