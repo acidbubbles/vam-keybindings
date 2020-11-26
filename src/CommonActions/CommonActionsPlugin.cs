@@ -57,7 +57,6 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
             fn(val);
             jss.valNoCallback = null;
         };
-        _actions.Add(jss);
     }
 
     private void CreateActionWithChoice(string jssName, Action<string> fn, Func<List<string>> genChoices)
@@ -75,11 +74,13 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
             jss.valNoCallback = null;
         };
         jss.popupOpenCallback += () => jss.choices = genChoices();
-        _actions.Add(jss);
     }
 
-    public void OnBindingsListRequested(List<object> bindings)
+    public void OnBindingsListRequested(ICollection<object> bindings)
     {
-        bindings.AddRange(_actions);
+        foreach (var action in _actions)
+        {
+            bindings.Add(action);
+        }
     }
 }

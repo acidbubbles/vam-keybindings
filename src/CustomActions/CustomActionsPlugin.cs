@@ -100,7 +100,7 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         }
     }
 
-    public void OnBindingsListRequested(List<object> bindings)
+    public void OnBindingsListRequested(ICollection<object> bindings)
     {
     }
 }

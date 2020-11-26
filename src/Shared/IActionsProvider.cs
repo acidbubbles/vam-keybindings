@@ -2,5 +2,5 @@
 
 public interface IActionsProvider
 {
-    void OnBindingsListRequested(List<object> bindings);
+    void OnBindingsListRequested(ICollection<object> bindings);
 }
