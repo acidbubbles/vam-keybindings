@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class BindableActions : MVRScript
+public class CommonActionsPlugin : MVRScript
 {
     public override void Init()
     {

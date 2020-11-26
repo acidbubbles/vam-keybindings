@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BindingsScreen : MonoBehaviour
+public class ShortcutsScreen : MonoBehaviour
 {
     public IBindingsManager bindingsManager { get; set; }
     public IPrefabManager prefabManager { get; set; }

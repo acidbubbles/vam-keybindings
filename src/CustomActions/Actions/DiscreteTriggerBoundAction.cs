@@ -8,7 +8,7 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
 
     private readonly TriggerActionDiscrete _triggerAction;
 
-    public DiscreteTriggerBoundAction(IPrefabManager prefabManager, Atom defaultAtom)
+    public DiscreteTriggerBoundAction(Atom defaultAtom, IPrefabManager prefabManager)
         : base(prefabManager)
     {
         _triggerAction = trigger.CreateDiscreteActionStartInternal();

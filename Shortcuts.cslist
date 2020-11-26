@@ -1,10 +1,5 @@
-﻿src/Shortcuts/Actions/DebugBoundAction.cs
-src/Shortcuts/Actions/DiscreteTriggerBoundAction.cs
-src/Shortcuts/Actions/IBoundAction.cs
-src/Shortcuts/Actions/TriggerBoundAction.cs
-src/Shortcuts/ActionsManager.cs
+﻿src/Shared/PrefabManager.cs
 src/Shortcuts/Binding.cs
-src/Shortcuts/PrefabManager.cs
-src/Shortcuts/Shortcuts.cs
+src/Shortcuts/ShortcutsPlugin.cs
 src/Shortcuts/BindingsManager.cs
-src/Shortcuts/UserInterface/BindingsScreen.cs
+src/Shortcuts/UI/ShortcutsScreen.cs

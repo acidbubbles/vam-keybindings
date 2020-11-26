@@ -1,0 +1,8 @@
+﻿src/Shared/PrefabManager.cs
+src/CustomActions/Actions/DebugBoundAction.cs
+src/CustomActions/Actions/DiscreteTriggerBoundAction.cs
+src/CustomActions/Actions/IBoundAction.cs
+src/CustomActions/Actions/TriggerBoundAction.cs
+src/CustomActions/UI/CustomActionsScreen.cs
+src/CustomActions/ActionsRepository.cs
+src/CustomActions/CustomActionsPlugin.cs

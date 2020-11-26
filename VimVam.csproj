@@ -56,21 +56,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BindableActions.cslist" />
+    <Content Include="CommonActions.cslist" />
+    <Content Include="CustomActions.cslist" />
     <Content Include="Shortcuts.cslist" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\BindableActions\BindableActions.cs" />
-    <Compile Include="src\Shortcuts\ActionsManager.cs" />
-    <Compile Include="src\Shortcuts\Actions\DebugBoundAction.cs" />
-    <Compile Include="src\Shortcuts\Actions\DiscreteTriggerBoundAction.cs" />
-    <Compile Include="src\Shortcuts\Actions\IBoundAction.cs" />
-    <Compile Include="src\Shortcuts\Actions\TriggerBoundAction.cs" />
+    <Compile Include="src\CommonActions\CommonActionsPlugin.cs" />
+    <Compile Include="src\CustomActions\ActionsRepository.cs" />
+    <Compile Include="src\CustomActions\Actions\DebugBoundAction.cs" />
+    <Compile Include="src\CustomActions\Actions\DiscreteTriggerBoundAction.cs" />
+    <Compile Include="src\CustomActions\Actions\IBoundAction.cs" />
+    <Compile Include="src\CustomActions\Actions\TriggerBoundAction.cs" />
+    <Compile Include="src\CustomActions\CustomActionsPlugin.cs" />
+    <Compile Include="src\CustomActions\UI\CustomActionsScreen.cs" />
+    <Compile Include="src\Shared\PrefabManager.cs" />
     <Compile Include="src\Shortcuts\Binding.cs" />
     <Compile Include="src\Shortcuts\BindingsManager.cs" />
-    <Compile Include="src\Shortcuts\PrefabManager.cs" />
-    <Compile Include="src\Shortcuts\Shortcuts.cs" />
-    <Compile Include="src\Shortcuts\UserInterface\BindingsScreen.cs" />
+    <Compile Include="src\Shortcuts\ShortcutsPlugin.cs" />
+    <Compile Include="src\Shortcuts\UI\ShortcutsScreen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
