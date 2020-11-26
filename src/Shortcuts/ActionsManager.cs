@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using SimpleJSON;
 
-public interface IShortcutsManager
+public interface IActionsManager
 {
 }
 
-public class ShortcutsManager : IShortcutsManager
+public class ActionsManager : IActionsManager
 {
     private readonly Atom _containingAtom;
     private readonly PrefabManager _prefabManager;
-    public Binding rootBinding { get; } = new Binding();
     private readonly Dictionary<string, IBoundAction> _actions = new Dictionary<string, IBoundAction>();
 
-    public ShortcutsManager(Atom containingAtom, PrefabManager prefabManager)
+    public ActionsManager(Atom containingAtom, PrefabManager prefabManager)
     {
         _containingAtom = containingAtom;
         _prefabManager = prefabManager;
@@ -21,11 +20,6 @@ public class ShortcutsManager : IShortcutsManager
     public void Add(string name, IBoundAction action)
     {
         _actions.Add(name, action);
-    }
-
-    public Binding Add(Binding binding)
-    {
-        return rootBinding.Add(binding);
     }
 
     public void Execute(string actionName)
@@ -69,6 +63,7 @@ public class ShortcutsManager : IShortcutsManager
 
     public void RestoreFromJSON(JSONClass actionsJSON)
     {
+        if ((actionsJSON?.Count ?? 0) == 0) return;
         _actions.Clear();
         foreach (var key in actionsJSON.AsObject.Keys)
         {

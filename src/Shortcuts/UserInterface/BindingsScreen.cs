@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BindingsScreen : MonoBehaviour
 {
-    public IShortcutsManager shortcutsManager { get; set; }
+    public IBindingsManager bindingsManager { get; set; }
+    public IPrefabManager prefabManager { get; set; }
 
     public void OnEnable()
     {
