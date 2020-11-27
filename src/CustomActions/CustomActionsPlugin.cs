@@ -40,19 +40,21 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
     public override void InitUI()
     {
         base.InitUI();
-        if (UITransform != null)
-        {
-            _prefabManager.triggerActionsParent = UITransform;
-            var scriptUI = UITransform.GetComponentInChildren<MVRScriptUI>();
+        if (UITransform == null) return;
+        _prefabManager.triggerActionsParent = UITransform;
 
-            var go = new GameObject();
-            go.transform.SetParent(scriptUI.fullWidthUIContent);
-            var active = go.activeInHierarchy;
-            if (active) go.SetActive(false);
-            _ui = go.AddComponent<CustomActionsScreen>();
-            _ui.prefabManager = _prefabManager;
-            if (active) go.SetActive(true);
-        }
+        var scriptUI = UITransform.GetComponentInChildren<MVRScriptUI>();
+
+        var go = new GameObject();
+        go.transform.SetParent(scriptUI.fullWidthUIContent, false);
+
+        var active = go.activeInHierarchy;
+        if (active) go.SetActive(false);
+        _ui = go.AddComponent<CustomActionsScreen>();
+        _ui.prefabManager = _prefabManager;
+        _ui.actions = _actions;
+        _ui.Configure();
+        if (active) go.SetActive(true);
     }
 
 

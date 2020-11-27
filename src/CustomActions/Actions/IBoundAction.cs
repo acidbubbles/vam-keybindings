@@ -1,13 +1,16 @@
 ﻿using SimpleJSON;
+using UnityEngine.Events;
 
 public interface IBoundAction
 {
     string type { get; }
+    string name { get; }
+    string displayName { get; }
 
     void Validate();
     void SyncAtomNames();
     void Invoke();
-    void Edit();
+    UnityEvent Edit();
     JSONClass GetJSON();
     void RestoreFromJSON(JSONClass json);
 }

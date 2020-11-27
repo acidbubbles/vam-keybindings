@@ -1,6 +1,7 @@
 ﻿using System;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityObject = UnityEngine.Object;
 
 public abstract class TriggerBoundAction : TriggerHandler
@@ -8,6 +9,8 @@ public abstract class TriggerBoundAction : TriggerHandler
     private readonly IPrefabManager _prefabManager;
 
     protected readonly Trigger trigger;
+
+    public virtual string name => trigger.displayName;
 
     protected TriggerBoundAction(IPrefabManager prefabManager)
     {
@@ -25,15 +28,16 @@ public abstract class TriggerBoundAction : TriggerHandler
         trigger?.SyncAtomNames();
     }
 
-    public virtual void Edit()
+    public virtual UnityEvent Edit()
     {
         trigger.triggerActionsParent = _prefabManager.triggerActionsParent;
-        Open();
+        return Open();
     }
 
-    protected virtual void Open()
+    protected virtual UnityEvent Open()
     {
         trigger.OpenTriggerActionsPanel();
+        return null;
     }
 
     public void RemoveTrigger(Trigger t)

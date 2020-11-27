@@ -1,13 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using SimpleJSON;
 
 namespace CustomActions
 {
-    public class ActionsRepository
+    public interface IActionsRepository : IEnumerable
+    {
+        IBoundAction AddDiscreteTrigger();
+        void Remove(IBoundAction action);
+    }
+
+    public class ActionsRepository : IActionsRepository
     {
         private readonly Atom _containingAtom;
         private readonly IPrefabManager _prefabManager;
-        private readonly Dictionary<string, IBoundAction> _actions = new Dictionary<string, IBoundAction>();
+        private readonly List<IBoundAction> _actions = new List<IBoundAction>();
 
         public ActionsRepository(Atom containingAtom, IPrefabManager prefabManager)
         {
@@ -15,45 +22,44 @@ namespace CustomActions
             _prefabManager = prefabManager;
         }
 
-        public void Add(string name, IBoundAction action)
+        public IBoundAction AddDiscreteTrigger()
         {
-            _actions.Add(name, action);
+            var action = new DiscreteTriggerBoundAction(_containingAtom, _prefabManager);
+            _actions.Add(action);
+            return action;
         }
 
-        public void Execute(string actionName)
+        public void Remove(IBoundAction action)
         {
-            IBoundAction boundAction;
-            if (!_actions.TryGetValue(actionName, out boundAction))
-            {
-                SuperController.LogError(
-                    $"Binding was mapped to {actionName} but there was no action matching this name available.");
-                return;
-            }
+            _actions.Remove(action);
+        }
 
-            boundAction.Invoke();
+        public void Add(string name, IBoundAction action)
+        {
+            _actions.Add(action);
         }
 
         public void Validate()
         {
-            foreach (var kvp in _actions)
-                kvp.Value.Validate();
+            foreach (var action in _actions)
+                action.Validate();
         }
 
         public void SyncAtomNames()
         {
-            foreach (var kvp in _actions)
-                kvp.Value.SyncAtomNames();
+            foreach (var action in _actions)
+                action.SyncAtomNames();
         }
 
-        public JSONClass GetJSON()
+        public JSONNode GetJSON()
         {
-            var actionsJSON = new JSONClass();
+            var actionsJSON = new JSONArray();
             foreach (var action in _actions)
             {
-                var actionJSON = action.Value.GetJSON();
+                var actionJSON = action.GetJSON();
                 if (actionJSON == null) continue;
-                actionJSON["__type"] = action.Value.type;
-                actionsJSON[action.Key] = actionJSON;
+                actionJSON["__type"] = action.type;
+                actionsJSON.Add(actionJSON);
             }
 
             return actionsJSON;
@@ -63,12 +69,10 @@ namespace CustomActions
         {
             if ((actionsJSON?.Count ?? 0) == 0) return;
             _actions.Clear();
-            foreach (var key in actionsJSON.AsObject.Keys)
+            foreach (JSONClass actionJSON in actionsJSON.AsArray)
             {
-                var actionJSON = actionsJSON[key].AsObject;
                 IBoundAction action;
                 var actionType = actionJSON["__type"];
-                SuperController.LogMessage($"{key} = {actionType}: {actionJSON}");
                 switch (actionType)
                 {
                     case DebugBoundAction.Type:
@@ -83,8 +87,13 @@ namespace CustomActions
                 }
 
                 action.RestoreFromJSON(actionJSON);
-                _actions.Add(key, action);
+                _actions.Add(action);
             }
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return _actions.GetEnumerator();
         }
     }
 }
