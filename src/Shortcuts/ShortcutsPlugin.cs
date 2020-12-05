@@ -24,15 +24,6 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
 
-        // TODO: Build from maps, e.g. ^s or :w
-        _bindingsManager.maps.Add(new BindingMap("<C-s>", "save"));
-        _bindingsManager.maps.Add(new BindingMap("1", "print.1"));
-        _bindingsManager.maps.Add(new BindingMap("2", "print.2"));
-        _bindingsManager.maps.Add(new BindingMap("3", "print.3"));
-        _bindingsManager.maps.Add(new BindingMap("34", "print.3.4"));
-        _bindingsManager.maps.Add(new BindingMap("35", "print.3.5"));
-        _bindingsManager.RebuildTree();
-
         AcquireAllAvailableBroadcastingPlugins();
     }
 
@@ -41,6 +32,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         yield return new WaitForEndOfFrame();
         if (this == null) yield break;
         if (!_loaded) containingAtom.RestoreFromLast(this);
+
+        // TODO: Remove this later, replace by levels (defaults, session, scene, atom)
+        _bindingsManager.RestoreDefaults();
+        // _bindingsManager.Debug(_bindingsManager.root);
     }
 
     public override void InitUI()
@@ -67,7 +62,8 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     {
         foreach (var atom in SuperController.singleton.GetAtoms())
         {
-            foreach (var storable in atom.GetStorableIDs().Select(id => atom.GetStorableByID(id))
+            foreach (var storable in atom.GetStorableIDs()
+                .Select(id => atom.GetStorableByID(id))
                 .Where(s => s is MVRScript))
             {
                 _remoteActionsManager.TryRegister(storable);
@@ -79,28 +75,31 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     {
         try
         {
+            // We won't allow binding to clicks
             if (!Input.anyKeyDown) return;
+
+            // <C-*> shortcuts can work even in a text field, otherwise text fields have preference
             if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
 
-            if (_timeoutCoroutine != null)
-                StopCoroutine(_timeoutCoroutine);
-
-            var next = (_current ?? _bindingsManager.root).DoMatch();
+            var current = _current;
+            _current = null;
+            var next = current?.DoMatch();
+            if (current != null)
+            {
+                SuperController.LogMessage("Result: " + next);
+            }
 
             if (next == null)
             {
-                if (_current != _bindingsManager.root)
-                    next = _bindingsManager.root.DoMatch();
-                _current = null;
+                next = _bindingsManager.root.DoMatch();
                 if (next == null)
                     return;
             }
 
-            if (next.Count == 0)
+            if (next.next.Count == 0)
             {
                 if (next.action != null)
                     Execute(next.action);
-                _current = null;
                 return;
             }
 
@@ -124,7 +123,6 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
                 Execute(_current.action);
                 _current = _bindingsManager.root;
             }
-
             _timeoutCoroutine = null;
         }
         catch (Exception e)
@@ -136,12 +134,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private void Execute(string action)
     {
         // TODO: Find the matching action and execute it (build and maintain a list)
-        SuperController.LogMessage(
-            $"Shortcut: Action '{action}' does not exist. Maybe it was assigned to a destroyed atom storable.");
+        SuperController.LogMessage( $"Shortcut: Action '{action}' does not exist. Maybe it was assigned to a destroyed atom storable.");
     }
 
-    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true,
-        bool forceStore = false)
+    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
     {
         var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
 

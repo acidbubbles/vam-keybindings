@@ -1,37 +1,43 @@
-﻿using SimpleJSON;
+﻿using System.Linq;
+using SimpleJSON;
 
 public class BindingMap
 {
-    public string keys { get; set; }
+    public Binding[] bindings { get; set; }
     public string action { get; set; }
 
     public BindingMap()
     {
     }
 
-    public BindingMap(string keys, string action)
+    public BindingMap(Binding[] bindings, string action)
     {
-        this.keys = keys;
+        this.bindings = bindings;
         this.action = action;
     }
 
     public JSONClass GetJSON()
     {
+        var bindingsJSON = new JSONArray();
+        foreach (var binding in bindings)
+        {
+            bindingsJSON.Add(binding.GetJSON());
+        }
         return new JSONClass
         {
-            {"keys", keys},
+            {"bindings", bindingsJSON},
             {"action", action},
         };
     }
 
     public void RestoreFromJSON(JSONNode mapJSON)
     {
-        keys = mapJSON["keys"].Value;
+        bindings = mapJSON["bindings"].AsArray.Childs.Select(Binding.FromJSON).ToArray();
         action = mapJSON["action"].Value;
     }
 
     public override string ToString()
     {
-        return $"map {keys} {action}";
+        return $"map {string.Join(", ", bindings.Select(b => b.ToString()).ToArray())} {action}";
     }
 }

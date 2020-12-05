@@ -74,6 +74,7 @@
     <Compile Include="src\Shared\IActionsInvoker.cs" />
     <Compile Include="src\Shared\PrefabManager.cs" />
     <Compile Include="src\Shortcuts\BindingMap.cs" />
+    <Compile Include="src\Shortcuts\Binding.cs" />
     <Compile Include="src\Shortcuts\BindingTreeNode.cs" />
     <Compile Include="src\Shortcuts\BindingsManager.cs" />
     <Compile Include="src\Shortcuts\RemoteActionsManager.cs" />

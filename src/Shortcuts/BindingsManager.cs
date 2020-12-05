@@ -1,84 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using SimpleJSON;
 using UnityEngine;
 
 public interface IBindingsManager
 {
-    void RebuildTree();
 }
 
 public class BindingsManager : IBindingsManager
 {
-    private static readonly Regex _keysParserRegex = new Regex(@"(<.+?>)|.", RegexOptions.Compiled);
     public List<BindingMap> maps { get; } = new List<BindingMap>();
     public BindingTreeNode root { get; } = new BindingTreeNode();
 
     public void RebuildTree()
     {
-        root.Clear();
+        root.next.Clear();
 
         foreach (var map in maps)
         {
-            if (string.IsNullOrEmpty(map.keys)) return;
-            var matches = _keysParserRegex.Matches(map.keys);
-            if (matches.Count == 0) return;
-            foreach (Match match in matches)
+            if (map.bindings.Length == 0) continue;
+            var node = root;
+            foreach (var binding in map.bindings)
             {
-                var keyString = match.Value;
-                if (keyString.Length == 1)
+                BindingTreeNode next;
+                if (node.TryGet(binding, out next))
                 {
-                    RebuildKey(keyString, KeyCode.None, map);
+                    node = next;
                     continue;
                 }
 
-                if (keyString[0] == '<')
-                {
-                    if(!keyString.StartsWith("<C-") || keyString.Length != 5)
-                        throw new NotImplementedException("Only <C-*> multi-key bindings are supported");
-                    RebuildKey(keyString[3].ToString(), KeyCode.LeftControl, map);
-                    continue;
-                }
-
-                SuperController.LogError($"Not implemented: {keyString} (in {map}");
+                next = new BindingTreeNode {binding = binding};
+                node.next.Add(next);
+                node = next;
             }
+            node.action = map.action;
         }
     }
 
-    private void RebuildKey(string keyString, KeyCode keyModifier, BindingMap map)
+    // ReSharper disable once UnusedMember.Global
+    public void Debug(BindingTreeNode node, int indent = 0)
     {
-        KeyCode keyCode;
-        if (!TryGetKeyCode(keyString, out keyCode))
-            SuperController.LogError($"Could not parse key to keycode: {keyString} (in {map})");
-        if (!TryAdd(keyCode, keyModifier, map.action))
-            SuperController.LogError($"Key conflict:{keyString} (in {map})");
-    }
-
-    private bool TryAdd(KeyCode keyCode, KeyCode keyModifier, string action)
-    {
-        if (root.All(x => x.Key != keyCode))
+        var indentStr = new string(' ', indent);
+        SuperController.LogMessage($"{indentStr}- {node}");
+        foreach (var child in node.next)
         {
-            root.Add(new BindingTreeNode {key = keyCode, modifier = keyModifier, action = action});
-            return false;
-        }
-
-        return true;
-    }
-
-    private static bool TryGetKeyCode(string keyString, out KeyCode keyCode)
-    {
-        try
-        {
-            keyCode = (KeyCode) Enum.Parse(typeof(KeyCode), keyString);
-            return true;
-        }
-        catch (Exception exc)
-        {
-            throw new NotImplementedException($"Key '{keyString}'", exc);
+            Debug(child, indent + 2);
         }
     }
+
 
     public JSONClass GetJSON()
     {
@@ -101,6 +69,17 @@ public class BindingsManager : IBindingsManager
             maps.Add(map);
         }
 
+        RebuildTree();
+    }
+
+    public void RestoreDefaults()
+    {
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.S, KeyCode.LeftControl)}, "save"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha1)}, "print.1"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha2)}, "print.2"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha3)}, "print.3"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha3), new Binding(KeyCode.Alpha4)}, "print.3.4"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha3), new Binding(KeyCode.Alpha5)}, "print.3.5"));
         RebuildTree();
     }
 }

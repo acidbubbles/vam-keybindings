@@ -1,25 +1,20 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BindingTreeNode : List<KeyValuePair<KeyCode, BindingTreeNode>>
+public class BindingTreeNode
 {
-    public KeyCode modifier;
-    public KeyCode key;
+    public Binding binding;
     public string action;
+    public readonly List<BindingTreeNode> next = new List<BindingTreeNode>();
 
-    public BindingTreeNode Add(BindingTreeNode bindingTreeNode)
-    {
-        Add(new KeyValuePair<KeyCode, BindingTreeNode>(bindingTreeNode.key, bindingTreeNode));
-        return bindingTreeNode;
-    }
 
     public BindingTreeNode DoMatch()
     {
-        for (var i = 0; i < Count; i++)
+        for (var i = 0; i < next.Count; i++)
         {
-            var binding = this[i];
-            if (binding.Value.IsMatch())
-                return binding.Value;
+            var child = next[i];
+            if (child.IsMatch())
+                return child;
         }
 
         return null;
@@ -27,8 +22,27 @@ public class BindingTreeNode : List<KeyValuePair<KeyCode, BindingTreeNode>>
 
     public bool IsMatch()
     {
-        if (!Input.GetKeyDown(key)) return false;
-        if (modifier != KeyCode.None && !Input.GetKey(modifier)) return false;
+        if (!Input.GetKeyDown(binding.key)) return false;
+        // TODO: Handle Shift+Alt+Ctrl
+        if (binding.modifier != KeyCode.None && !Input.GetKey(binding.modifier)) return false;
         return true;
+    }
+
+    public bool TryGet(Binding source, out BindingTreeNode result)
+    {
+        for (var i = 0; i < next.Count; i++)
+        {
+            if (!next[i].binding.Equals(source)) continue;
+            result = next[i];
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+
+    public override string ToString()
+    {
+        return $"treemap {binding} {action}";
     }
 };
