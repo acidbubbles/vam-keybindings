@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Binding : List<KeyValuePair<KeyCode, Binding>>
+public class BindingTreeNode : List<KeyValuePair<KeyCode, BindingTreeNode>>
 {
     public KeyCode modifier;
     public KeyCode key;
     public string action;
 
-    public Binding Add(Binding binding)
+    public BindingTreeNode Add(BindingTreeNode bindingTreeNode)
     {
-        Add(new KeyValuePair<KeyCode, Binding>(binding.key, binding));
-        return binding;
+        Add(new KeyValuePair<KeyCode, BindingTreeNode>(bindingTreeNode.key, bindingTreeNode));
+        return bindingTreeNode;
     }
 
-    public Binding DoMatch()
+    public BindingTreeNode DoMatch()
     {
         for (var i = 0; i < Count; i++)
         {

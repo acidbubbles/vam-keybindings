@@ -8,12 +8,12 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 {
     private const float _timeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
 
-    private Binding _current;
     private PrefabManager _prefabManager;
     private BindingsManager _bindingsManager;
     private RemoteActionsManager _remoteActionsManager;
     private ShortcutsScreen _ui;
-    private Coroutine _coroutine;
+    private Coroutine _timeoutCoroutine;
+    private BindingTreeNode _current;
     private bool _loaded;
 
     public override void Init()
@@ -25,33 +25,33 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         SuperController.singleton.StartCoroutine(DeferredInit());
 
         // TODO: Build from maps, e.g. ^s or :w
-        _bindingsManager.Add(new Binding
+        _bindingsManager.root.Add(new BindingTreeNode
         {
             modifier = KeyCode.LeftControl,
             key = KeyCode.S,
             action = "save"
         });
-        _bindingsManager.Add(new Binding
+        _bindingsManager.root.Add(new BindingTreeNode
         {
             key = KeyCode.Alpha1,
             action = "print.1"
         });
-        _bindingsManager.Add(new Binding
+        _bindingsManager.root.Add(new BindingTreeNode
         {
             key = KeyCode.Alpha2,
             action = "print.2"
         });
-        var b3 = _bindingsManager.Add(new Binding
+        var b3 = _bindingsManager.root.Add(new BindingTreeNode
         {
             key = KeyCode.Alpha3,
             action = "print.3"
         });
-        b3.Add(new Binding
+        b3.Add(new BindingTreeNode
         {
             key = KeyCode.Alpha4,
             action = "print.3.4"
         });
-        b3.Add(new Binding
+        b3.Add(new BindingTreeNode
         {
             key = KeyCode.Alpha5,
             action = "print.3.5"
@@ -106,15 +106,15 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             if (!Input.anyKeyDown) return;
             if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
 
-            if (_coroutine != null)
-                StopCoroutine(_coroutine);
+            if (_timeoutCoroutine != null)
+                StopCoroutine(_timeoutCoroutine);
 
-            var next = (_current ?? _bindingsManager.rootBinding).DoMatch();
+            var next = (_current ?? _bindingsManager.root).DoMatch();
 
             if (next == null)
             {
-                if (_current != _bindingsManager.rootBinding)
-                    next = _bindingsManager.rootBinding.DoMatch();
+                if (_current != _bindingsManager.root)
+                    next = _bindingsManager.root.DoMatch();
                 _current = null;
                 if (next == null)
                     return;
@@ -129,7 +129,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             }
 
             _current = next;
-            _coroutine = StartCoroutine(TimeoutCoroutine());
+            _timeoutCoroutine = StartCoroutine(TimeoutCoroutine());
         }
         catch (Exception e)
         {
@@ -146,10 +146,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             if (_current.action != null)
             {
                 Execute(_current.action);
-                _current = _bindingsManager.rootBinding;
+                _current = _bindingsManager.root;
             }
 
-            _coroutine = null;
+            _timeoutCoroutine = null;
         }
         catch (Exception e)
         {

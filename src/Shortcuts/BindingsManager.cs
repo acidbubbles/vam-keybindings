@@ -6,12 +6,7 @@ public interface IBindingsManager
 
 public class BindingsManager : IBindingsManager
 {
-    public Binding rootBinding { get; } = new Binding();
-
-    public Binding Add(Binding binding)
-    {
-        return rootBinding.Add(binding);
-    }
+    public BindingTreeNode root { get; } = new BindingTreeNode();
 
     public JSONClass GetJSON()
     {
