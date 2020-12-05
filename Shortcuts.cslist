@@ -1,8 +1,9 @@
 ﻿src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/Shared/PrefabManager.cs
-src/Shortcuts/Binding.cs
-src/Shortcuts/ShortcutsPlugin.cs
+src/Shortcuts/BindingsMap.cs
 src/Shortcuts/BindingsManager.cs
+src/Shortcuts/BindingTreeNode.cs
 src/Shortcuts/RemoteActionsManager.cs
+src/Shortcuts/ShortcutsPlugin.cs
 src/Shortcuts/UI/ShortcutsScreen.cs
