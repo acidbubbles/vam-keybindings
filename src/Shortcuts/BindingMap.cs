@@ -5,6 +5,16 @@ public class BindingMap
     public string keys { get; set; }
     public string action { get; set; }
 
+    public BindingMap()
+    {
+    }
+
+    public BindingMap(string keys, string action)
+    {
+        this.keys = keys;
+        this.action = action;
+    }
+
     public JSONClass GetJSON()
     {
         return new JSONClass

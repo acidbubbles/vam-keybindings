@@ -7,6 +7,7 @@ using UnityEngine;
 
 public interface IBindingsManager
 {
+    void RebuildTree();
 }
 
 public class BindingsManager : IBindingsManager
@@ -15,7 +16,7 @@ public class BindingsManager : IBindingsManager
     public List<BindingMap> maps { get; } = new List<BindingMap>();
     public BindingTreeNode root { get; } = new BindingTreeNode();
 
-    private void RebuildTree()
+    public void RebuildTree()
     {
         root.Clear();
 
@@ -29,21 +30,53 @@ public class BindingsManager : IBindingsManager
                 var keyString = match.Value;
                 if (keyString.Length == 1)
                 {
-                    KeyCode keyCode;
-                    if (!Enum.TryParse(keyString, out keyCode))
-                    {
-                        SuperController.LogError($"Could not parse key to keycode: {keyString} (in {map})");
-                    }
-                    if (root.Any(x => x.Key == keyCode))
-                    {
-                        SuperController.LogError($"Key conflict:{keyString} (in {map})");
-                    }
-                    root.Add(new BindingTreeNode {key = keyCode, action = map.action});
+                    RebuildKey(keyString, KeyCode.None, map);
+                    continue;
+                }
+
+                if (keyString[0] == '<')
+                {
+                    if(!keyString.StartsWith("<C-") || keyString.Length != 5)
+                        throw new NotImplementedException("Only <C-*> multi-key bindings are supported");
+                    RebuildKey(keyString[3].ToString(), KeyCode.LeftControl, map);
                     continue;
                 }
 
                 SuperController.LogError($"Not implemented: {keyString} (in {map}");
             }
+        }
+    }
+
+    private void RebuildKey(string keyString, KeyCode keyModifier, BindingMap map)
+    {
+        KeyCode keyCode;
+        if (!TryGetKeyCode(keyString, out keyCode))
+            SuperController.LogError($"Could not parse key to keycode: {keyString} (in {map})");
+        if (!TryAdd(keyCode, keyModifier, map.action))
+            SuperController.LogError($"Key conflict:{keyString} (in {map})");
+    }
+
+    private bool TryAdd(KeyCode keyCode, KeyCode keyModifier, string action)
+    {
+        if (root.All(x => x.Key != keyCode))
+        {
+            root.Add(new BindingTreeNode {key = keyCode, modifier = keyModifier, action = action});
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryGetKeyCode(string keyString, out KeyCode keyCode)
+    {
+        try
+        {
+            keyCode = (KeyCode) Enum.Parse(typeof(KeyCode), keyString);
+            return true;
+        }
+        catch (Exception exc)
+        {
+            throw new NotImplementedException($"Key '{keyString}'", exc);
         }
     }
 

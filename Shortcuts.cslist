@@ -1,7 +1,7 @@
 ﻿src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/Shared/PrefabManager.cs
-src/Shortcuts/BindingsMap.cs
+src/Shortcuts/BindingMap.cs
 src/Shortcuts/BindingsManager.cs
 src/Shortcuts/BindingTreeNode.cs
 src/Shortcuts/RemoteActionsManager.cs

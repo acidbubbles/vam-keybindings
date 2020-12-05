@@ -25,37 +25,13 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         SuperController.singleton.StartCoroutine(DeferredInit());
 
         // TODO: Build from maps, e.g. ^s or :w
-        _bindingsManager.root.Add(new BindingTreeNode
-        {
-            modifier = KeyCode.LeftControl,
-            key = KeyCode.S,
-            action = "save"
-        });
-        _bindingsManager.root.Add(new BindingTreeNode
-        {
-            key = KeyCode.Alpha1,
-            action = "print.1"
-        });
-        _bindingsManager.root.Add(new BindingTreeNode
-        {
-            key = KeyCode.Alpha2,
-            action = "print.2"
-        });
-        var b3 = _bindingsManager.root.Add(new BindingTreeNode
-        {
-            key = KeyCode.Alpha3,
-            action = "print.3"
-        });
-        b3.Add(new BindingTreeNode
-        {
-            key = KeyCode.Alpha4,
-            action = "print.3.4"
-        });
-        b3.Add(new BindingTreeNode
-        {
-            key = KeyCode.Alpha5,
-            action = "print.3.5"
-        });
+        _bindingsManager.maps.Add(new BindingMap("<C-s>", "save"));
+        _bindingsManager.maps.Add(new BindingMap("1", "print.1"));
+        _bindingsManager.maps.Add(new BindingMap("2", "print.2"));
+        _bindingsManager.maps.Add(new BindingMap("3", "print.3"));
+        _bindingsManager.maps.Add(new BindingMap("34", "print.3.4"));
+        _bindingsManager.maps.Add(new BindingMap("35", "print.3.5"));
+        _bindingsManager.RebuildTree();
 
         AcquireAllAvailableBroadcastingPlugins();
     }
