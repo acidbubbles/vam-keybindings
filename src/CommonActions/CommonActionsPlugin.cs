@@ -25,6 +25,13 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
         CreateAction(ActionNames.LoadScene, SuperController.singleton.LoadSceneDialog);
         CreateAction(ActionNames.MergeLoadScene, SuperController.singleton.LoadMergeSceneDialog);
         CreateAction(ActionNames.Exit, SuperController.singleton.Quit);
+        CreateAction(ActionNames.ScreenshotMode, SuperController.singleton.SelectModeScreenshot);
+        CreateAction(ActionNames.OnlineBrowser, () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
+        CreateAction(ActionNames.TopMenu, () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
+        CreateAction(ActionNames.ToggleErrorLog, ToggleErrorLog);
+        CreateAction(ActionNames.ToggleMessageLog, ToggleMessageLog);
+        CreateAction(ActionNames.CloseCurrentPanel, () => SuperController.singleton.activeUI = SuperController.ActiveUI.None);
+        CreateAction(ActionNames.AddAtom, () => SuperController.singleton.SetMainMenuTab("TabAddAtom"));
 
         // Selection
         CreateActionWithChoice("SelectAtom",
@@ -82,5 +89,21 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
         {
             bindings.Add(action);
         }
+    }
+
+    private static void ToggleMessageLog()
+    {
+        if (SuperController.singleton.msgLogPanel.gameObject.activeSelf)
+            SuperController.singleton.CloseMessageLogPanel();
+        else
+            SuperController.singleton.OpenMessageLogPanel();
+    }
+
+    private static void ToggleErrorLog()
+    {
+        if (SuperController.singleton.errorLogPanel.gameObject.activeSelf)
+            SuperController.singleton.CloseErrorLogPanel();
+        else
+            SuperController.singleton.OpenErrorLogPanel();
     }
 }

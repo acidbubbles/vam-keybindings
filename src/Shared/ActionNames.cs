@@ -10,5 +10,12 @@
     public const string SaveScene = "SaveScene";
     public const string LoadScene = "LoadScene";
     public const string MergeLoadScene = "MergeLoadScene";
+    public const string ScreenshotMode = "ScreenshotMode";
+    public const string OnlineBrowser = "OnlineBrowser";
+    public const string TopMenu = "TopMenu";
+    public const string ToggleErrorLog = "ToggleErrorLog";
+    public const string ToggleMessageLog = "ToggleMessageLog";
+    public const string CloseCurrentPanel = "CloseCurrentPanel";
+    public const string AddAtom = "AddAtom";
     public const string Exit = "Exit";
 }
