@@ -93,7 +93,6 @@ public class ShortcutsScreen : MonoBehaviour
             _setBindingRestoreColor = bindingBtn.buttonColor;
             _setKeybindingCoroutine = StartCoroutine(SetKeybinding());
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
-;
             bindingBtn.label = "Recording...";
         });
         row.bindingBtn = bindingBtn;
@@ -152,7 +151,7 @@ public class ShortcutsScreen : MonoBehaviour
                 if (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6) continue;
                 var binding = new Binding(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
                 _setKeybindingList.Add(binding);
-                _setBindingBtn.label = binding.ToString();
+                _setBindingBtn.label = _setKeybindingList.GetBindingsAsString();
                 expire = Time.unscaledTime + Settings.TimeoutLen;
             }
         }
@@ -167,7 +166,7 @@ public class ShortcutsScreen : MonoBehaviour
             var previousMap = bindingsManager.maps.FirstOrDefault(m => m.action == _setBindingAction.name);
             if (previousMap != null)
                 bindingsManager.maps.Remove(previousMap);
-            var conflictMap = bindingsManager.maps.FirstOrDefault(m => m.SameBinding(bindings));
+            var conflictMap = bindingsManager.maps.FirstOrDefault(m => m.bindings.SameBinding(bindings));
             if (conflictMap != null)
             {
                 bindingsManager.maps.Remove(conflictMap);
@@ -189,7 +188,7 @@ public class ShortcutsScreen : MonoBehaviour
     {
         var mapped = bindingsManager.maps.FirstOrDefault(m => m.action == action.name);
         return mapped != null
-            ? mapped.GetBindingsAsString()
+            ? mapped.bindings.GetBindingsAsString()
             : "-";
     }
 

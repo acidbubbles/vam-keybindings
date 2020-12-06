@@ -41,7 +41,14 @@ public class RemoteActionsManager
         if (!ValidateReceiver(action.storable))
             return;
 
-        action.Invoke();
+        try
+        {
+            action.Invoke();
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"Failed invoking {action.name}: {exc}");
+        }
     }
 
     public void TryRegister(JSONStorable storable)
