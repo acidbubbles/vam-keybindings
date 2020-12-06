@@ -41,21 +41,22 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     public override void InitUI()
     {
         base.InitUI();
-        if (UITransform != null)
-        {
-            _prefabManager.triggerActionsParent = UITransform;
-            var scriptUI = UITransform.GetComponentInChildren<MVRScriptUI>();
+        if (UITransform == null) return;
+        _prefabManager.triggerActionsParent = UITransform;
 
-            var go = new GameObject();
-            go.transform.SetParent(scriptUI.fullWidthUIContent);
-            var active = go.activeInHierarchy;
-            if (active) go.SetActive(false);
-            _ui = go.AddComponent<ShortcutsScreen>();
-            _ui.prefabManager = _prefabManager;
-            _ui.bindingsManager = _bindingsManager;
-            _ui.remoteActionsManager = _remoteActionsManager;
-            if (active) go.SetActive(true);
-        }
+        var scriptUI = UITransform.GetComponentInChildren<MVRScriptUI>();
+
+        var go = new GameObject();
+        go.transform.SetParent(scriptUI.fullWidthUIContent, false);
+
+        var active = go.activeInHierarchy;
+        if (active) go.SetActive(false);
+        _ui = go.AddComponent<ShortcutsScreen>();
+        _ui.prefabManager = _prefabManager;
+        _ui.bindingsManager = _bindingsManager;
+        _ui.remoteActionsManager = _remoteActionsManager;
+        _ui.Configure();
+        if (active) go.SetActive(true);
     }
 
     public void AcquireAllAvailableBroadcastingPlugins()
@@ -80,6 +81,9 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
             // <C-*> shortcuts can work even in a text field, otherwise text fields have preference
             if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
+
+            if (_timeoutCoroutine != null)
+                StopCoroutine(_timeoutCoroutine);
 
             var current = _current;
             _current = null;

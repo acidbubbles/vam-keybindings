@@ -81,7 +81,6 @@ public class CustomActionsScreen : MonoBehaviour
         textLayout.flexibleWidth = 1000f;
 
         var btnEdit = prefabManager.CreateButton(go.transform, "Edit");
-        // TODO: Detect when done and update the list
         btnEdit.button.onClick.AddListener(() =>
         {
             var e = action.Edit();

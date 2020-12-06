@@ -27,7 +27,7 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
         CreateAction(ActionNames.Exit, SuperController.singleton.Quit);
         CreateAction(ActionNames.ScreenshotMode, SuperController.singleton.SelectModeScreenshot);
         CreateAction(ActionNames.OnlineBrowser, () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
-        CreateAction(ActionNames.TopMenu, () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
+        CreateAction(ActionNames.MainMenu, () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
         CreateAction(ActionNames.ToggleErrorLog, ToggleErrorLog);
         CreateAction(ActionNames.ToggleMessageLog, ToggleMessageLog);
         CreateAction(ActionNames.CloseCurrentPanel, () => SuperController.singleton.activeUI = SuperController.ActiveUI.None);

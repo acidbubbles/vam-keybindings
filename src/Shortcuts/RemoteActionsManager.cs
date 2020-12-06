@@ -2,20 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JSONStorableActionAction
+public interface IAction
 {
-    public JSONStorable storable;
+    JSONStorable storable { get; }
+    string displayName { get; }
+    void Invoke();
+}
+
+public class JSONStorableActionAction : IAction
+{
+    public JSONStorable storable { get; set; }
+    public string displayName => action.name;
     public JSONStorableAction action;
+
+    public void Invoke()
+    {
+        action.actionCallback.Invoke();
+    }
 }
 
 public class RemoteActionsManager
 {
-    private readonly Dictionary<string, JSONStorableActionAction> _actionsMap = new Dictionary<string, JSONStorableActionAction>();
+    // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
+    private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
     private readonly Dictionary<JSONStorable, List<JSONStorableActionAction>> _receiversMap = new Dictionary<JSONStorable, List<JSONStorableActionAction>>();
 
     public void Execute(string name)
     {
-        JSONStorableActionAction action;
+        IAction action;
         if (!_actionsMap.TryGetValue(name, out action))
         {
             SuperController.LogError($"Action '{name}' was not found. Maybe the action this binding was mapped to is associated with an atom that is not present in the current scene.");
@@ -25,7 +39,7 @@ public class RemoteActionsManager
         if (!ValidateReceiver(action.storable))
             return;
 
-        action.action.actionCallback.Invoke();
+        action.Invoke();
     }
 
     public void TryRegister(JSONStorable storable)
@@ -96,8 +110,8 @@ public class RemoteActionsManager
         return true;
     }
 
-    public IEnumerable<string> ToList()
+    public IEnumerable<IAction> ToList()
     {
-        return _actionsMap.Keys.ToList();
+        return _actionsMap.Values;
     }
 }
