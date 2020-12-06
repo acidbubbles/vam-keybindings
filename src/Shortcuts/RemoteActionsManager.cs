@@ -1,16 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+
+public class JSONStorableActionAction
+{
+    public JSONStorable storable;
+    public JSONStorableAction action;
+}
 
 public class RemoteActionsManager
 {
-    private readonly List<Receiver> _receivers = new List<Receiver>();
+    private readonly Dictionary<string, JSONStorableActionAction> _actionsMap = new Dictionary<string, JSONStorableActionAction>();
+    private readonly Dictionary<JSONStorable, List<JSONStorableActionAction>> _receiversMap = new Dictionary<JSONStorable, List<JSONStorableActionAction>>();
+
+    public void Execute(string name)
+    {
+        JSONStorableActionAction action;
+        if (!_actionsMap.TryGetValue(name, out action))
+        {
+            SuperController.LogError($"Action '{name}' was not found. Maybe the action this binding was mapped to is associated with an atom that is not present in the current scene.");
+            return;
+        }
+
+        if (!ValidateReceiver(action.storable))
+            return;
+
+        action.action.actionCallback.Invoke();
+    }
 
     public void TryRegister(JSONStorable storable)
     {
-        var existing = _receivers.FirstOrDefault(r => r.storable == storable);
-        if (existing != null) _receivers.Remove(existing);
+        RemoveReceiver(storable);
 
         var bindings = new List<object>();
         try
@@ -19,71 +39,65 @@ public class RemoteActionsManager
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"Failed requesting bindings on {storable.name} in atom {storable.containingAtom.name}: {exc}");
+            SuperController.LogError($"Shortcuts: Failed requesting bindings on {storable.name} in atom {storable.containingAtom.name}: {exc}");
             return;
         }
 
         if (bindings.Count > 0)
         {
-            var actions = new List<JSONStorableAction>();
+            var actions = new List<JSONStorableActionAction>();
             foreach (var binding in bindings)
             {
-                if (!(TryAdd(actions, binding)))
-                    SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {storable.containingAtom?.name ?? "(no containing atom)"}.");
+                if (binding is JSONStorableAction)
+                {
+                    var actionBinding = binding as JSONStorableAction;
+                    var action = new JSONStorableActionAction {action = actionBinding, storable = storable};
+                    _actionsMap[actionBinding.name] = action;
+                    SuperController.LogMessage($"Mapped {actionBinding.name}");
+                    actions.Add(action);
+                    continue;
+                }
+
+                SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
             }
-
-            _receivers.Add(new Receiver
-            {
-                storable = storable,
-                actions = actions,
-            });
+            _receiversMap[storable] = actions;
         }
     }
 
-    private static bool TryAdd<T>(List<T> list, object binding) where T : class
+    private void RemoveReceiver(JSONStorable storable)
     {
-        var typed = binding as T;
-        if (typed != null)
+        List<JSONStorableActionAction> existing;
+        if (!_receiversMap.TryGetValue(storable, out existing))
+            return;
+
+        foreach (var action in existing)
         {
-            list.Add(typed);
-            return true;
+            _actionsMap.Remove(action.action.name);
         }
 
-        return false;
+        _receiversMap.Remove(storable);
     }
 
-    private bool ValidateReceiver(Receiver receiver)
+    private bool ValidateReceiver(JSONStorable storable)
     {
-        if (receiver.storable == null)
+        if (storable == null)
         {
-            _receivers.Remove(receiver);
+            RemoveReceiver(storable);
             SuperController.LogError($"Shortcuts: The receiver does not exist anymore.");
             return false;
         }
 
-        if (!receiver.storable.isActiveAndEnabled)
+        if (!storable.isActiveAndEnabled)
         {
-            SuperController.LogError($"Shortcuts: The receiver {receiver.storable.containingAtom?.name ?? "(unspecified)"}/{receiver.storable.name} is disabled.");
+            SuperController.LogError($"Shortcuts: The receiver {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}/{storable.name} is disabled.");
             return false;
         }
 
         return true;
     }
 
-    private class Receiver
+    public IEnumerable<string> ToList()
     {
-        public JSONStorable storable;
-        public List<JSONStorableAction> actions;
-    }
-
-    public List<string> ToList()
-    {
-        var list = new List<string>();
-        foreach (var receiver in _receivers)
-        {
-            foreach (var p in receiver.actions)
-                list.Add($"{receiver.storable.name}/{p.name}");
-        }
-        return list;
+        return _actionsMap.Keys.ToList();
     }
 }

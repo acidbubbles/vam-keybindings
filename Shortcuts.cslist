@@ -1,4 +1,5 @@
-﻿src/Shared/IActionsInvoker.cs
+﻿src/Shared/ActionNames.cs
+src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/Shared/PrefabManager.cs
 src/Shortcuts/Binding.cs

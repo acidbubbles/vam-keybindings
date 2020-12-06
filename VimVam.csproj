@@ -69,6 +69,7 @@
     <Compile Include="src\CustomActions\Actions\TriggerBoundAction.cs" />
     <Compile Include="src\CustomActions\CustomActionsPlugin.cs" />
     <Compile Include="src\CustomActions\UI\CustomActionsScreen.cs" />
+    <Compile Include="src\Shared\ActionNames.cs" />
     <Compile Include="src\Shared\BroadcastingUtil.cs" />
     <Compile Include="src\Shared\IActionsProvider.cs" />
     <Compile Include="src\Shared\IActionsInvoker.cs" />

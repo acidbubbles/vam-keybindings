@@ -84,10 +84,6 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             var current = _current;
             _current = null;
             var next = current?.DoMatch();
-            if (current != null)
-            {
-                SuperController.LogMessage("Result: " + next);
-            }
 
             if (next == null)
             {
@@ -99,7 +95,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             if (next.next.Count == 0)
             {
                 if (next.action != null)
-                    Execute(next.action);
+                    _remoteActionsManager.Execute(next.action);
                 return;
             }
 
@@ -120,7 +116,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         {
             if (_current.action != null)
             {
-                Execute(_current.action);
+                _remoteActionsManager.Execute(_current.action);
                 _current = _bindingsManager.root;
             }
             _timeoutCoroutine = null;
@@ -129,12 +125,6 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         {
             SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(TimeoutCoroutine)}: {e}");
         }
-    }
-
-    private void Execute(string action)
-    {
-        // TODO: Find the matching action and execute it (build and maintain a list)
-        SuperController.LogMessage( $"Shortcut: Action '{action}' does not exist. Maybe it was assigned to a destroyed atom storable.");
     }
 
     public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)

@@ -16,15 +16,15 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
 
         // Logging
         CreateActionWithParam("LogMessage", SuperController.LogMessage);
-        CreateAction("ClearMessageLog", SuperController.singleton.ClearMessages);
+        CreateAction(ActionNames.ClearMessageLog, SuperController.singleton.ClearMessages);
         CreateActionWithParam("LogError", SuperController.LogError);
-        CreateAction("ClearErrorLog", SuperController.singleton.ClearErrors);
+        CreateAction(ActionNames.ClearErrorLog, SuperController.singleton.ClearErrors);
 
         // Main menu
-        CreateAction("SaveScene", SuperController.singleton.SaveSceneDialog);
-        CreateAction("LoadScene", SuperController.singleton.LoadSceneDialog);
-        CreateAction("MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
-        CreateAction("Exit", SuperController.singleton.Quit);
+        CreateAction(ActionNames.SaveScene, SuperController.singleton.SaveSceneDialog);
+        CreateAction(ActionNames.LoadScene, SuperController.singleton.LoadSceneDialog);
+        CreateAction(ActionNames.MergeLoadScene, SuperController.singleton.LoadMergeSceneDialog);
+        CreateAction(ActionNames.Exit, SuperController.singleton.Quit);
 
         // Selection
         CreateActionWithChoice("SelectAtom",

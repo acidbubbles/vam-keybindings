@@ -74,7 +74,7 @@ public class BindingsManager : IBindingsManager
 
     public void RestoreDefaults()
     {
-        maps.Add(new BindingMap(new[] {new Binding(KeyCode.S, KeyCode.LeftControl)}, "save"));
+        maps.Add(new BindingMap(new[] {new Binding(KeyCode.S, KeyCode.LeftControl)}, ActionNames.SaveScene));
         maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha1)}, "print.1"));
         maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha2)}, "print.2"));
         maps.Add(new BindingMap(new[] {new Binding(KeyCode.Alpha3)}, "print.3"));

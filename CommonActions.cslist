@@ -1,4 +1,5 @@
-﻿src/Shared/BroadcastingUtil.cs
+﻿src/Shared/ActionNames.cs
+src/Shared/BroadcastingUtil.cs
 src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/CommonActions/CommonActionsPlugin.cs
