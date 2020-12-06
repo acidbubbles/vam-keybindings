@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class ShortcutsPlugin : MVRScript, IActionsInvoker
 {
-    private const float _timeoutLen = 1.0f; // http://vimdoc.sourceforge.net/htmldoc/options.html#'timeoutlen'
-
     private PrefabManager _prefabManager;
     private BindingsManager _bindingsManager;
     private RemoteActionsManager _remoteActionsManager;
@@ -76,8 +74,11 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     {
         try
         {
-            // We won't allow binding to clicks
+            // Don't waste resources
             if (!Input.anyKeyDown) return;
+
+            // Do not listen while a keybinding is being recorded
+            if (_ui.isRecording) return;
 
             // <C-*> shortcuts can work even in a text field, otherwise text fields have preference
             if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
@@ -99,7 +100,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             if (next.next.Count == 0)
             {
                 if (next.action != null)
-                    _remoteActionsManager.Execute(next.action);
+                    _remoteActionsManager.Invoke(next.action);
                 return;
             }
 
@@ -114,13 +115,13 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
     private IEnumerator TimeoutCoroutine()
     {
-        yield return new WaitForSecondsRealtime(_timeoutLen);
+        yield return new WaitForSecondsRealtime(Settings.TimeoutLen);
         if (_current == null) yield break;
         try
         {
             if (_current.action != null)
             {
-                _remoteActionsManager.Execute(_current.action);
+                _remoteActionsManager.Invoke(_current.action);
                 _current = _bindingsManager.root;
             }
             _timeoutCoroutine = null;

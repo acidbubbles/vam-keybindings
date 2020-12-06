@@ -7,5 +7,6 @@ src/Shortcuts/BindingMap.cs
 src/Shortcuts/BindingsManager.cs
 src/Shortcuts/BindingTreeNode.cs
 src/Shortcuts/RemoteActionsManager.cs
+src/Shortcuts/Settings.cs
 src/Shortcuts/ShortcutsPlugin.cs
 src/Shortcuts/UI/ShortcutsScreen.cs

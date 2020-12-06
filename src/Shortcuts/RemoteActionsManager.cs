@@ -5,14 +5,16 @@ using UnityEngine;
 public interface IAction
 {
     JSONStorable storable { get; }
-    string displayName { get; }
+    string name { get; }
+    string label { get; }
     void Invoke();
 }
 
 public class JSONStorableActionAction : IAction
 {
     public JSONStorable storable { get; set; }
-    public string displayName => action.name;
+    public string name => action.name;
+    public string label => action.name;
     public JSONStorableAction action;
 
     public void Invoke()
@@ -27,7 +29,7 @@ public class RemoteActionsManager
     private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
     private readonly Dictionary<JSONStorable, List<JSONStorableActionAction>> _receiversMap = new Dictionary<JSONStorable, List<JSONStorableActionAction>>();
 
-    public void Execute(string name)
+    public void Invoke(string name)
     {
         IAction action;
         if (!_actionsMap.TryGetValue(name, out action))
@@ -67,7 +69,6 @@ public class RemoteActionsManager
                     var actionBinding = binding as JSONStorableAction;
                     var action = new JSONStorableActionAction {action = actionBinding, storable = storable};
                     _actionsMap[actionBinding.name] = action;
-                    SuperController.LogMessage($"Mapped {actionBinding.name}");
                     actions.Add(action);
                     continue;
                 }

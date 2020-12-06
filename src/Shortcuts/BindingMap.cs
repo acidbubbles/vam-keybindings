@@ -38,6 +38,21 @@ public class BindingMap
 
     public override string ToString()
     {
-        return $"map {string.Join(", ", bindings.Select(b => b.ToString()).ToArray())} {action}";
+        return $"map {GetBindingsAsString()} {action}";
+    }
+
+    public string GetBindingsAsString()
+    {
+        return string.Join(", ", bindings.Select(b => b.ToString()).ToArray());
+    }
+
+    public bool SameBinding(Binding[] other)
+    {
+        if (other.Length != bindings.Length) return false;
+        for (var i = 0; i < bindings.Length; i++)
+        {
+            if (!other[i].Equals(bindings[i])) return false;
+        }
+        return true;
     }
 }

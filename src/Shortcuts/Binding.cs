@@ -4,7 +4,7 @@ using UnityEngine;
 
 public struct Binding
 {
-    public static readonly Binding empty = new Binding(KeyCode.None, KeyCode.None);
+    public static readonly Binding empty = new Binding(KeyCode.None);
 
     public readonly KeyCode modifier;
     public readonly KeyCode key;
@@ -17,7 +17,16 @@ public struct Binding
 
     public override string ToString()
     {
-        return modifier == KeyCode.None ? $"{key}" : $"{modifier}+{key}";
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+        switch (modifier)
+        {
+            case KeyCode.LeftControl:
+                return $"Ctrl+{key}";
+            case KeyCode.None:
+                return $"{key}";
+            default:
+                return $"?+{key}";
+        }
     }
 
     public override bool Equals(object obj)

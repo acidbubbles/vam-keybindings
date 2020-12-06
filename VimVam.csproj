@@ -79,6 +79,7 @@
     <Compile Include="src\Shortcuts\BindingTreeNode.cs" />
     <Compile Include="src\Shortcuts\BindingsManager.cs" />
     <Compile Include="src\Shortcuts\RemoteActionsManager.cs" />
+    <Compile Include="src\Shortcuts\Settings.cs" />
     <Compile Include="src\Shortcuts\ShortcutsPlugin.cs" />
     <Compile Include="src\Shortcuts\UI\ShortcutsScreen.cs" />
   </ItemGroup>

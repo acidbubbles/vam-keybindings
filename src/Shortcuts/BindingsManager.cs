@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface IBindingsManager
 {
+    List<BindingMap> maps { get; }
+    void RebuildTree();
 }
 
 public class BindingsManager : IBindingsManager
