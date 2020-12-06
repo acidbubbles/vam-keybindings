@@ -86,6 +86,7 @@ public class CustomActionsScreen : MonoBehaviour
             var e = action.Edit();
             e?.AddListener(() =>
             {
+                actions.onChange.Invoke();
                 text.text = action.displayName;
             });
         });

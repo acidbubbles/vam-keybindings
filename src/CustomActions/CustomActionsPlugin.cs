@@ -16,18 +16,10 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
     {
         _prefabManager = new PrefabManager();
         _actions = new ActionsRepository(containingAtom, _prefabManager);
+        _actions.onChange.AddListener(OnActionsChanged);
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
         SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
-
-        _actions.Add("save", new DiscreteTriggerBoundAction(containingAtom, _prefabManager));
-        _actions.Add("print.1", new DiscreteTriggerBoundAction(containingAtom, _prefabManager));
-        _actions.Add("print.2", new DiscreteTriggerBoundAction(containingAtom, _prefabManager));
-        _actions.Add("print.3", new DiscreteTriggerBoundAction(containingAtom, _prefabManager));
-        _actions.Add("print.3.4", new DebugBoundAction("debug 3.4"));
-        _actions.Add("print.3.5", new DebugBoundAction("debug 3.5"));
-
-        BroadcastingUtil.BroadcastActionsAvailable(this);
     }
 
     private IEnumerator DeferredInit()
@@ -95,6 +87,9 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         {
             _loaded = true;
             _actions.RestoreFromJSON(jc["actions"]?.AsObject);
+            if (_actions.count > 0)
+                OnActionsChanged();
+
         }
         catch (Exception exc)
         {
@@ -102,7 +97,17 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         }
     }
 
+    private void OnActionsChanged()
+    {
+        BroadcastingUtil.BroadcastActionsAvailable(this);
+    }
+
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
+        foreach (IBoundAction action in _actions)
+        {
+            if (action.bindable == null) continue;
+            bindings.Add(action.bindable);
+        }
     }
 }

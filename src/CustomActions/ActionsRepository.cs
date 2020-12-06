@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SimpleJSON;
+using UnityEngine.Events;
 
 namespace CustomActions
 {
     public interface IActionsRepository : IEnumerable
     {
+        UnityEvent onChange { get; }
         IBoundAction AddDiscreteTrigger();
         void Remove(IBoundAction action);
     }
 
     public class ActionsRepository : IActionsRepository
     {
+        public UnityEvent onChange { get; } = new UnityEvent();
+        public int count => _actions.Count;
+
         private readonly Atom _containingAtom;
         private readonly IPrefabManager _prefabManager;
         private readonly List<IBoundAction> _actions = new List<IBoundAction>();
@@ -26,17 +31,14 @@ namespace CustomActions
         {
             var action = new DiscreteTriggerBoundAction(_containingAtom, _prefabManager);
             _actions.Add(action);
+            onChange.Invoke();
             return action;
         }
 
         public void Remove(IBoundAction action)
         {
             _actions.Remove(action);
-        }
-
-        public void Add(string name, IBoundAction action)
-        {
-            _actions.Add(action);
+            onChange.Invoke();
         }
 
         public void Validate()

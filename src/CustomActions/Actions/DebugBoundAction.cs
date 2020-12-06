@@ -7,6 +7,7 @@ public class DebugBoundAction : IBoundAction
     public const string Type = "debug";
     public string type => Type;
     public string name { get; private set; }
+    public object bindable { get; } = null;
     public string displayName => $"<b>DEBUG</b> <i>{name}</i> '{_message}'";
 
     private string _message;

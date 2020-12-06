@@ -9,10 +9,8 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
     public const string Type = "discreteTrigger";
     public string type => Type;
 
-    private UnityEvent _onClose;
-    private Coroutine _waitForCloseCo;
-
     public override string name => _triggerAction.name;
+    public object bindable => !string.IsNullOrEmpty(_jsa.name) ? _jsa : null;
 
     public string displayName
     {
@@ -63,7 +61,10 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
         }
     }
 
+    private UnityEvent _onClose;
+    private Coroutine _waitForCloseCo;
     private readonly TriggerActionDiscrete _triggerAction;
+    private readonly JSONStorableAction _jsa;
 
     public DiscreteTriggerBoundAction(Atom defaultAtom, IPrefabManager prefabManager)
         : base(prefabManager)
@@ -76,6 +77,7 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
             if (defaultStorableId != null)
                 _triggerAction.receiver = defaultAtom.GetStorableByID(defaultStorableId);
         }
+        _jsa = new JSONStorableAction("", Invoke);
     }
 
     public void Invoke()
@@ -97,8 +99,9 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
     private IEnumerator WaitForCloseCoroutine()
     {
         yield return 0;
-        while(_triggerAction.detailPanelOpen)
-            yield return new WaitForSeconds(0.1f);
+        while (_triggerAction.detailPanelOpen)
+            yield return 0;
+        _jsa.name = _triggerAction.name;
         _onClose.Invoke();
         _onClose.RemoveAllListeners();
         _onClose = null;
