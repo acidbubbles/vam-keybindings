@@ -10,6 +10,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private KeyMapManager _keyMapManager;
     private RemoteActionsManager _remoteActionsManager;
     private ShortcutsScreen _ui;
+    private ShortcutsOverlay _overlay;
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
     private bool _loaded;
@@ -55,18 +56,26 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         _ui.remoteActionsManager = _remoteActionsManager;
         _ui.Configure();
         if (active) go.SetActive(true);
+
+        _overlay = ShortcutsOverlay.CreateOverlayGameObject(_prefabManager);
+        _overlay.autoClear = Settings.TimeoutLen;
+        _overlay.Draw("VimVam Ready!");
+    }
+
+    public void OnDestroy()
+    {
+        if (_overlay != null) Destroy(_overlay.gameObject);
     }
 
     public void AcquireAllAvailableBroadcastingPlugins()
     {
-        foreach (var atom in SuperController.singleton.GetAtoms())
+        foreach (var storable in SuperController.singleton
+            .GetAtoms()
+            .SelectMany(atom => atom.GetStorableIDs()
+            .Select(atom.GetStorableByID)
+            .Where(s => s is MVRScript)))
         {
-            foreach (var storable in atom.GetStorableIDs()
-                .Select(id => atom.GetStorableByID(id))
-                .Where(s => s is MVRScript))
-            {
-                _remoteActionsManager.TryRegister(storable);
-            }
+            _remoteActionsManager.TryRegister(storable);
         }
     }
 
@@ -96,6 +105,8 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
                 if (next == null)
                     return;
             }
+
+            _overlay.Draw(next.keyChord.ToString());
 
             if (next.next.Count == 0)
             {

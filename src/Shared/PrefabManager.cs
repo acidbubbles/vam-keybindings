@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 
 public interface IPrefabManager
 {
+    Font font { get; }
     Transform triggerActionsParent { get; }
     RectTransform triggerActionsPrefab { get; }
     RectTransform triggerActionMiniPrefab { get; }
@@ -19,7 +20,7 @@ public interface IPrefabManager
 
 public class PrefabManager : IPrefabManager
 {
-    private Font _font;
+    public Font font { get; private set; }
     public Transform triggerActionsParent { get; set; }
     public RectTransform triggerActionsPrefab { get; private set; }
     public RectTransform triggerActionMiniPrefab { get; private set; }
@@ -29,7 +30,7 @@ public class PrefabManager : IPrefabManager
 
     public IEnumerator LoadUIAssets()
     {
-        _font = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        font = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
         foreach (var r in LoadUIAsset("TriggerActionsPanel", x => triggerActionsPrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("TriggerActionMiniPanel", x => triggerActionMiniPrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("TriggerActionDiscretePanel", x => triggerActionDiscretePrefab = x)) yield return r;
@@ -46,7 +47,7 @@ public class PrefabManager : IPrefabManager
         layout.preferredHeight = 36;
 
         var text = go.AddComponent<Text>();
-        text.font = _font;
+        text.font = font;
         text.raycastTarget = false;
         text.alignment = TextAnchor.MiddleLeft;
         text.color = Color.black;

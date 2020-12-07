@@ -38,6 +38,6 @@ public class KeyMap
 
     public override string ToString()
     {
-        return $"map {chords.GetBindingsAsString()} {action}";
+        return $"map {chords.GetKeyChordsAsString()} {action}";
     }
 }

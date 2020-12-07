@@ -160,7 +160,7 @@ public class ShortcutsScreen : MonoBehaviour
                 if (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6) continue;
                 var binding = new KeyChord(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
                 _setKeybindingList.Add(binding);
-                _setBindingBtn.label = _setKeybindingList.GetBindingsAsString();
+                _setBindingBtn.label = _setKeybindingList.GetKeyChordsAsString();
                 expire = Time.unscaledTime + Settings.TimeoutLen;
             }
         }
@@ -197,7 +197,7 @@ public class ShortcutsScreen : MonoBehaviour
     {
         var mapped = bindingsManager.maps.FirstOrDefault(m => m.action == action.name);
         return mapped != null
-            ? mapped.chords.GetBindingsAsString()
+            ? mapped.chords.GetKeyChordsAsString()
             : "-";
     }
 
