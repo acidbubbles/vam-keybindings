@@ -7,17 +7,17 @@ using UnityEngine;
 public class ShortcutsPlugin : MVRScript, IActionsInvoker
 {
     private PrefabManager _prefabManager;
-    private BindingsManager _bindingsManager;
+    private KeyMapManager _keyMapManager;
     private RemoteActionsManager _remoteActionsManager;
     private ShortcutsScreen _ui;
     private Coroutine _timeoutCoroutine;
-    private BindingTreeNode _current;
+    private KeyMapTreeNode _current;
     private bool _loaded;
 
     public override void Init()
     {
         _prefabManager = new PrefabManager();
-        _bindingsManager = new BindingsManager();
+        _keyMapManager = new KeyMapManager();
         _remoteActionsManager = new RemoteActionsManager();
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
@@ -32,7 +32,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         if (!_loaded) containingAtom.RestoreFromLast(this);
 
         // TODO: Remove this later, replace by levels (defaults, session, scene, atom)
-        _bindingsManager.RestoreDefaults();
+        _keyMapManager.RestoreDefaults();
         // _bindingsManager.Debug(_bindingsManager.root);
     }
 
@@ -51,7 +51,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         if (active) go.SetActive(false);
         _ui = go.AddComponent<ShortcutsScreen>();
         _ui.prefabManager = _prefabManager;
-        _ui.bindingsManager = _bindingsManager;
+        _ui.bindingsManager = _keyMapManager;
         _ui.remoteActionsManager = _remoteActionsManager;
         _ui.Configure();
         if (active) go.SetActive(true);
@@ -92,7 +92,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
             if (next == null)
             {
-                next = _bindingsManager.root.DoMatch();
+                next = _keyMapManager.root.DoMatch();
                 if (next == null)
                     return;
             }
@@ -122,7 +122,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             if (_current.action != null)
             {
                 _remoteActionsManager.Invoke(_current.action);
-                _current = _bindingsManager.root;
+                _current = _keyMapManager.root;
             }
             _timeoutCoroutine = null;
         }
@@ -138,7 +138,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
         try
         {
-            json["bindings"] = _bindingsManager.GetJSON();
+            json["maps"] = _keyMapManager.GetJSON();
             needsStore = true;
         }
         catch (Exception exc)
@@ -157,7 +157,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         try
         {
             _loaded = true;
-            _bindingsManager.RestoreFromJSON(jc["bindings"]?.AsObject);
+            _keyMapManager.RestoreFromJSON(jc["maps"]);
         }
         catch (Exception exc)
         {
@@ -168,5 +168,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     public void OnActionsProviderAvailable(JSONStorable storable)
     {
         _remoteActionsManager.TryRegister(storable);
+    }
+
+    public void OnActionsProviderDestroyed(JSONStorable storable)
+    {
+        _remoteActionsManager.Remove(storable);
     }
 }

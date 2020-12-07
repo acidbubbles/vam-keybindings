@@ -115,5 +115,6 @@ public class DiscreteTriggerBoundAction : TriggerBoundAction, IBoundAction
     public override void RestoreFromJSON(JSONClass json)
     {
         _triggerAction.RestoreFromJSON(json);
+        _jsa.name = _triggerAction.name;
     }
 }

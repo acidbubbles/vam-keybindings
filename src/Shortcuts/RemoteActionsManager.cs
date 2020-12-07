@@ -1,33 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
-public interface IAction
-{
-    JSONStorable storable { get; }
-    string name { get; }
-    string label { get; }
-    void Invoke();
-}
-
-public class JSONStorableActionAction : IAction
-{
-    public JSONStorable storable { get; set; }
-    public string name => action.name;
-    public string label => action.name;
-    public JSONStorableAction action;
-
-    public void Invoke()
-    {
-        action.actionCallback.Invoke();
-    }
-}
 
 public class RemoteActionsManager
 {
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
     private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
-    private readonly Dictionary<JSONStorable, List<JSONStorableActionAction>> _receiversMap = new Dictionary<JSONStorable, List<JSONStorableActionAction>>();
 
     public void Invoke(string name)
     {
@@ -53,7 +32,8 @@ public class RemoteActionsManager
 
     public void TryRegister(JSONStorable storable)
     {
-        RemoveReceiver(storable);
+        // TODO: Does not work afaik
+        Remove(storable);
 
         var bindings = new List<object>();
         try
@@ -66,45 +46,40 @@ public class RemoteActionsManager
             return;
         }
 
-        if (bindings.Count > 0)
-        {
-            var actions = new List<JSONStorableActionAction>();
-            foreach (var binding in bindings)
-            {
-                if (binding is JSONStorableAction)
-                {
-                    var actionBinding = binding as JSONStorableAction;
-                    var action = new JSONStorableActionAction {action = actionBinding, storable = storable};
-                    _actionsMap[actionBinding.name] = action;
-                    actions.Add(action);
-                    continue;
-                }
+        if (bindings.Count <= 0)
+            return;
 
-                SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
+        foreach (var binding in bindings)
+        {
+            var storableAction = binding as JSONStorableAction;
+            if (storableAction != null)
+            {
+                var action = new JSONStorableActionAction {action = storableAction, storable = storable};
+                _actionsMap[storableAction.name] = action;
+                continue;
             }
-            _receiversMap[storable] = actions;
+
+            SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
     }
 
-    private void RemoveReceiver(JSONStorable storable)
+    public void Remove(JSONStorable storable)
     {
-        List<JSONStorableActionAction> existing;
-        if (!_receiversMap.TryGetValue(storable, out existing))
-            return;
-
-        foreach (var action in existing)
+        var actionsToRemove = new List<string>();
+        foreach (var action in _actionsMap)
         {
-            _actionsMap.Remove(action.action.name);
+            if (action.Value.storable == storable)
+                actionsToRemove.Add(action.Key);
         }
-
-        _receiversMap.Remove(storable);
+        foreach (var action in actionsToRemove)
+            _actionsMap.Remove(action);
     }
 
     private bool ValidateReceiver(JSONStorable storable)
     {
         if (storable == null)
         {
-            RemoveReceiver(storable);
+            Remove(storable);
             SuperController.LogError($"Shortcuts: The receiver does not exist anymore.");
             return false;
         }
@@ -120,6 +95,6 @@ public class RemoteActionsManager
 
     public IEnumerable<IAction> ToList()
     {
-        return _actionsMap.Values;
+        return _actionsMap.Values.OrderBy(v => v.name);
     }
 }

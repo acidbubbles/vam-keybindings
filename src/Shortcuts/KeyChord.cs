@@ -2,14 +2,14 @@
 using SimpleJSON;
 using UnityEngine;
 
-public struct Binding
+public struct KeyChord
 {
-    public static readonly Binding empty = new Binding(KeyCode.None);
+    public static readonly KeyChord empty = new KeyChord(KeyCode.None);
 
     public readonly KeyCode modifier;
     public readonly KeyCode key;
 
-    public Binding(KeyCode key, KeyCode modifier = KeyCode.None)
+    public KeyChord(KeyCode key, KeyCode modifier = KeyCode.None)
     {
         this.key = key;
         this.modifier = modifier;
@@ -32,10 +32,10 @@ public struct Binding
     public override bool Equals(object obj)
     {
         if (ReferenceEquals(null, obj)) return false;
-        return obj is Binding && Equals((Binding) obj);
+        return obj is KeyChord && Equals((KeyChord) obj);
     }
 
-    private bool Equals(Binding other)
+    private bool Equals(KeyChord other)
     {
         return modifier == other.modifier && key == other.key;
     }
@@ -57,9 +57,9 @@ public struct Binding
         };
     }
 
-    public static Binding FromJSON(JSONNode jsonNode)
+    public static KeyChord FromJSON(JSONNode jsonNode)
     {
-        return new Binding(
+        return new KeyChord(
             (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["key"].Value),
             (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["modifier"].Value)
         );

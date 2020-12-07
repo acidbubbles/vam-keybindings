@@ -44,6 +44,11 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
         BroadcastingUtil.BroadcastActionsAvailable(this);
     }
 
+    public void OnDestroy()
+    {
+        BroadcastingUtil.BroadcastActionsDestroyed(this);
+    }
+
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
     {
         var jsa = new JSONStorableAction(jsaName, fn);

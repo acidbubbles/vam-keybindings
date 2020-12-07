@@ -7,6 +7,11 @@ using UnityEngine.UI;
 
 public class ShortcutsScreen : MonoBehaviour
 {
+    // TODO: Provide helpful labels (how could we do that?)
+    // TODO: Group by plugin/storable
+    // TODO: Do we really need Invoke in there?
+    // TODO: Search (just hide the rows)
+
     private class Row
     {
         public string action;
@@ -22,7 +27,7 @@ public class ShortcutsScreen : MonoBehaviour
     public bool isRecording;
     private readonly List<Row> _rows = new List<Row>();
     private Coroutine _setKeybindingCoroutine;
-    private readonly List<Binding> _setKeybindingList = new List<Binding>();
+    private readonly List<KeyChord> _setKeybindingList = new List<KeyChord>();
     private UIDynamicButton _setBindingBtn;
     private IAction _setBindingAction;
     private Color _setBindingRestoreColor;
@@ -54,10 +59,14 @@ public class ShortcutsScreen : MonoBehaviour
 
     public void OnEnable()
     {
-        foreach (var action in remoteActionsManager.ToList())
+        var actions = remoteActionsManager.ToList();
+
+        foreach (var action in actions)
         {
             AddEditRow(action);
         }
+
+        // TODO: Shortcuts mapped to nothing?
     }
 
     private void ClearRows()
@@ -149,7 +158,7 @@ public class ShortcutsScreen : MonoBehaviour
                         continue;
                 }
                 if (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6) continue;
-                var binding = new Binding(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
+                var binding = new KeyChord(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
                 _setKeybindingList.Add(binding);
                 _setBindingBtn.label = _setKeybindingList.GetBindingsAsString();
                 expire = Time.unscaledTime + Settings.TimeoutLen;
@@ -166,7 +175,7 @@ public class ShortcutsScreen : MonoBehaviour
             var previousMap = bindingsManager.maps.FirstOrDefault(m => m.action == _setBindingAction.name);
             if (previousMap != null)
                 bindingsManager.maps.Remove(previousMap);
-            var conflictMap = bindingsManager.maps.FirstOrDefault(m => m.bindings.SameBinding(bindings));
+            var conflictMap = bindingsManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
             if (conflictMap != null)
             {
                 bindingsManager.maps.Remove(conflictMap);
@@ -178,7 +187,7 @@ public class ShortcutsScreen : MonoBehaviour
                 SuperController.LogError($"Reassigned binding from {conflictMap.action} to {_setBindingAction.name}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
-            bindingsManager.maps.Add(new BindingMap(bindings, _setBindingAction.name));
+            bindingsManager.maps.Add(new KeyMap(bindings, _setBindingAction.name));
             bindingsManager.RebuildTree();
         }
         StopRecording();
@@ -188,7 +197,7 @@ public class ShortcutsScreen : MonoBehaviour
     {
         var mapped = bindingsManager.maps.FirstOrDefault(m => m.action == action.name);
         return mapped != null
-            ? mapped.bindings.GetBindingsAsString()
+            ? mapped.chords.GetBindingsAsString()
             : "-";
     }
 

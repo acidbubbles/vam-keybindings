@@ -60,8 +60,7 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         _actions.SyncAtomNames();
     }
 
-    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true,
-        bool forceStore = false)
+    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
     {
         var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
 
@@ -78,15 +77,14 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         return json;
     }
 
-    public override void RestoreFromJSON(JSONClass jc, bool restorePhysical = true, bool restoreAppearance = true,
-        JSONArray presetAtoms = null, bool setMissingToDefault = true)
+    public override void RestoreFromJSON(JSONClass jc, bool restorePhysical = true, bool restoreAppearance = true, JSONArray presetAtoms = null, bool setMissingToDefault = true)
     {
         base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
 
         try
         {
             _loaded = true;
-            _actions.RestoreFromJSON(jc["actions"]?.AsObject);
+            _actions.RestoreFromJSON(jc["actions"]);
             if (_actions.count > 0)
                 OnActionsChanged();
 
@@ -100,6 +98,11 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
     private void OnActionsChanged()
     {
         BroadcastingUtil.BroadcastActionsAvailable(this);
+    }
+
+    public void OnDestroy()
+    {
+        BroadcastingUtil.BroadcastActionsDestroyed(this);
     }
 
     public void OnBindingsListRequested(ICollection<object> bindings)

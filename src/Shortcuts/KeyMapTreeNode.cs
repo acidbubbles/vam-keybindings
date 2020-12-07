@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BindingTreeNode
+public class KeyMapTreeNode
 {
-    public Binding binding;
+    public KeyChord keyChord;
     public string action;
-    public readonly List<BindingTreeNode> next = new List<BindingTreeNode>();
+    public readonly List<KeyMapTreeNode> next = new List<KeyMapTreeNode>();
 
 
-    public BindingTreeNode DoMatch()
+    public KeyMapTreeNode DoMatch()
     {
         for (var i = 0; i < next.Count; i++)
         {
@@ -22,17 +22,17 @@ public class BindingTreeNode
 
     public bool IsMatch()
     {
-        if (!Input.GetKeyDown(binding.key)) return false;
+        if (!Input.GetKeyDown(keyChord.key)) return false;
         // TODO: Handle Shift+Alt+Ctrl
-        if (binding.modifier != KeyCode.None && !Input.GetKey(binding.modifier)) return false;
+        if (keyChord.modifier != KeyCode.None && !Input.GetKey(keyChord.modifier)) return false;
         return true;
     }
 
-    public bool TryGet(Binding source, out BindingTreeNode result)
+    public bool TryGet(KeyChord source, out KeyMapTreeNode result)
     {
         for (var i = 0; i < next.Count; i++)
         {
-            if (!next[i].binding.Equals(source)) continue;
+            if (!next[i].keyChord.Equals(source)) continue;
             result = next[i];
             return true;
         }
@@ -43,6 +43,6 @@ public class BindingTreeNode
 
     public override string ToString()
     {
-        return $"treemap {binding} {action}";
+        return $"treemap {keyChord} {action}";
     }
 };

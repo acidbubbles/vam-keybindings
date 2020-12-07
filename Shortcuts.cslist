@@ -2,11 +2,13 @@
 src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/Shared/PrefabManager.cs
-src/Shortcuts/Binding.cs
+src/Shortcuts/Actions/IAction.cs
+src/Shortcuts/Actions/JSONStorableActionAction.cs
 src/Shortcuts/BindingExtensions.cs
-src/Shortcuts/BindingMap.cs
-src/Shortcuts/BindingsManager.cs
-src/Shortcuts/BindingTreeNode.cs
+src/Shortcuts/KeyChord.cs
+src/Shortcuts/KeyMap.cs
+src/Shortcuts/KeyMapManager.cs
+src/Shortcuts/KeyMapTreeNode.cs
 src/Shortcuts/RemoteActionsManager.cs
 src/Shortcuts/Settings.cs
 src/Shortcuts/ShortcutsPlugin.cs

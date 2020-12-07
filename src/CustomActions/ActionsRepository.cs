@@ -67,7 +67,7 @@ namespace CustomActions
             return actionsJSON;
         }
 
-        public void RestoreFromJSON(JSONClass actionsJSON)
+        public void RestoreFromJSON(JSONNode actionsJSON)
         {
             if ((actionsJSON?.Count ?? 0) == 0) return;
             _actions.Clear();
