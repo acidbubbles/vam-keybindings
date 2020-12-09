@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
-public interface IBindingsManager
+public interface IKeyMapManager
 {
     List<KeyMap> maps { get; }
     void RebuildTree();
+    KeyMap GetMapByName(string name);
 }
 
-public class KeyMapManager : IBindingsManager
+public class KeyMapManager : IKeyMapManager
 {
     public List<KeyMap> maps { get; } = new List<KeyMap>();
     public KeyMapTreeNode root { get; } = new KeyMapTreeNode();
@@ -36,6 +38,11 @@ public class KeyMapManager : IBindingsManager
             }
             node.action = map.action;
         }
+    }
+
+    public KeyMap GetMapByName(string name)
+    {
+        return maps.FirstOrDefault(m => m.action == name);
     }
 
     // ReSharper disable once UnusedMember.Global

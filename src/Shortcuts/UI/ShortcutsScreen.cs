@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,10 +18,8 @@ public class ShortcutsScreen : MonoBehaviour
         public UIDynamicButton bindingBtn;
     }
 
-    private static readonly KeyCode[] _allKeyCodes = (KeyCode[]) Enum.GetValues(typeof(KeyCode));
-
     public IPrefabManager prefabManager { get; set; }
-    public IBindingsManager bindingsManager { get; set; }
+    public IKeyMapManager keyMapManager { get; set; }
     public RemoteActionsManager remoteActionsManager { get; set; }
     public bool isRecording;
     private readonly List<Row> _rows = new List<Row>();
@@ -81,7 +78,7 @@ public class ShortcutsScreen : MonoBehaviour
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
-        var row = new Row {container = go, action = action.name};
+        var row = new ShortcutsScreen.Row {container = go, action = action.name};
         _rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 2);
@@ -114,6 +111,18 @@ public class ShortcutsScreen : MonoBehaviour
         var editLayout = editBtn.GetComponent<LayoutElement>();
         editLayout.minWidth = 160f;
         editLayout.preferredWidth = 160f;
+
+        var clearBtn = prefabManager.CreateButton(go.transform, "X");
+        clearBtn.button.onClick.AddListener(() =>
+        {
+            var mapped = keyMapManager.GetMapByName(action.name);
+            if (mapped != null)
+                keyMapManager.maps.Remove(mapped);
+            bindingBtn.label = "-";
+        });
+        var clearLayout = clearBtn.GetComponent<LayoutElement>();
+        clearLayout.minWidth = 40f;
+        clearLayout.preferredWidth = 40f;
     }
 
     private void StopRecording()
@@ -146,23 +155,14 @@ public class ShortcutsScreen : MonoBehaviour
                 StopRecording();
                 yield break;
             }
-            foreach (var key in _allKeyCodes)
-            {
-                if (!Input.GetKeyDown(key)) continue;
-                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-                switch (key)
-                {
-                    case KeyCode.LeftControl:
-                    case KeyCode.LeftShift:
-                    case KeyCode.LeftAlt:
-                        continue;
-                }
-                if (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6) continue;
-                var binding = new KeyChord(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
-                _setKeybindingList.Add(binding);
-                _setBindingBtn.label = _setKeybindingList.GetKeyChordsAsString();
-                expire = Time.unscaledTime + Settings.TimeoutLen;
-            }
+
+            var key = KeyCodes.bindableKeyCodes.GetCurrent();
+            if (key == KeyCode.None) continue;
+
+            var binding = new KeyChord(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
+            _setKeybindingList.Add(binding);
+            _setBindingBtn.label = _setKeybindingList.GetKeyChordsAsString();
+            expire = Time.unscaledTime + Settings.TimeoutLen;
         }
         ApplyRecordedKeybinding();
     }
@@ -172,13 +172,13 @@ public class ShortcutsScreen : MonoBehaviour
         if (_setKeybindingList.Count > 0)
         {
             var bindings = _setKeybindingList.ToArray();
-            var previousMap = bindingsManager.maps.FirstOrDefault(m => m.action == _setBindingAction.name);
+            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.action == _setBindingAction.name);
             if (previousMap != null)
-                bindingsManager.maps.Remove(previousMap);
-            var conflictMap = bindingsManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
+                keyMapManager.maps.Remove(previousMap);
+            var conflictMap = keyMapManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
             if (conflictMap != null)
             {
-                bindingsManager.maps.Remove(conflictMap);
+                keyMapManager.maps.Remove(conflictMap);
                 var conflictRow = _rows.FirstOrDefault(r => r.action == conflictMap.action);
                 if (conflictRow != null)
                 {
@@ -187,15 +187,15 @@ public class ShortcutsScreen : MonoBehaviour
                 SuperController.LogError($"Reassigned binding from {conflictMap.action} to {_setBindingAction.name}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
-            bindingsManager.maps.Add(new KeyMap(bindings, _setBindingAction.name));
-            bindingsManager.RebuildTree();
+            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingAction.name));
+            keyMapManager.RebuildTree();
         }
         StopRecording();
     }
 
     private string GetMappedBinding(IAction action)
     {
-        var mapped = bindingsManager.maps.FirstOrDefault(m => m.action == action.name);
+        var mapped = keyMapManager.GetMapByName(action.name);
         return mapped != null
             ? mapped.chords.GetKeyChordsAsString()
             : "-";

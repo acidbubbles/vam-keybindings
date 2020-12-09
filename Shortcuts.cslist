@@ -8,6 +8,7 @@ src/Shortcuts/UI/ShortcutsScreen.cs
 src/Shortcuts/Overlays/ShortcutsOverlay.cs
 src/Shortcuts/KeyChord.cs
 src/Shortcuts/KeyChordExtensions.cs
+src/Shortcuts/KeyCodes.cs
 src/Shortcuts/KeyMap.cs
 src/Shortcuts/KeyMapManager.cs
 src/Shortcuts/KeyMapTreeNode.cs

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
@@ -31,39 +32,66 @@ public class ShortcutsOverlay : MonoBehaviour
 
             var rectTransform = go.GetComponent<RectTransform>();
             // TODO: Handle screen resize
-            rectTransform.sizeDelta = new Vector2(mainCamera.scaledPixelWidth, mainCamera.scaledPixelHeight);
-            rectTransform.localPosition = new Vector3(0, 0, 0.8f);
+            rectTransform.pivot = new Vector2(1, 0);
+            rectTransform.sizeDelta = new Vector2(mainCamera.scaledPixelWidth/1.33f, mainCamera.scaledPixelHeight/12f);
+            // TODO: Move that point in screen space for Desktop, and world space in VR (the former needs to be updated as the window is resized)
+            rectTransform.localPosition = new Vector3(0.4f, -0.2f, 0.8f);
             rectTransform.localScale = new Vector3(0.00050f, 0.00050f, 1.0f);
 
+            // To make the area visible
             // var bg = go.AddComponent<Image>();
             // bg.raycastTarget = false;
-            // bg.color = Color.blue;
-
-            var textContainerGo = new GameObject("text") {layer = 5};
-            textContainerGo.transform.SetParent(go.transform, false);
-
-            textContainerGo.AddComponent<CanvasRenderer>();
-
-            var textRect = textContainerGo.AddComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-
-            var text = textContainerGo.AddComponent<Text>();
-            text.raycastTarget = false;
-            // text.canvasRenderer.SetAlpha(0.0f);
-            text.color = Color.white;
-            text.text = "";
-            text.font = prefabManager.font;
-            text.fontSize = isVR ? 18 : 48;
-            text.alignment = TextAnchor.LowerRight;
-
-            var textShadow = textContainerGo.AddComponent<Shadow>();
-            textShadow.effectColor = Color.black;
-            textShadow.effectDistance = new Vector2(2f, -0.5f);
+            // bg.color = new Color(1f, 1f, 1f, 0.01f);
 
             var overlay = go.AddComponent<ShortcutsOverlay>();
-            overlay.text = text;
 
+            {
+                var textContainerGo = new GameObject("text") {layer = 5};
+                textContainerGo.transform.SetParent(go.transform, false);
+
+                textContainerGo.AddComponent<CanvasRenderer>();
+
+                var textRect = textContainerGo.AddComponent<RectTransform>();
+                textRect.pivot = new Vector2(1, 0);
+                textRect.anchorMin = new Vector2(0, 0);
+                textRect.anchorMax = new Vector2(1, 0);
+
+                var text = textContainerGo.AddComponent<Text>();
+                text.raycastTarget = false;
+                text.color = Color.white;
+                text.font = prefabManager.font;
+                text.fontSize = isVR ? 18 : 36;
+                text.alignment = TextAnchor.LowerRight;
+                overlay.text = text;
+
+                var textShadow = textContainerGo.AddComponent<Shadow>();
+                textShadow.effectColor = Color.black;
+                textShadow.effectDistance = new Vector2(2f, -0.5f);
+            }
+
+            {
+                var textInputGo = new GameObject();
+                textInputGo.transform.SetParent(go.transform, false);
+
+                var textRect = textInputGo.AddComponent<RectTransform>();
+                textRect.anchorMin = new Vector2(0, 1);
+                textRect.anchorMax = new Vector2(1, 1);
+                textRect.pivot = new Vector2(1, 1);
+                textRect.sizeDelta = new Vector2(400f, 40f);
+
+                var text = textInputGo.AddComponent<Text>();
+                text.raycastTarget = true;
+                text.font = prefabManager.font;
+                text.alignment = TextAnchor.UpperRight;
+                text.fontSize = 12;
+
+                var input = textInputGo.AddComponent<InputField>();
+                input.textComponent = text;
+                input.interactable = true;
+                overlay.input = input;
+            }
+
+            X();
             return overlay;
         }
         catch (Exception e)
@@ -74,17 +102,28 @@ public class ShortcutsOverlay : MonoBehaviour
         }
     }
 
+    public static object X()
+    {
+        return new object();
+    }
+
     public Text text;
+    public InputField input;
     public float autoClear { get; set; }
     private Coroutine _autoClearCoroutine;
     private float _clearTime;
 
-    public void Draw(string value)
+    public void Append(string value)
     {
         if (text.text == "")
-            text.text = value;
+            Set(value);
         else
-            text.text += " " + value;
+            Set(text.text + " " + value);
+    }
+
+    public void Set(string value)
+    {
+        text.text = value;
         _clearTime = Time.unscaledTime + autoClear;
         if (_autoClearCoroutine == null) _autoClearCoroutine = StartCoroutine(AutoClearCoroutine());
     }

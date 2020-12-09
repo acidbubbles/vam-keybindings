@@ -18,14 +18,16 @@ public struct KeyChord
     public override string ToString()
     {
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+        var keyStr = key.ToPrettyString();
+
         switch (modifier)
         {
             case KeyCode.LeftControl:
-                return $"Ctrl+{key}";
+                return $"Ctrl+{keyStr}";
             case KeyCode.None:
-                return $"{key}";
+                return $"{keyStr}";
             default:
-                return $"?+{key}";
+                return $"?+{keyStr}";
         }
     }
 

@@ -80,6 +80,7 @@
     <Compile Include="src\Shortcuts\Actions\IAction.cs" />
     <Compile Include="src\Shortcuts\Actions\JSONStorableActionAction.cs" />
     <Compile Include="src\Shortcuts\KeyChordExtensions.cs" />
+    <Compile Include="src\Shortcuts\KeyCodes.cs" />
     <Compile Include="src\Shortcuts\KeyMap.cs" />
     <Compile Include="src\Shortcuts\KeyChord.cs" />
     <Compile Include="src\Shortcuts\KeyMapTreeNode.cs" />

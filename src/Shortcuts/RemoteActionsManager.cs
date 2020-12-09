@@ -8,25 +8,26 @@ public class RemoteActionsManager
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
     private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
 
-    public void Invoke(string name)
+    public bool Invoke(string name)
     {
         IAction action;
         if (!_actionsMap.TryGetValue(name, out action))
         {
-            SuperController.LogError($"Action '{name}' was not found. Maybe the action this binding was mapped to is associated with an atom that is not present in the current scene.");
-            return;
+            return false;
         }
 
         if (!ValidateReceiver(action.storable))
-            return;
+            return false;
 
         try
         {
             action.Invoke();
+            return true;
         }
         catch (Exception exc)
         {
             SuperController.LogError($"Failed invoking {action.name}: {exc}");
+            return false;
         }
     }
 
@@ -96,5 +97,31 @@ public class RemoteActionsManager
     public IEnumerable<IAction> ToList()
     {
         return _actionsMap.Values.OrderBy(v => v.name);
+    }
+
+    public IAction FuzzyFind(string query)
+    {
+        if (string.IsNullOrEmpty(query))
+            return null;
+
+        // TODO: Optimize
+        foreach (var kvp in _actionsMap)
+        {
+            var action = kvp.Key;
+            if(action.Length < query.Length) continue;
+            var queryIndex = 0;
+            for(var actionIndex = 0; actionIndex < action.Length; actionIndex++)
+            {
+                var queryChar = query[queryIndex];
+                var actionChar = action[actionIndex];
+                var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(actionChar) : queryChar == actionChar;
+                if (!isMatch) continue;
+
+                queryIndex++;
+                if (queryIndex > query.Length - 1)
+                    return kvp.Value;
+            }
+        }
+        return null;
     }
 }
