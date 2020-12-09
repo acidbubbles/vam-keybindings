@@ -18,4 +18,8 @@
     public const string CloseCurrentPanel = "CloseCurrentPanel";
     public const string AddAtom = "AddAtom";
     public const string Exit = "Exit";
+
+    // Tabs
+    public const string OpenControlTab = "OpenControlTab";
+    public const string OpenPluginsTab = "OpenPluginsTab";
 }
