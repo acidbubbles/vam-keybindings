@@ -56,11 +56,11 @@ public class ShortcutsScreen : MonoBehaviour
 
     public void OnEnable()
     {
-        var actions = remoteActionsManager.ToList();
-
-        foreach (var action in actions)
+        foreach (var actionName in remoteActionsManager.names)
         {
-            AddEditRow(action);
+            IAction action;
+            if (remoteActionsManager.TryGetAction(actionName, out action))
+                AddEditRow(action);
         }
 
         // TODO: Shortcuts mapped to nothing?
@@ -78,7 +78,7 @@ public class ShortcutsScreen : MonoBehaviour
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
-        var row = new ShortcutsScreen.Row {container = go, action = action.name};
+        var row = new Row {container = go, action = action.name};
         _rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 2);

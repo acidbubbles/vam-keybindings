@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class ShortcutsPlugin : MVRScript, IActionsInvoker
 {
@@ -16,15 +14,16 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private ShortcutsOverlay _overlay;
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
+    private FuzzyFinder _fuzzyFinder;
     private bool _loaded;
     private bool _controlMode;
-    private readonly StringBuilder _controlInput = new StringBuilder();
 
     public override void Init()
     {
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _remoteActionsManager = new RemoteActionsManager();
+        _fuzzyFinder = new FuzzyFinder();
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
 
@@ -169,9 +168,11 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private void StartControlMode()
     {
         _controlMode = true;
+        _fuzzyFinder.Init(_remoteActionsManager.names);
         _overlay.autoClear = float.PositiveInfinity;
         _overlay.Set(":");
         EventSystem.current.SetSelectedGameObject(_overlay.input.gameObject);
+        _overlay.input.text = "";
         _overlay.input.ActivateInputField();
         _overlay.input.Select();
     }
@@ -179,7 +180,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private void LeaveControlMode()
     {
         _controlMode = false;
-        _controlInput.Length = 0;
+        _fuzzyFinder.Clear();
         _overlay.input.text = "";
         _overlay.input.DeactivateInputField();
         EventSystem.current.SetSelectedGameObject(null);
@@ -193,11 +194,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
+            var selectedAction = _fuzzyFinder.FuzzyFind(query);
             LeaveControlMode();
-            // TODO: Do not re-run fuzzy find, instead keep track of it all in a separate stateful class
-            var selectedAction = _remoteActionsManager.FuzzyFind(query);
             if (selectedAction != null)
-                Invoke(selectedAction.name);
+                Invoke(selectedAction);
             return;
         }
 
@@ -212,50 +212,10 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             // TODO: Module into results (reset on new char)
         }
 
-        // TODO: Keep track of the results subset so we can accelerate fuzzy finding
-        var nearestAction = _remoteActionsManager.FuzzyFind(query);
-        if (nearestAction != null)
-        {
-            var nearestActionHighlighted = ColorizeMatch(nearestAction.name, query);
-            _overlay.Set(nearestActionHighlighted);
-        }
-        else
-        {
-            _overlay.Set("");
-        }
-    }
-
-    private string ColorizeMatch(string action, string query)
-    {
-        // TODO: Reuse the stringbuilder
-        var sb = new StringBuilder(action.Length);
-        var queryIndex = 0;
-        for (var actionIndex = 0; actionIndex < action.Length; actionIndex++)
-        {
-            if (queryIndex >= query.Length)
-            {
-                sb.Append(action.Substring(actionIndex));
-                break;
-            }
-
-            // TODO: Same code in RemoteActionsManager, to extract and reuse
-            var queryChar = query[queryIndex];
-            var actionChar = action[actionIndex];
-            var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(actionChar) : queryChar == actionChar;
-
-            if (isMatch)
-            {
-                queryIndex++;
-                sb.Append("<color=cyan>");
-                sb.Append(action[actionIndex]);
-                sb.Append("</color>");
-                continue;
-            }
-
-            sb.Append(action[actionIndex]);
-        }
-
-        return sb.ToString();
+        var result = _fuzzyFinder.FuzzyFind(query);
+        _overlay.Set(result != null
+            ? _fuzzyFinder.ColorizeMatch(result, query)
+            : ":");
     }
 
     #endregion

@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class RemoteActionsManager
 {
+    private readonly List<string> _names = new List<string>();
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
     private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
+    public List<string> names => _names;
+
+    public bool TryGetAction(string name, out IAction action)
+    {
+        return _actionsMap.TryGetValue(name, out action);
+    }
 
     public bool Invoke(string name)
     {
@@ -57,11 +63,14 @@ public class RemoteActionsManager
             {
                 var action = new JSONStorableActionAction {action = storableAction, storable = storable};
                 _actionsMap[storableAction.name] = action;
+                _names.Add(storableAction.name);
                 continue;
             }
 
             SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
+
+        _names.Sort();
     }
 
     public void Remove(JSONStorable storable)
@@ -72,8 +81,13 @@ public class RemoteActionsManager
             if (action.Value.storable == storable)
                 actionsToRemove.Add(action.Key);
         }
+
         foreach (var action in actionsToRemove)
+        {
             _actionsMap.Remove(action);
+            // TODO: When we map multiple targets to an action name, check if it's the last
+            _names.Remove(action);
+        }
     }
 
     private bool ValidateReceiver(JSONStorable storable)
@@ -92,36 +106,5 @@ public class RemoteActionsManager
         }
 
         return true;
-    }
-
-    public IEnumerable<IAction> ToList()
-    {
-        return _actionsMap.Values.OrderBy(v => v.name);
-    }
-
-    public IAction FuzzyFind(string query)
-    {
-        if (string.IsNullOrEmpty(query))
-            return null;
-
-        // TODO: Optimize
-        foreach (var kvp in _actionsMap)
-        {
-            var action = kvp.Key;
-            if(action.Length < query.Length) continue;
-            var queryIndex = 0;
-            for(var actionIndex = 0; actionIndex < action.Length; actionIndex++)
-            {
-                var queryChar = query[queryIndex];
-                var actionChar = action[actionIndex];
-                var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(actionChar) : queryChar == actionChar;
-                if (!isMatch) continue;
-
-                queryIndex++;
-                if (queryIndex > query.Length - 1)
-                    return kvp.Value;
-            }
-        }
-        return null;
     }
 }
