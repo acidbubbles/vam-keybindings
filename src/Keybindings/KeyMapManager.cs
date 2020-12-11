@@ -86,8 +86,8 @@ public class KeyMapManager : IKeyMapManager
     public void RestoreDefaults()
     {
         // TODO: Mark them as "default" so they are not saved and not overwritten
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.S, KeyCode.LeftControl)}, CommandNames.SaveScene));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.O, KeyCode.LeftControl)}, CommandNames.LoadScene));
+        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.S, KeyCode.LeftControl)}, "SaveScene"));
+        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.O, KeyCode.LeftControl)}, "LoadScene"));
 
         // tests
         maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha1)}, "print.1"));

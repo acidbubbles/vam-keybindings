@@ -46,11 +46,11 @@ public class KeybindingsScreen : MonoBehaviour
 
     public void Awake()
     {
-        var title = prefabManager.CreateText(transform, "<b>Shortcuts</b>");
+        var title = prefabManager.CreateText(transform, "<b>Keybindings</b>");
         title.fontSize = 30;
         title.alignment = TextAnchor.MiddleCenter;
 
-        var subtitle = prefabManager.CreateText(transform, "<i>You can configure custom shortcuts in CustomActionsPlugin</i>");
+        var subtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
         subtitle.alignment = TextAnchor.UpperCenter;
     }
 

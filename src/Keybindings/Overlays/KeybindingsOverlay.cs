@@ -16,7 +16,7 @@ public class KeybindingsOverlay : MonoBehaviour
         if (mainCamera == null) return null;
         // TODO: We could use something that also works for monitor mode
         var isVR = XRDevice.isPresent;
-        var go = new GameObject("ShortcutsPluginOverlay") {layer = 5};
+        var go = new GameObject(nameof(KeybindingsOverlay)) {layer = 5};
         try
         {
             // TODO: Will this allow switching from/to VR?
@@ -97,7 +97,7 @@ public class KeybindingsOverlay : MonoBehaviour
         catch (Exception e)
         {
             Destroy(go);
-            SuperController.LogError("Shortcuts: Failed creating overlays" + e);
+            SuperController.LogError("Keybindings: Failed creating overlays" + e);
             return null;
         }
     }

@@ -8,3 +8,4 @@ src/CustomCommands/Commands/TriggerCommandBase.cs
 src/CustomCommands/UI/CustomCommandsScreen.cs
 src/CustomCommands/CustomCommandsRepository.cs
 src/CustomCommands/CustomCommands.cs
+src/CustomCommands/ParameterizedTriggers.cs

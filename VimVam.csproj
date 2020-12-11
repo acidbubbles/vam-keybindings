@@ -63,6 +63,7 @@
     <Content Include="Keybindings.cslist" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\CustomCommands\ParameterizedTriggers.cs" />
     <Compile Include="src\CustomCommands\CustomCommandsRepository.cs" />
     <Compile Include="src\CustomCommands\Commands\DebugCommand.cs" />
     <Compile Include="src\CustomCommands\Commands\DiscreteTriggerCommand.cs" />
@@ -70,13 +71,12 @@
     <Compile Include="src\CustomCommands\Commands\TriggerCommandBase.cs" />
     <Compile Include="src\CustomCommands\CustomCommands.cs" />
     <Compile Include="src\CustomCommands\UI\CustomCommandsScreen.cs" />
-    <Compile Include="src\Keybindings\CommandNames.cs" />
     <Compile Include="src\Shared\ICommandsProvider.cs" />
     <Compile Include="src\Shared\ICommandsInvoker.cs" />
     <Compile Include="src\Shared\PrefabManager.cs" />
-    <Compile Include="src\Keybindings\Commands\ICommandInvoker.cs" />
-    <Compile Include="src\Keybindings\Commands\JSONStorableActionCommandInvoker.cs" />
-    <Compile Include="src\Keybindings\Commands.cs" />
+    <Compile Include="src\Keybindings\CommandInvokers\ICommandInvoker.cs" />
+    <Compile Include="src\Keybindings\CommandInvokers\JSONStorableActionCommandInvoker.cs" />
+    <Compile Include="src\Keybindings\SharedCommands.cs" />
     <Compile Include="src\Keybindings\FuzzyFinder.cs" />
     <Compile Include="src\Keybindings\KeyChordExtensions.cs" />
     <Compile Include="src\Keybindings\KeyCodes.cs" />
@@ -89,9 +89,6 @@
     <Compile Include="src\Keybindings\Settings.cs" />
     <Compile Include="src\Keybindings\Keybindings.cs" />
     <Compile Include="src\Keybindings\UI\KeybindingsScreen.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\Keybindings\CommonActions" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

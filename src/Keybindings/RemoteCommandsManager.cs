@@ -48,7 +48,7 @@ public class RemoteCommandsManager
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"Shortcuts: Failed requesting bindings on {storable.name} in atom {storable.containingAtom.name}: {exc}");
+            SuperController.LogError($"Keybindings: Failed requesting bindings on {storable.name} in atom {storable.containingAtom.name}: {exc}");
             return;
         }
 
@@ -66,7 +66,7 @@ public class RemoteCommandsManager
                 continue;
             }
 
-            SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
+            SuperController.LogError($"Keybindings: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
 
         names.Sort();
@@ -94,13 +94,13 @@ public class RemoteCommandsManager
         if (storable == null)
         {
             Remove(storable);
-            SuperController.LogError($"Shortcuts: The receiver does not exist anymore.");
+            SuperController.LogError($"Keybindings: The receiver does not exist anymore.");
             return false;
         }
 
         if (!storable.isActiveAndEnabled)
         {
-            SuperController.LogError($"Shortcuts: The receiver {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}/{storable.name} is disabled.");
+            SuperController.LogError($"Keybindings: The receiver {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}/{storable.name} is disabled.");
             return false;
         }
 

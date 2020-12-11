@@ -23,8 +23,8 @@ public class Keybindings : MVRScript, IActionsInvoker
     {
         if (containingAtom.type != "SessionPluginManager")
         {
-            SuperController.LogError("Shortcuts plugin can only be installed as a session plugin.");
-            CreateTextField(new JSONStorableString("Error", "Shortcuts plugin can only be installed as a session plugin."));
+            SuperController.LogError("Keybindings plugin can only be installed as a session plugin.");
+            CreateTextField(new JSONStorableString("Error", "Keybindings plugin can only be installed as a session plugin."));
             enabledJSON.val = false;
             return;
         }
