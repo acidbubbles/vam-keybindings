@@ -18,7 +18,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     private FuzzyFinder _fuzzyFinder;
     private bool _valid;
     private bool _loaded;
-    private bool _controlMode;
+    private bool _commandMode;
 
     public override void Init()
     {
@@ -90,7 +90,7 @@ public class Keybindings : MVRScript, IActionsInvoker
             // Don't waste resources
             if (!Input.anyKeyDown) return;
 
-            if (_controlMode)
+            if (_commandMode)
             {
                 HandleControlMode();
                 return;
@@ -128,7 +128,7 @@ public class Keybindings : MVRScript, IActionsInvoker
             {
                 if (Input.GetKeyDown(KeyCode.Semicolon) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
                 {
-                    StartControlMode();
+                    StartCommandMode();
                 }
 
                 return;
@@ -177,9 +177,17 @@ public class Keybindings : MVRScript, IActionsInvoker
 
     #region Control mode
 
-    private void StartControlMode()
+    private void ToggleCommandMode()
     {
-        _controlMode = true;
+        if (_commandMode)
+            LeaveCommandMode();
+        else
+            StartCommandMode();
+    }
+
+    private void StartCommandMode()
+    {
+        _commandMode = true;
         _fuzzyFinder.Init(_remoteCommandsManager.names);
         _overlay.autoClear = float.PositiveInfinity;
         _overlay.Set(":");
@@ -189,9 +197,9 @@ public class Keybindings : MVRScript, IActionsInvoker
         _overlay.input.Select();
     }
 
-    private void LeaveControlMode()
+    private void LeaveCommandMode()
     {
-        _controlMode = false;
+        _commandMode = false;
         _fuzzyFinder.Clear();
         _overlay.input.text = "";
         _overlay.input.DeactivateInputField();
@@ -207,7 +215,7 @@ public class Keybindings : MVRScript, IActionsInvoker
         if (Input.GetKeyDown(KeyCode.Return))
         {
             var selectedAction = _fuzzyFinder.FuzzyFind(query);
-            LeaveControlMode();
+            LeaveCommandMode();
             if (selectedAction != null)
                 Invoke(selectedAction);
             return;
@@ -215,7 +223,7 @@ public class Keybindings : MVRScript, IActionsInvoker
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            LeaveControlMode();
+            LeaveCommandMode();
             return;
         }
 
@@ -277,6 +285,8 @@ public class Keybindings : MVRScript, IActionsInvoker
 
     private void AcquireAllAvailableBroadcastingPlugins()
     {
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleCommandMode));
+
         foreach (var storable in SuperController.singleton
             .GetAtoms()
             .SelectMany(atom => atom.GetStorableIDs()
@@ -286,7 +296,10 @@ public class Keybindings : MVRScript, IActionsInvoker
             _remoteCommandsManager.TryRegister(storable);
         }
 
-        foreach (var storable in SuperController.singleton.GetComponentInChildren<MVRPluginManager>().GetComponentsInChildren<MVRScript>())
+        foreach (var storable in SuperController.singleton
+            .GetComponentInChildren<MVRPluginManager>()
+            .GetComponentsInChildren<MVRScript>()
+            .Where(s => !ReferenceEquals(s, this)))
         {
             _remoteCommandsManager.TryRegister(storable);
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,11 +10,6 @@ public class RemoteCommandsManager
     private readonly Dictionary<string, ICommandInvoker> _actionsMap = new Dictionary<string, ICommandInvoker>();
     public List<string> names { get; } = new List<string>();
     public IEnumerable<ICommandInvoker> commands => _actionsMap.Select(kvp => kvp.Value);
-
-    public bool TryGetAction(string name, out ICommandInvoker commandInvoker)
-    {
-        return _actionsMap.TryGetValue(name, out commandInvoker);
-    }
 
     public bool Invoke(string name)
     {
@@ -66,10 +60,8 @@ public class RemoteCommandsManager
             var storableAction = binding as JSONStorableAction;
             if (storableAction != null)
             {
-                var commandName = $"{commandNamespace}.{storableAction.name}";
-                var invoker = new JSONStorableActionCommandInvoker {action = storableAction, storable = storable, commandName = commandName, ns = commandNamespace, localName = storableAction.name};
-                _actionsMap[commandName] = invoker;
-                names.Add(commandName);
+                var invoker = new JSONStorableActionCommandInvoker(storable, commandNamespace, storableAction.name, storableAction);
+                Add(invoker);
                 continue;
             }
 
@@ -77,6 +69,12 @@ public class RemoteCommandsManager
         }
 
         names.Sort();
+    }
+
+    public void Add(ICommandInvoker invoker)
+    {
+        _actionsMap[invoker.commandName] = invoker;
+        names.Add(invoker.commandName);
     }
 
     private static readonly Regex _pluginNameRegex = new Regex("^plugin#[0-9]+_(.+)$", RegexOptions.Compiled);

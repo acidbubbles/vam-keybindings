@@ -1,15 +1,15 @@
-﻿public class JSONStorableActionCommandInvoker : ICommandInvoker
+﻿public class JSONStorableActionCommandInvoker : CommandInvokerBase, ICommandInvoker
 {
-    // TODO: If many mapped, use last selected
-    public JSONStorable storable { get; set; }
-    public string commandName { get; set; }
-    public string ns { get; set; }
-    public string localName { get; set; }
+    private readonly JSONStorableAction _action;
 
-    public JSONStorableAction action;
+    public JSONStorableActionCommandInvoker(JSONStorable storable, string ns, string localName, JSONStorableAction action)
+        : base(storable, ns, localName)
+    {
+        _action = action;
+    }
 
     public void Invoke()
     {
-        action.actionCallback.Invoke();
+        _action.actionCallback.Invoke();
     }
 }

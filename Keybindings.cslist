@@ -1,6 +1,8 @@
 ﻿src/Shared/ICommandsInvoker.cs
 src/Shared/ICommandsProvider.cs
 src/Shared/PrefabManager.cs
+src/Keybindings/CommandInvokers/ActionCommandInvoker.cs
+src/Keybindings/CommandInvokers/CommandInvokerBase.cs
 src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
