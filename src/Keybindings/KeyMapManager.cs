@@ -36,13 +36,13 @@ public class KeyMapManager : IKeyMapManager
                 node.next.Add(next);
                 node = next;
             }
-            node.boundCommandName = map.action;
+            node.boundCommandName = map.commandName;
         }
     }
 
     public KeyMap GetMapByName(string name)
     {
-        return maps.FirstOrDefault(m => m.action == name);
+        return maps.FirstOrDefault(m => m.commandName == name);
     }
 
     // ReSharper disable once UnusedMember.Global

@@ -4,16 +4,16 @@ using SimpleJSON;
 public class KeyMap
 {
     public KeyChord[] chords { get; set; }
-    public string action { get; set; }
+    public string commandName { get; set; }
 
     public KeyMap()
     {
     }
 
-    public KeyMap(KeyChord[] chords, string action)
+    public KeyMap(KeyChord[] chords, string commandName)
     {
         this.chords = chords;
-        this.action = action;
+        this.commandName = commandName;
     }
 
     public JSONClass GetJSON()
@@ -26,18 +26,18 @@ public class KeyMap
         return new JSONClass
         {
             {"chords", chordsJSON},
-            {"action", action},
+            {"action", commandName},
         };
     }
 
     public void RestoreFromJSON(JSONNode mapJSON)
     {
         chords = mapJSON["chords"].AsArray.Childs.Select(KeyChord.FromJSON).ToArray();
-        action = mapJSON["action"].Value;
+        commandName = mapJSON["action"].Value;
     }
 
     public override string ToString()
     {
-        return $"map {chords.GetKeyChordsAsString()} {action}";
+        return $"map {chords.GetKeyChordsAsString()} {commandName}";
     }
 }

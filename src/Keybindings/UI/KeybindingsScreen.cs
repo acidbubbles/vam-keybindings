@@ -47,20 +47,24 @@ public class KeybindingsScreen : MonoBehaviour
     public void Awake()
     {
         var title = prefabManager.CreateText(transform, "<b>Keybindings</b>");
-        title.fontSize = 30;
+        title.fontSize = 32;
         title.alignment = TextAnchor.MiddleCenter;
 
         var subtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
         subtitle.alignment = TextAnchor.UpperCenter;
+        subtitle.GetComponent<LayoutElement>().preferredHeight = 70;
     }
 
     public void OnEnable()
     {
-        foreach (var actionName in remoteCommandsManager.names)
+        foreach (var group in remoteCommandsManager.commands.GroupBy(c => c.ns))
         {
-            ICommandInvoker commandInvoker;
-            if (remoteCommandsManager.TryGetAction(actionName, out commandInvoker))
-                AddEditRow(commandInvoker);
+            AddGroupRow(group.Key);
+
+            foreach (var command in group)
+            {
+                AddEditRow(command);
+            }
         }
 
         // TODO: Shortcuts mapped to nothing?
@@ -73,20 +77,43 @@ public class KeybindingsScreen : MonoBehaviour
         _rows.Clear();
     }
 
+    private void AddGroupRow(string groupName)
+    {
+        var go = new GameObject();
+        go.transform.SetParent(transform, false);
+
+        var row = new CommandBindingRow {container = go};
+        _rows.Add(row);
+
+        go.transform.SetSiblingIndex(transform.childCount - 1);
+
+        var layout = go.AddComponent<LayoutElement>();
+        layout.preferredHeight = 70;
+
+        var text = go.AddComponent<Text>();
+        text.text = groupName;
+        text.color = new Color(0.3f, 0.2f, 0.2f);
+        text.raycastTarget = false;
+        text.font = prefabManager.font;
+        text.fontSize = 30;
+        text.fontStyle = FontStyle.Bold;
+        text.alignment = TextAnchor.MiddleLeft;
+    }
+
     private void AddEditRow(ICommandInvoker commandInvoker)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
-        var row = new CommandBindingRow {container = go, commandName = commandInvoker.name};
+        var row = new CommandBindingRow {container = go, commandName = commandInvoker.commandName};
         _rows.Add(row);
 
-        go.transform.SetSiblingIndex(transform.childCount - 2);
+        go.transform.SetSiblingIndex(transform.childCount - 1);
 
         var group = go.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 10f;
 
-        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.label);
+        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.localName);
         var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
         displayNameLayout.flexibleWidth = 1000f;
 
@@ -115,7 +142,7 @@ public class KeybindingsScreen : MonoBehaviour
         var clearBtn = prefabManager.CreateButton(go.transform, "X");
         clearBtn.button.onClick.AddListener(() =>
         {
-            var mapped = keyMapManager.GetMapByName(commandInvoker.name);
+            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
             if (mapped != null)
                 keyMapManager.maps.Remove(mapped);
             bindingBtn.label = "-";
@@ -172,22 +199,20 @@ public class KeybindingsScreen : MonoBehaviour
         if (_setKeybindingList.Count > 0)
         {
             var bindings = _setKeybindingList.ToArray();
-            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.action == _setBindingCommandInvoker.name);
+            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.commandName == _setBindingCommandInvoker.commandName);
             if (previousMap != null)
                 keyMapManager.maps.Remove(previousMap);
             var conflictMap = keyMapManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
             if (conflictMap != null)
             {
                 keyMapManager.maps.Remove(conflictMap);
-                var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.action);
+                var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
-                {
                     conflictRow.bindingBtn.label = "-";
-                }
-                SuperController.LogError($"Reassigned binding from {conflictMap.action} to {_setBindingCommandInvoker.name}");
+                SuperController.LogError($"Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
-            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.name));
+            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.commandName));
             keyMapManager.RebuildTree();
         }
         StopRecording();
@@ -195,7 +220,7 @@ public class KeybindingsScreen : MonoBehaviour
 
     private string GetMappedBinding(ICommandInvoker commandInvoker)
     {
-        var mapped = keyMapManager.GetMapByName(commandInvoker.name);
+        var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
         return mapped != null
             ? mapped.chords.GetKeyChordsAsString()
             : "-";

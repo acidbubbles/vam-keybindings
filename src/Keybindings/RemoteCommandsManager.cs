@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class RemoteCommandsManager
@@ -7,6 +10,7 @@ public class RemoteCommandsManager
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
     private readonly Dictionary<string, ICommandInvoker> _actionsMap = new Dictionary<string, ICommandInvoker>();
     public List<string> names { get; } = new List<string>();
+    public IEnumerable<ICommandInvoker> commands => _actionsMap.Select(kvp => kvp.Value);
 
     public bool TryGetAction(string name, out ICommandInvoker commandInvoker)
     {
@@ -31,7 +35,7 @@ public class RemoteCommandsManager
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"Failed invoking {commandInvoker.name}: {exc}");
+            SuperController.LogError($"Failed invoking {commandInvoker.commandName}: {exc}");
             return false;
         }
     }
@@ -55,14 +59,17 @@ public class RemoteCommandsManager
         if (bindings.Count <= 0)
             return;
 
+        var commandNamespace = GetNamespace(storable.name);
+
         foreach (var binding in bindings)
         {
             var storableAction = binding as JSONStorableAction;
             if (storableAction != null)
             {
-                var action = new JSONStorableActionCommandInvoker {action = storableAction, storable = storable};
-                _actionsMap[storableAction.name] = action;
-                names.Add(storableAction.name);
+                var commandName = $"{commandNamespace}.{storableAction.name}";
+                var invoker = new JSONStorableActionCommandInvoker {action = storableAction, storable = storable, commandName = commandName, ns = commandNamespace, localName = storableAction.name};
+                _actionsMap[commandName] = invoker;
+                names.Add(commandName);
                 continue;
             }
 
@@ -70,6 +77,14 @@ public class RemoteCommandsManager
         }
 
         names.Sort();
+    }
+
+    private static readonly Regex _pluginNameRegex = new Regex("^plugin#[0-9]+_(.+)$", RegexOptions.Compiled);
+
+    private static string GetNamespace(string storableName)
+    {
+        var pluginName = _pluginNameRegex.Match(storableName);
+        return pluginName.Success ? pluginName.Groups[1].Value : storableName;
     }
 
     public void Remove(JSONStorable storable)
