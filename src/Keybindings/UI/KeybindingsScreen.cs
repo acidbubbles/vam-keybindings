@@ -4,29 +4,29 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShortcutsScreen : MonoBehaviour
+public class KeybindingsScreen : MonoBehaviour
 {
     // TODO: Provide helpful labels (how could we do that?)
     // TODO: Group by plugin/storable
     // TODO: Do we really need Invoke in there?
     // TODO: Search (just hide the rows)
 
-    private class Row
+    private class CommandBindingRow
     {
-        public string action;
+        public string commandName;
         public GameObject container;
         public UIDynamicButton bindingBtn;
     }
 
     public IPrefabManager prefabManager { get; set; }
     public IKeyMapManager keyMapManager { get; set; }
-    public RemoteActionsManager remoteActionsManager { get; set; }
+    public RemoteCommandsManager remoteCommandsManager { get; set; }
     public bool isRecording;
-    private readonly List<Row> _rows = new List<Row>();
+    private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
     private readonly List<KeyChord> _setKeybindingList = new List<KeyChord>();
     private UIDynamicButton _setBindingBtn;
-    private IAction _setBindingAction;
+    private ICommandInvoker _setBindingCommandInvoker;
     private Color _setBindingRestoreColor;
 
     public void Configure()
@@ -56,11 +56,11 @@ public class ShortcutsScreen : MonoBehaviour
 
     public void OnEnable()
     {
-        foreach (var actionName in remoteActionsManager.names)
+        foreach (var actionName in remoteCommandsManager.names)
         {
-            IAction action;
-            if (remoteActionsManager.TryGetAction(actionName, out action))
-                AddEditRow(action);
+            ICommandInvoker commandInvoker;
+            if (remoteCommandsManager.TryGetAction(actionName, out commandInvoker))
+                AddEditRow(commandInvoker);
         }
 
         // TODO: Shortcuts mapped to nothing?
@@ -73,12 +73,12 @@ public class ShortcutsScreen : MonoBehaviour
         _rows.Clear();
     }
 
-    private void AddEditRow(IAction action)
+    private void AddEditRow(ICommandInvoker commandInvoker)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
-        var row = new Row {container = go, action = action.name};
+        var row = new CommandBindingRow {container = go, commandName = commandInvoker.name};
         _rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 2);
@@ -86,16 +86,16 @@ public class ShortcutsScreen : MonoBehaviour
         var group = go.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 10f;
 
-        var displayNameText = prefabManager.CreateText(go.transform, action.label);
+        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.label);
         var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
         displayNameLayout.flexibleWidth = 1000f;
 
-        var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(action));
+        var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker));
         bindingBtn.button.onClick.AddListener(() =>
         {
             StopRecording();
             _setBindingBtn = bindingBtn;
-            _setBindingAction = action;
+            _setBindingCommandInvoker = commandInvoker;
             _setBindingRestoreColor = bindingBtn.buttonColor;
             _setKeybindingCoroutine = StartCoroutine(SetKeybinding());
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
@@ -107,7 +107,7 @@ public class ShortcutsScreen : MonoBehaviour
         bindingLayout.preferredWidth = 400f;
 
         var editBtn = prefabManager.CreateButton(go.transform, "Invoke");
-        editBtn.button.onClick.AddListener(action.Invoke);
+        editBtn.button.onClick.AddListener(commandInvoker.Invoke);
         var editLayout = editBtn.GetComponent<LayoutElement>();
         editLayout.minWidth = 160f;
         editLayout.preferredWidth = 160f;
@@ -115,7 +115,7 @@ public class ShortcutsScreen : MonoBehaviour
         var clearBtn = prefabManager.CreateButton(go.transform, "X");
         clearBtn.button.onClick.AddListener(() =>
         {
-            var mapped = keyMapManager.GetMapByName(action.name);
+            var mapped = keyMapManager.GetMapByName(commandInvoker.name);
             if (mapped != null)
                 keyMapManager.maps.Remove(mapped);
             bindingBtn.label = "-";
@@ -131,7 +131,7 @@ public class ShortcutsScreen : MonoBehaviour
         isRecording = false;
         _setKeybindingList.Clear();
         _setBindingBtn.buttonColor = _setBindingRestoreColor;
-        _setBindingBtn.label = GetMappedBinding(_setBindingAction);
+        _setBindingBtn.label = GetMappedBinding(_setBindingCommandInvoker);
         if (_setKeybindingCoroutine != null) StopCoroutine(_setKeybindingCoroutine);
     }
 
@@ -172,30 +172,30 @@ public class ShortcutsScreen : MonoBehaviour
         if (_setKeybindingList.Count > 0)
         {
             var bindings = _setKeybindingList.ToArray();
-            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.action == _setBindingAction.name);
+            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.action == _setBindingCommandInvoker.name);
             if (previousMap != null)
                 keyMapManager.maps.Remove(previousMap);
             var conflictMap = keyMapManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
             if (conflictMap != null)
             {
                 keyMapManager.maps.Remove(conflictMap);
-                var conflictRow = _rows.FirstOrDefault(r => r.action == conflictMap.action);
+                var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.action);
                 if (conflictRow != null)
                 {
                     conflictRow.bindingBtn.label = "-";
                 }
-                SuperController.LogError($"Reassigned binding from {conflictMap.action} to {_setBindingAction.name}");
+                SuperController.LogError($"Reassigned binding from {conflictMap.action} to {_setBindingCommandInvoker.name}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
-            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingAction.name));
+            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.name));
             keyMapManager.RebuildTree();
         }
         StopRecording();
     }
 
-    private string GetMappedBinding(IAction action)
+    private string GetMappedBinding(ICommandInvoker commandInvoker)
     {
-        var mapped = keyMapManager.GetMapByName(action.name);
+        var mapped = keyMapManager.GetMapByName(commandInvoker.name);
         return mapped != null
             ? mapped.chords.GetKeyChordsAsString()
             : "-";

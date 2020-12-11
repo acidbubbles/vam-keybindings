@@ -1,4 +1,4 @@
-﻿public interface IAction
+﻿public interface ICommandInvoker
 {
     JSONStorable storable { get; }
     string name { get; }

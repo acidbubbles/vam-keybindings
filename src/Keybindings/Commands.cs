@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CommonActionsPlugin : MVRScript, IActionsProvider
+public class Commands : MVRScript, ICommandsProvider
 {
     private readonly List<object> _actions = new List<object>();
 
@@ -26,27 +26,27 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
 
         // Logging
         CreateActionWithParam("LogMessage", SuperController.LogMessage);
-        CreateAction(ActionNames.ClearMessageLog, SuperController.singleton.ClearMessages);
+        CreateAction(CommandNames.ClearMessageLog, SuperController.singleton.ClearMessages);
         CreateActionWithParam("LogError", SuperController.LogError);
-        CreateAction(ActionNames.ClearErrorLog, SuperController.singleton.ClearErrors);
+        CreateAction(CommandNames.ClearErrorLog, SuperController.singleton.ClearErrors);
 
         // Main menu
-        CreateAction(ActionNames.SaveScene, SuperController.singleton.SaveSceneDialog);
-        CreateAction(ActionNames.LoadScene, SuperController.singleton.LoadSceneDialog);
-        CreateAction(ActionNames.MergeLoadScene, SuperController.singleton.LoadMergeSceneDialog);
-        CreateAction(ActionNames.Exit, SuperController.singleton.Quit);
-        CreateAction(ActionNames.ScreenshotMode, SuperController.singleton.SelectModeScreenshot);
-        CreateAction(ActionNames.OnlineBrowser, () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
-        CreateAction(ActionNames.MainMenu, () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
-        CreateAction(ActionNames.ToggleErrorLog, ToggleErrorLog);
-        CreateAction(ActionNames.ToggleMessageLog, ToggleMessageLog);
-        CreateAction(ActionNames.CloseCurrentPanel, () => SuperController.singleton.activeUI = SuperController.ActiveUI.None);
-        CreateAction(ActionNames.AddAtom, () => SuperController.singleton.SetMainMenuTab("TabAddAtom"));
+        CreateAction(CommandNames.SaveScene, SuperController.singleton.SaveSceneDialog);
+        CreateAction(CommandNames.LoadScene, SuperController.singleton.LoadSceneDialog);
+        CreateAction(CommandNames.MergeLoadScene, SuperController.singleton.LoadMergeSceneDialog);
+        CreateAction(CommandNames.Exit, SuperController.singleton.Quit);
+        CreateAction(CommandNames.ScreenshotMode, SuperController.singleton.SelectModeScreenshot);
+        CreateAction(CommandNames.OnlineBrowser, () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
+        CreateAction(CommandNames.MainMenu, () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
+        CreateAction(CommandNames.ToggleErrorLog, ToggleErrorLog);
+        CreateAction(CommandNames.ToggleMessageLog, ToggleMessageLog);
+        CreateAction(CommandNames.CloseCurrentPanel, () => SuperController.singleton.activeUI = SuperController.ActiveUI.None);
+        CreateAction(CommandNames.AddAtom, () => SuperController.singleton.SetMainMenuTab("TabAddAtom"));
 
         // Tabs
         // TODO: Add all known tabs and filters for Person tabs
-        CreateAction(ActionNames.OpenControlTab, () => OpenTab("Control"));
-        CreateAction(ActionNames.OpenPluginsTab, () => OpenTab("Plugins"));
+        CreateAction(CommandNames.OpenControlTab, () => OpenTab("Control"));
+        CreateAction(CommandNames.OpenPluginsTab, () => OpenTab("Plugins"));
         // TODO: Automatically focus on the search fields for clothing tab
         // TODO: Add links to the plugins by #, e.g. OpenPluginsTabPlugin1CustomUI
 

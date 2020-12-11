@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityObject = UnityEngine.Object;
 
-public abstract class TriggerBoundAction : TriggerHandler
+public abstract class TriggerCommandBase : TriggerHandler
 {
     private readonly IPrefabManager _prefabManager;
 
@@ -12,7 +12,7 @@ public abstract class TriggerBoundAction : TriggerHandler
 
     public virtual string name => trigger.displayName;
 
-    protected TriggerBoundAction(IPrefabManager prefabManager)
+    protected TriggerCommandBase(IPrefabManager prefabManager)
     {
         _prefabManager = prefabManager;
         trigger = new Trigger {handler = this};

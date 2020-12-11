@@ -5,13 +5,13 @@ using SimpleJSON;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ShortcutsPlugin : MVRScript, IActionsInvoker
+public class Keybindings : MVRScript, IActionsInvoker
 {
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
-    private RemoteActionsManager _remoteActionsManager;
-    private ShortcutsScreen _ui;
-    private ShortcutsOverlay _overlay;
+    private RemoteCommandsManager _remoteCommandsManager;
+    private KeybindingsScreen _ui;
+    private KeybindingsOverlay _overlay;
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
     private FuzzyFinder _fuzzyFinder;
@@ -31,7 +31,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
-        _remoteActionsManager = new RemoteActionsManager();
+        _remoteCommandsManager = new RemoteCommandsManager();
         _fuzzyFinder = new FuzzyFinder();
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
@@ -65,14 +65,14 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
         var active = go.activeInHierarchy;
         if (active) go.SetActive(false);
-        _ui = go.AddComponent<ShortcutsScreen>();
+        _ui = go.AddComponent<KeybindingsScreen>();
         _ui.prefabManager = _prefabManager;
         _ui.keyMapManager = _keyMapManager;
-        _ui.remoteActionsManager = _remoteActionsManager;
+        _ui.remoteCommandsManager = _remoteCommandsManager;
         _ui.Configure();
         if (active) go.SetActive(true);
 
-        _overlay = ShortcutsOverlay.CreateOverlayGameObject(_prefabManager);
+        _overlay = KeybindingsOverlay.CreateOverlayGameObject(_prefabManager);
         _overlay.autoClear = Settings.TimeoutLen;
         _overlay.Append("VimVam Ready!");
     }
@@ -107,7 +107,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(Update)}: {e}");
+            SuperController.LogError($"{nameof(Keybindings)}.{nameof(Update)}: {e}");
         }
     }
 
@@ -120,12 +120,12 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
         var current = _current;
         _current = null;
-        var next = current?.DoMatch();
+        var match = current?.DoMatch();
 
-        if (next == null)
+        if (match == null)
         {
-            next = _keyMapManager.root.DoMatch();
-            if (next == null)
+            match = _keyMapManager.root.DoMatch();
+            if (match == null)
             {
                 if (Input.GetKeyDown(KeyCode.Semicolon) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
                 {
@@ -136,16 +136,16 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             }
         }
 
-        _overlay.Append(next.keyChord.ToString());
+        _overlay.Append(match.keyChord.ToString());
 
-        if (next.next.Count == 0)
+        if (match.next.Count == 0)
         {
-            if (next.action != null)
-                Invoke(next.action);
+            if (match.boundCommandName != null)
+                Invoke(match.boundCommandName);
             return;
         }
 
-        _current = next;
+        _current = match;
         _timeoutCoroutine = StartCoroutine(TimeoutCoroutine());
     }
 
@@ -155,22 +155,22 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         if (_current == null) yield break;
         try
         {
-            if (_current.action != null)
+            if (_current.boundCommandName != null)
             {
-                Invoke(_current.action);
+                Invoke(_current.boundCommandName);
                 _current = _keyMapManager.root;
             }
             _timeoutCoroutine = null;
         }
         catch (Exception e)
         {
-            SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(TimeoutCoroutine)}: {e}");
+            SuperController.LogError($"{nameof(Keybindings)}.{nameof(TimeoutCoroutine)}: {e}");
         }
     }
 
     private void Invoke(string action)
     {
-        if(!_remoteActionsManager.Invoke(action))
+        if(!_remoteCommandsManager.Invoke(action))
             _overlay.Set($"Action '{action}' not found");
     }
 
@@ -181,7 +181,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private void StartControlMode()
     {
         _controlMode = true;
-        _fuzzyFinder.Init(_remoteActionsManager.names);
+        _fuzzyFinder.Init(_remoteCommandsManager.names);
         _overlay.autoClear = float.PositiveInfinity;
         _overlay.Set(":");
         EventSystem.current.SetSelectedGameObject(_overlay.input.gameObject);
@@ -248,7 +248,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(GetJSON)} (Serialize): {exc}");
+            SuperController.LogError($"{nameof(Keybindings)}.{nameof(GetJSON)} (Serialize): {exc}");
         }
 
         return json;
@@ -268,7 +268,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"{nameof(ShortcutsPlugin)}.{nameof(RestoreFromJSON)}: {exc}");
+            SuperController.LogError($"{nameof(Keybindings)}.{nameof(RestoreFromJSON)}: {exc}");
         }
     }
 
@@ -284,25 +284,25 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
             .Select(atom.GetStorableByID)
             .Where(s => s is MVRScript)))
         {
-            _remoteActionsManager.TryRegister(storable);
+            _remoteCommandsManager.TryRegister(storable);
         }
 
         foreach (var storable in SuperController.singleton.GetComponentInChildren<MVRPluginManager>().GetComponentsInChildren<MVRScript>())
         {
-            _remoteActionsManager.TryRegister(storable);
+            _remoteCommandsManager.TryRegister(storable);
         }
     }
 
     public void OnActionsProviderAvailable(JSONStorable storable)
     {
         if (!_valid) return;
-        _remoteActionsManager.TryRegister(storable);
+        _remoteCommandsManager.TryRegister(storable);
     }
 
     public void OnActionsProviderDestroyed(JSONStorable storable)
     {
         if (!_valid) return;
-        _remoteActionsManager.Remove(storable);
+        _remoteCommandsManager.Remove(storable);
     }
 
     #endregion

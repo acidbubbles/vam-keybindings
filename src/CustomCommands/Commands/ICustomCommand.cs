@@ -2,7 +2,7 @@
 using SimpleJSON;
 using UnityEngine.Events;
 
-public interface IBoundAction
+public interface ICustomCommand
 {
     string type { get; }
     string name { get; }

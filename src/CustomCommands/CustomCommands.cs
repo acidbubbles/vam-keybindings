@@ -5,18 +5,18 @@ using CustomActions;
 using SimpleJSON;
 using UnityEngine;
 
-public class CustomActionsPlugin : MVRScript, IActionsProvider
+public class CustomCommands : MVRScript, ICommandsProvider
 {
-    private ActionsRepository _actions;
+    private CustomCommandsRepository _customCommands;
     private PrefabManager _prefabManager;
     private bool _loaded;
-    private CustomActionsScreen _ui;
+    private CustomCommandsScreen _ui;
 
     public override void Init()
     {
         _prefabManager = new PrefabManager();
-        _actions = new ActionsRepository(containingAtom, _prefabManager);
-        _actions.onChange.AddListener(OnActionsChanged);
+        _customCommands = new CustomCommandsRepository(containingAtom, _prefabManager);
+        _customCommands.onChange.AddListener(OnActionsChanged);
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
         SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
@@ -42,9 +42,9 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
 
         var active = go.activeInHierarchy;
         if (active) go.SetActive(false);
-        _ui = go.AddComponent<CustomActionsScreen>();
+        _ui = go.AddComponent<CustomCommandsScreen>();
         _ui.prefabManager = _prefabManager;
-        _ui.actions = _actions;
+        _ui.customCommands = _customCommands;
         _ui.Configure();
         if (active) go.SetActive(true);
     }
@@ -52,12 +52,12 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
 
     public override void Validate()
     {
-        _actions.Validate();
+        _customCommands.Validate();
     }
 
     public void OnAtomRename(string oldid, string newid)
     {
-        _actions.SyncAtomNames();
+        _customCommands.SyncAtomNames();
     }
 
     public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
@@ -66,7 +66,7 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
 
         try
         {
-            json["actions"] = _actions.GetJSON();
+            json["actions"] = _customCommands.GetJSON();
             needsStore = true;
         }
         catch (Exception exc)
@@ -84,8 +84,8 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
         try
         {
             _loaded = true;
-            _actions.RestoreFromJSON(jc["actions"]);
-            if (_actions.count > 0)
+            _customCommands.RestoreFromJSON(jc["actions"]);
+            if (_customCommands.count > 0)
                 OnActionsChanged();
 
         }
@@ -107,10 +107,10 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
 
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
-        foreach (IBoundAction action in _actions)
+        foreach (ICustomCommand command in _customCommands)
         {
-            if (action.bindable == null) continue;
-            bindings.Add(action.bindable);
+            if (command.bindable == null) continue;
+            bindings.Add(command.bindable);
         }
     }
 }

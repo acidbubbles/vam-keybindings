@@ -1,4 +1,4 @@
-﻿public static class ActionNames
+﻿public static class CommandNames
 {
     // Logging
     public const string LogMessage = "LogMessage";

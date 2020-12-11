@@ -3,16 +3,16 @@ using CustomActions;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CustomActionsScreen : MonoBehaviour
+public class CustomCommandsScreen : MonoBehaviour
 {
     private class Row
     {
-        public IBoundAction action;
+        public ICustomCommand action;
         public GameObject container;
     }
 
     public IPrefabManager prefabManager { get; set; }
-    public IActionsRepository actions { get; set; }
+    public ICustomCommandsRepository customCommands { get; set; }
 
     private readonly List<Row> _rows = new List<Row>();
 
@@ -33,24 +33,24 @@ public class CustomActionsScreen : MonoBehaviour
 
     public void Awake()
     {
-        var title = prefabManager.CreateText(transform, "<b>Custom actions</b>");
+        var title = prefabManager.CreateText(transform, "<b>Custom commands</b>");
         title.fontSize = 30;
         title.alignment = TextAnchor.MiddleCenter;
 
-        var subtitle = prefabManager.CreateText(transform, "<i>The <b>[name]</b> can be invoked by a shortcut.</i>");
+        var subtitle = prefabManager.CreateText(transform, "<i>The <b>[name]</b> can be invoked by a keybinding plugin.</i>");
         subtitle.alignment = TextAnchor.UpperCenter;
 
-        var addBtn = prefabManager.CreateButton(transform, "+ Add custom action");
+        var addBtn = prefabManager.CreateButton(transform, "+ Add a custom command");
         addBtn.button.onClick.AddListener(() =>
         {
-            var action = actions.AddDiscreteTrigger();
+            var action = customCommands.AddDiscreteTrigger();
             AddEditRow(action);
         });
     }
 
     public void OnEnable()
     {
-        foreach (IBoundAction action in actions)
+        foreach (ICustomCommand action in customCommands)
         {
             AddEditRow(action);
         }
@@ -63,7 +63,7 @@ public class CustomActionsScreen : MonoBehaviour
         _rows.Clear();
     }
 
-    private void AddEditRow(IBoundAction action)
+    private void AddEditRow(ICustomCommand action)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
@@ -86,7 +86,7 @@ public class CustomActionsScreen : MonoBehaviour
             var e = action.Edit();
             e?.AddListener(() =>
             {
-                actions.onChange.Invoke();
+                customCommands.onChange.Invoke();
                 text.text = action.displayName;
             });
         });
@@ -97,7 +97,7 @@ public class CustomActionsScreen : MonoBehaviour
         var btnRemove = prefabManager.CreateButton(go.transform, "X");
         btnRemove.button.onClick.AddListener(() =>
         {
-            actions.Remove(action);
+            customCommands.Remove(action);
             _rows.Remove(row);
             Destroy(go);
         });

@@ -1,0 +1,10 @@
+﻿src/Shared/ICommandsInvoker.cs
+src/Shared/ICommandsProvider.cs
+src/Shared/PrefabManager.cs
+src/CustomCommands/Commands/DebugCommand.cs
+src/CustomCommands/Commands/DiscreteTriggerCommand.cs
+src/CustomCommands/Commands/ICustomCommand.cs
+src/CustomCommands/Commands/TriggerCommandBase.cs
+src/CustomCommands/UI/CustomCommandsScreen.cs
+src/CustomCommands/CustomCommandsRepository.cs
+src/CustomCommands/CustomCommands.cs

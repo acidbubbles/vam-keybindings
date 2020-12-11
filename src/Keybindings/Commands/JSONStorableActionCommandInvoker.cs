@@ -1,4 +1,4 @@
-﻿public class JSONStorableActionAction : IAction
+﻿public class JSONStorableActionCommandInvoker : ICommandInvoker
 {
     // TODO: If many mapped, use last selected
     public JSONStorable storable { get; set; }

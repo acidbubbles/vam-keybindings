@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
-public class ShortcutsOverlay : MonoBehaviour
+public class KeybindingsOverlay : MonoBehaviour
 {
-    public static ShortcutsOverlay CreateOverlayGameObject(PrefabManager prefabManager)
+    public static KeybindingsOverlay CreateOverlayGameObject(PrefabManager prefabManager)
     {
         // Heavily inspired by hazmox's VAMOverlays https://hub.virtamate.com/resources/vamoverlays.2438/
         // Thanks a lot for allowing me to use the result of your hard work!
@@ -43,7 +43,7 @@ public class ShortcutsOverlay : MonoBehaviour
             // bg.raycastTarget = false;
             // bg.color = new Color(1f, 1f, 1f, 0.01f);
 
-            var overlay = go.AddComponent<ShortcutsOverlay>();
+            var overlay = go.AddComponent<KeybindingsOverlay>();
 
             {
                 var textContainerGo = new GameObject("text") {layer = 5};

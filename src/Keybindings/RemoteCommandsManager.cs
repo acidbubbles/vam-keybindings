@@ -2,37 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RemoteActionsManager
+public class RemoteCommandsManager
 {
-    private readonly List<string> _names = new List<string>();
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
-    private readonly Dictionary<string, IAction> _actionsMap = new Dictionary<string, IAction>();
-    public List<string> names => _names;
+    private readonly Dictionary<string, ICommandInvoker> _actionsMap = new Dictionary<string, ICommandInvoker>();
+    public List<string> names { get; } = new List<string>();
 
-    public bool TryGetAction(string name, out IAction action)
+    public bool TryGetAction(string name, out ICommandInvoker commandInvoker)
     {
-        return _actionsMap.TryGetValue(name, out action);
+        return _actionsMap.TryGetValue(name, out commandInvoker);
     }
 
     public bool Invoke(string name)
     {
-        IAction action;
-        if (!_actionsMap.TryGetValue(name, out action))
+        ICommandInvoker commandInvoker;
+        if (!_actionsMap.TryGetValue(name, out commandInvoker))
         {
             return false;
         }
 
-        if (!ValidateReceiver(action.storable))
+        if (!ValidateReceiver(commandInvoker.storable))
             return false;
 
         try
         {
-            action.Invoke();
+            commandInvoker.Invoke();
             return true;
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"Failed invoking {action.name}: {exc}");
+            SuperController.LogError($"Failed invoking {commandInvoker.name}: {exc}");
             return false;
         }
     }
@@ -61,16 +60,16 @@ public class RemoteActionsManager
             var storableAction = binding as JSONStorableAction;
             if (storableAction != null)
             {
-                var action = new JSONStorableActionAction {action = storableAction, storable = storable};
+                var action = new JSONStorableActionCommandInvoker {action = storableAction, storable = storable};
                 _actionsMap[storableAction.name] = action;
-                _names.Add(storableAction.name);
+                names.Add(storableAction.name);
                 continue;
             }
 
             SuperController.LogError($"Shortcuts: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
 
-        _names.Sort();
+        names.Sort();
     }
 
     public void Remove(JSONStorable storable)
@@ -86,7 +85,7 @@ public class RemoteActionsManager
         {
             _actionsMap.Remove(action);
             // TODO: When we map multiple targets to an action name, check if it's the last
-            _names.Remove(action);
+            names.Remove(action);
         }
     }
 

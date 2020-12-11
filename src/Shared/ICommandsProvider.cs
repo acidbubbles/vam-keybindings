@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public interface IActionsProvider
+public interface ICommandsProvider
 {
     void OnBindingsListRequested(ICollection<object> bindings);
 }

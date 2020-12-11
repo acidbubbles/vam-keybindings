@@ -2,7 +2,7 @@
 using SimpleJSON;
 using UnityEngine.Events;
 
-public class DebugBoundAction : IBoundAction
+public class DebugCommand : ICustomCommand
 {
     public const string Type = "debug";
     public string type => Type;
@@ -12,11 +12,11 @@ public class DebugBoundAction : IBoundAction
 
     private string _message;
 
-    public DebugBoundAction()
+    public DebugCommand()
     {
     }
 
-    public DebugBoundAction(string message)
+    public DebugCommand(string message)
     {
         _message = message;
         name = Guid.NewGuid().ToString();

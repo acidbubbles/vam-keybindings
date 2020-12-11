@@ -37,36 +37,36 @@ public class FuzzyFinder
         return null;
     }
 
-    public string ColorizeMatch(string action, string query)
+    public string ColorizeMatch(string commandName, string query)
     {
-        var lengthWithColors = action.Length + query.Length * 20;
+        var lengthWithColors = commandName.Length + query.Length * 20;
         if (_colorizedStringBuilder.Capacity < lengthWithColors)
             _colorizedStringBuilder.Capacity = lengthWithColors;
 
         var queryIndex = 0;
-        for (var actionIndex = 0; actionIndex < action.Length; actionIndex++)
+        for (var actionIndex = 0; actionIndex < commandName.Length; actionIndex++)
         {
             if (queryIndex >= query.Length)
             {
-                _colorizedStringBuilder.Append(action.Substring(actionIndex));
+                _colorizedStringBuilder.Append(commandName.Substring(actionIndex));
                 break;
             }
 
             // TODO: Same code in RemoteActionsManager, to extract and reuse
             var queryChar = query[queryIndex];
-            var actionChar = action[actionIndex];
+            var actionChar = commandName[actionIndex];
             var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(actionChar) : queryChar == actionChar;
 
             if (isMatch)
             {
                 queryIndex++;
                 _colorizedStringBuilder.Append("<color=cyan>");
-                _colorizedStringBuilder.Append(action[actionIndex]);
+                _colorizedStringBuilder.Append(commandName[actionIndex]);
                 _colorizedStringBuilder.Append("</color>");
                 continue;
             }
 
-            _colorizedStringBuilder.Append(action[actionIndex]);
+            _colorizedStringBuilder.Append(commandName[actionIndex]);
         }
 
         var result = _colorizedStringBuilder.ToString();
