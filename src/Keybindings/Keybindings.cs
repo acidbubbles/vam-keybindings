@@ -19,6 +19,9 @@ public class Keybindings : MVRScript, IActionsInvoker
     private bool _valid;
     private bool _loaded;
     private bool _commandMode;
+    private bool _ctrlDown;
+    private bool _altDown;
+    private bool _shiftDown;
 
     public override void Init()
     {
@@ -119,11 +122,11 @@ public class Keybindings : MVRScript, IActionsInvoker
 
         var current = _current;
         _current = null;
-        var match = current?.DoMatch();
+        var match = current != null ? DoMatch(current) : null;
 
         if (match == null)
         {
-            match = _keyMapManager.root.DoMatch();
+            match = DoMatch(_keyMapManager.root);
             if (match == null)
             {
                 if (Input.GetKeyDown(KeyCode.Semicolon) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
@@ -146,6 +149,31 @@ public class Keybindings : MVRScript, IActionsInvoker
 
         _current = match;
         _timeoutCoroutine = StartCoroutine(TimeoutCoroutine());
+    }
+
+    public KeyMapTreeNode DoMatch(KeyMapTreeNode node)
+    {
+        _ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        _altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        _shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+        for (var i = 0; i < node.next.Count; i++)
+        {
+            var child = node.next[i];
+            if (IsMatch(child.keyChord))
+                return child;
+        }
+
+        return null;
+    }
+
+    public bool IsMatch(KeyChord keyChord)
+    {
+        if (!Input.GetKeyDown(keyChord.key)) return false;
+        if (keyChord.ctrl != _ctrlDown) return false;
+        if (keyChord.alt != _altDown) return false;
+        if (keyChord.shift != _shiftDown) return false;
+        return true;
     }
 
     private IEnumerator TimeoutCoroutine()

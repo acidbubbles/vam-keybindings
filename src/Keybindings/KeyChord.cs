@@ -1,34 +1,67 @@
 ﻿using System;
+using System.Text;
 using SimpleJSON;
 using UnityEngine;
 
 public struct KeyChord
 {
-    public static readonly KeyChord empty = new KeyChord(KeyCode.None);
+    public static readonly KeyChord empty = new KeyChord(KeyCode.None, false, false, false);
 
-    public readonly KeyCode modifier;
+    // This is not thread safe
+    private static readonly StringBuilder _sb = new StringBuilder();
+
+    public readonly bool ctrl;
+    public readonly bool shift;
+    public readonly bool alt;
     public readonly KeyCode key;
 
-    public KeyChord(KeyCode key, KeyCode modifier = KeyCode.None)
+    public KeyChord(KeyCode key, bool ctrl, bool alt, bool shift)
     {
         this.key = key;
-        this.modifier = modifier;
+        this.ctrl = ctrl;
+        this.alt = alt;
+        this.shift = shift;
     }
 
     public override string ToString()
     {
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-        var keyStr = key.ToPrettyString();
+        if (ctrl) _sb.Append("Ctrl+");
+        if (alt) _sb.Append("Alt+");
+        if (shift) _sb.Append("Shift+");
+        _sb.Append(key.ToPrettyString());
+        var result = _sb.ToString();
+        _sb.Length = 0;
+        return result;
+    }
 
-        switch (modifier)
+    public JSONNode GetJSON()
+    {
+        var jc = new JSONClass
         {
-            case KeyCode.LeftControl:
-                return $"Ctrl+{keyStr}";
-            case KeyCode.None:
-                return $"{keyStr}";
-            default:
-                return $"?+{keyStr}";
-        }
+            {"key", key.ToString()}
+        };
+
+        if (ctrl) jc["ctrl"].AsBool = true;
+        if (alt) jc["alt"].AsBool = true;
+        if (shift) jc["shift"].AsBool = true;
+
+        return jc;
+    }
+
+    public static KeyChord FromJSON(JSONNode jsonNode)
+    {
+        return new KeyChord(
+            (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["key"].Value),
+            jsonNode["ctrl"].AsBool,
+            jsonNode["alt"].AsBool,
+            jsonNode["shift"].AsBool
+        );
+    }
+
+    public bool Equals(KeyChord other)
+    {
+        return ctrl == other.ctrl && shift == other.shift && alt == other.alt && key == other.key;
     }
 
     public override bool Equals(object obj)
@@ -37,33 +70,15 @@ public struct KeyChord
         return obj is KeyChord && Equals((KeyChord) obj);
     }
 
-    private bool Equals(KeyChord other)
-    {
-        return modifier == other.modifier && key == other.key;
-    }
-
     public override int GetHashCode()
     {
         unchecked
         {
-            return ((int) modifier * 397) ^ (int) key;
+            var hashCode = ctrl.GetHashCode();
+            hashCode = (hashCode * 397) ^ shift.GetHashCode();
+            hashCode = (hashCode * 397) ^ alt.GetHashCode();
+            hashCode = (hashCode * 397) ^ (int) key;
+            return hashCode;
         }
-    }
-
-    public JSONNode GetJSON()
-    {
-        return new JSONClass
-        {
-            {"key", key.ToString()},
-            {"modifier", modifier.ToString()}
-        };
-    }
-
-    public static KeyChord FromJSON(JSONNode jsonNode)
-    {
-        return new KeyChord(
-            (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["key"].Value),
-            (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["modifier"].Value)
-        );
     }
 }

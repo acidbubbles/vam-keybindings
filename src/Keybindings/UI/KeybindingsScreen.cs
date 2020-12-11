@@ -200,7 +200,10 @@ public class KeybindingsScreen : MonoBehaviour
             var key = KeyCodes.bindableKeyCodes.GetCurrent();
             if (key == KeyCode.None) continue;
 
-            var binding = new KeyChord(key, Input.GetKey(KeyCode.LeftControl) ? KeyCode.LeftControl : KeyCode.None);
+            var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+            var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
             _setKeybindingList.Add(binding);
             _setBindingBtn.label = _setKeybindingList.GetKeyChordsAsString();
             expire = Time.unscaledTime + Settings.TimeoutLen;

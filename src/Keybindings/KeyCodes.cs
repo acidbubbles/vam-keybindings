@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class KeyCodes
 {
-    public static Dictionary<KeyCode, string> keyCodeToCharMap = new Dictionary<KeyCode, string>()
+    private static readonly Dictionary<KeyCode, string> _keyCodeToCharMap = new Dictionary<KeyCode, string>()
     {
         {KeyCode.A, "a"},
         {KeyCode.B, "b"},
@@ -86,8 +86,11 @@ public static class KeyCodes
     {
         KeyCode.None,
         KeyCode.LeftControl,
+        KeyCode.RightControl,
         KeyCode.LeftShift,
+        KeyCode.RightShift,
         KeyCode.LeftAlt,
+        KeyCode.RightAlt,
         KeyCode.Mouse0,
         KeyCode.Mouse1,
         KeyCode.Mouse2,
@@ -120,6 +123,6 @@ public static class KeyCodes
     public static string ToPrettyString(this KeyCode keyCode)
     {
         string keyStr;
-        return !keyCodeToCharMap.TryGetValue(keyCode, out keyStr) ? keyCode.ToString() : keyStr;
+        return !_keyCodeToCharMap.TryGetValue(keyCode, out keyStr) ? keyCode.ToString() : keyStr;
     }
 }
