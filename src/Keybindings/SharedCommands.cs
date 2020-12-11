@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -38,14 +39,32 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("ToggleErrorLog", ToggleErrorLog);
         CreateAction("ToggleMessageLog", ToggleMessageLog);
         CreateAction("CloseAllPanels", CloseAllPanels);
-        CreateAction("AddAtom", () => SuperController.singleton.SetMainMenuTab("TabAddAtom"));
 
-        // Tabs
-        // TODO: Add all known tabs and filters for Person tabs
-        CreateAction("OpenControlTab", () => OpenTab("Control"));
-        CreateAction("OpenPluginsTab", () => OpenTab("Plugins"));
+        // Selected Tabs
+        // TODO: Add all known tabs
+        CreateAction("OpenControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
+        CreateAction("OpenPluginsTab", () => OpenTab(_ => "Plugins"));
+        CreateAction("OpenClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("OpenHairTab", () => OpenTab(_ => "Hair", "Person"));
         // TODO: Automatically focus on the search fields for clothing tab
         // TODO: Add links to the plugins by #, e.g. OpenPluginsTabPlugin1CustomUI
+
+        // Main Tabs
+        CreateAction("OpenMainMenu", () => OpenMainTab(null));
+        CreateAction("OpenMainMenuFileTab", () => OpenMainTab("TabFile"));
+        CreateAction("OpenMainMenuUserPrefsTab", () => OpenMainTab("TabUserPrefs"));
+        CreateAction("OpenMainMenuNavigationTab", () => OpenMainTab("TabNavigation"));
+        CreateAction("OpenMainMenuSelectTab", () => OpenMainTab("TabSelect"));
+        CreateAction("OpenMainMenuSessionPluginPresetsTab", () => OpenMainTab("TabSessionPluginPresets"));
+        CreateAction("OpenMainMenuSessionPluginsTab", () => OpenMainTab("TabSessionPlugins"));
+        CreateAction("OpenMainMenuScenePluginsTab", () => OpenMainTab("TabScenePlugins"));
+        CreateAction("OpenMainMenuScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
+        CreateAction("OpenMainMenuSceneLightingTab", () => OpenMainTab("TabSceneLighting"));
+        CreateAction("OpenMainMenuSceneMiscTab", () => OpenMainTab("TabSceneMisc"));
+        CreateAction("OpenMainMenuSceneAnimationTab", () => OpenMainTab("TabSceneAnimation"));
+        CreateAction("OpenMainMenuAddAtomTab", () => OpenMainTab("TabAddAtom"));
+        CreateAction("OpenMainMenuAudioTab", () => OpenMainTab("TabAudio"));
+        // CreateAction("OpenMainMenuDebugTab", () => OpenMainTab("TabDebug"));
 
         // Selection
         CreateAction("Deselect", () => SuperController.singleton.SelectController(null));
@@ -98,18 +117,34 @@ public class SharedCommands : MVRScript, ICommandsProvider
             SuperController.singleton.OpenErrorLogPanel();
     }
 
-    private static void OpenTab(string name)
+    private static void OpenMainTab(string tabName)
+    {
+        SuperController.singleton.SetActiveUI("MainMenu");
+        if(tabName != null)
+        SuperController.singleton.SetMainMenuTab(tabName);
+    }
+
+    private static void OpenTab(Func<string, string> getTabName, string type = null)
     {
         var selectedAtom = SuperController.singleton.GetSelectedAtom();
         // TODO: Remember last selected atom
-        if (selectedAtom == null)
+        if (selectedAtom == null || (type != null && selectedAtom.type != type))
         {
-            selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault();
+            if (type == null)
+                selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == "Person") ?? SuperController.singleton.GetAtoms().FirstOrDefault();
+            else
+                selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == type);
             if (selectedAtom == null) return;
-            SuperController.singleton.SelectController(selectedAtom?.mainController);
         }
 
+        var tabName = getTabName(selectedAtom.type);
+        if (tabName == null) return;
+
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>();
-        selector?.SetActiveTab(name);
+        if (selector == null) return;
+
+        SuperController.singleton.SetActiveUI("SelectedOptions");
+        SuperController.singleton.SelectController(selectedAtom.mainController);
+        selector.SetActiveTab(getTabName(selectedAtom.type));
     }
 }
