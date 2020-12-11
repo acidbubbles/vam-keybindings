@@ -21,6 +21,8 @@ public class KeybindingsScreen : MonoBehaviour
     public IPrefabManager prefabManager { get; set; }
     public IKeyMapManager keyMapManager { get; set; }
     public RemoteCommandsManager remoteCommandsManager { get; set; }
+    public KeybindingsExporter exporter { get; set; }
+
     public bool isRecording;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
@@ -53,6 +55,18 @@ public class KeybindingsScreen : MonoBehaviour
         var subtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
         subtitle.alignment = TextAnchor.UpperCenter;
         subtitle.GetComponent<LayoutElement>().preferredHeight = 70;
+
+        var toolbarGo = new GameObject();
+        toolbarGo.transform.SetParent(transform, false);
+
+        var group = toolbarGo.AddComponent<HorizontalLayoutGroup>();
+        group.spacing = 20;
+
+        var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import");
+        importBtn.button.onClick.AddListener(exporter.Import);
+
+        var exportBtn = prefabManager.CreateButton(toolbarGo.transform, "Export");
+        exportBtn.button.onClick.AddListener(exporter.Export);
     }
 
     public void OnEnable()

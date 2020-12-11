@@ -10,6 +10,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
     private RemoteCommandsManager _remoteCommandsManager;
+    private KeybindingsExporter _exporter;
     private KeybindingsScreen _ui;
     private KeybindingsOverlay _overlay;
     private Coroutine _timeoutCoroutine;
@@ -32,6 +33,7 @@ public class Keybindings : MVRScript, IActionsInvoker
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _remoteCommandsManager = new RemoteCommandsManager();
+        _exporter = new KeybindingsExporter(this);
         _fuzzyFinder = new FuzzyFinder();
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
@@ -45,10 +47,6 @@ public class Keybindings : MVRScript, IActionsInvoker
         yield return new WaitForEndOfFrame();
         if (this == null) yield break;
         if (!_loaded) containingAtom.RestoreFromLast(this);
-
-        // TODO: Remove this later, replace by levels (defaults, session, scene, atom)
-        _keyMapManager.RestoreDefaults();
-        // _bindingsManager.Debug(_bindingsManager.root);
     }
 
     public override void InitUI()
@@ -69,6 +67,7 @@ public class Keybindings : MVRScript, IActionsInvoker
         _ui.prefabManager = _prefabManager;
         _ui.keyMapManager = _keyMapManager;
         _ui.remoteCommandsManager = _remoteCommandsManager;
+        _ui.exporter = _exporter;
         _ui.Configure();
         if (active) go.SetActive(true);
 
@@ -243,7 +242,7 @@ public class Keybindings : MVRScript, IActionsInvoker
 
         try
         {
-            json["maps"] = _keyMapManager.GetJSON();
+            json["keybindings"] = _keyMapManager.GetJSON();
             needsStore = true;
         }
         catch (Exception exc)
@@ -264,7 +263,7 @@ public class Keybindings : MVRScript, IActionsInvoker
         try
         {
             _loaded = true;
-            _keyMapManager.RestoreFromJSON(jc["maps"]);
+            _keyMapManager.RestoreFromJSON(jc["keybindings"]);
         }
         catch (Exception exc)
         {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
-using UnityEngine;
 
 public interface IKeyMapManager
 {
@@ -80,21 +79,6 @@ public class KeyMapManager : IKeyMapManager
             maps.Add(map);
         }
 
-        RebuildTree();
-    }
-
-    public void RestoreDefaults()
-    {
-        // TODO: Mark them as "default" so they are not saved and not overwritten
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.S, KeyCode.LeftControl)}, "SaveScene"));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.O, KeyCode.LeftControl)}, "LoadScene"));
-
-        // tests
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha1)}, "print.1"));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha2)}, "print.2"));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha3)}, "print.3"));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha3), new KeyChord(KeyCode.Alpha4)}, "print.3.4"));
-        maps.Add(new KeyMap(new[] {new KeyChord(KeyCode.Alpha3), new KeyChord(KeyCode.Alpha5)}, "print.3.5"));
         RebuildTree();
     }
 }

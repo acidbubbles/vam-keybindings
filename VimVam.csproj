@@ -71,6 +71,7 @@
     <Compile Include="src\CustomCommands\Commands\TriggerCommandBase.cs" />
     <Compile Include="src\CustomCommands\CustomCommands.cs" />
     <Compile Include="src\CustomCommands\UI\CustomCommandsScreen.cs" />
+    <Compile Include="src\Keybindings\KeybindingsExporter.cs" />
     <Compile Include="src\Shared\ICommandsProvider.cs" />
     <Compile Include="src\Shared\ICommandsInvoker.cs" />
     <Compile Include="src\Shared\PrefabManager.cs" />
