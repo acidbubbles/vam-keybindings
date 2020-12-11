@@ -15,11 +15,20 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
     private FuzzyFinder _fuzzyFinder;
+    private bool _valid;
     private bool _loaded;
     private bool _controlMode;
 
     public override void Init()
     {
+        if (containingAtom.type != "SessionPluginManager")
+        {
+            SuperController.LogError("Shortcuts plugin can only be installed as a session plugin.");
+            CreateTextField(new JSONStorableString("Error", "Shortcuts plugin can only be installed as a session plugin."));
+            enabledJSON.val = false;
+            return;
+        }
+
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _remoteActionsManager = new RemoteActionsManager();
@@ -27,6 +36,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
 
+        _valid = true;
         AcquireAllAvailableBroadcastingPlugins();
     }
 
@@ -44,6 +54,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     public override void InitUI()
     {
         base.InitUI();
+        if (!_valid) return;
         if (UITransform == null) return;
         _prefabManager.triggerActionsParent = UITransform;
 
@@ -73,6 +84,8 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
     public void Update()
     {
+        if (!_valid) return;
+
         try
         {
             // Don't waste resources
@@ -226,6 +239,8 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     {
         var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
 
+        if (!_valid) return json;
+
         try
         {
             json["maps"] = _keyMapManager.GetJSON();
@@ -244,6 +259,8 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
     {
         base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
 
+        if (!_valid) return;
+
         try
         {
             _loaded = true;
@@ -259,7 +276,7 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
     #region Interop
 
-    public void AcquireAllAvailableBroadcastingPlugins()
+    private void AcquireAllAvailableBroadcastingPlugins()
     {
         foreach (var storable in SuperController.singleton
             .GetAtoms()
@@ -278,11 +295,13 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
 
     public void OnActionsProviderAvailable(JSONStorable storable)
     {
+        if (!_valid) return;
         _remoteActionsManager.TryRegister(storable);
     }
 
     public void OnActionsProviderDestroyed(JSONStorable storable)
     {
+        if (!_valid) return;
         _remoteActionsManager.Remove(storable);
     }
 

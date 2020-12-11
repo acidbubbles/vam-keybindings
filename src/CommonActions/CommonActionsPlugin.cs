@@ -9,6 +9,14 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
 
     public override void Init()
     {
+        if (containingAtom.type != "SessionPluginManager")
+        {
+            SuperController.LogError("Shortcuts plugin can only be installed as a session plugin.");
+            CreateTextField(new JSONStorableString("Error", "Shortcuts plugin can only be installed as a session plugin."));
+            enabledJSON.val = false;
+            return;
+        }
+
         _actions.Clear();
 
         CreateTextField(new JSONStorableString(
