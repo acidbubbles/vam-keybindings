@@ -1,5 +1,4 @@
-﻿src/Shared/BroadcastingUtil.cs
-src/Shared/IActionsInvoker.cs
+﻿src/Shared/IActionsInvoker.cs
 src/Shared/IActionsProvider.cs
 src/Shared/PrefabManager.cs
 src/CustomActions/Actions/DebugBoundAction.cs

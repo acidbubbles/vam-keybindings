@@ -269,6 +269,11 @@ public class ShortcutsPlugin : MVRScript, IActionsInvoker
         {
             _remoteActionsManager.TryRegister(storable);
         }
+
+        foreach (var storable in SuperController.singleton.GetComponentInChildren<MVRPluginManager>().GetComponentsInChildren<MVRScript>())
+        {
+            _remoteActionsManager.TryRegister(storable);
+        }
     }
 
     public void OnActionsProviderAvailable(JSONStorable storable)

@@ -97,12 +97,12 @@ public class CustomActionsPlugin : MVRScript, IActionsProvider
 
     private void OnActionsChanged()
     {
-        BroadcastingUtil.BroadcastActionsAvailable(this);
+        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void OnDestroy()
     {
-        BroadcastingUtil.BroadcastActionsDestroyed(this);
+        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void OnBindingsListRequested(ICollection<object> bindings)

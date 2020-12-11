@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class CommonActionsPlugin : MVRScript, IActionsProvider
 {
@@ -49,12 +50,12 @@ public class CommonActionsPlugin : MVRScript, IActionsProvider
         );
 
         // Broadcast
-        BroadcastingUtil.BroadcastActionsAvailable(this);
+        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void OnDestroy()
     {
-        BroadcastingUtil.BroadcastActionsDestroyed(this);
+        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
