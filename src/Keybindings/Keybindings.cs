@@ -268,6 +268,17 @@ public class Keybindings : MVRScript, IActionsInvoker
 
     #endregion
 
+    #region Settings
+
+    private void OpenSettings()
+    {
+        SuperController.singleton.SetActiveUI("MainMenu");
+        SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
+        UITransform.gameObject.SetActive(true);
+    }
+
+    #endregion
+
     #region Save
 
     public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
@@ -314,6 +325,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     private void AcquireAllAvailableBroadcastingPlugins()
     {
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleCommandMode));
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "KeybindingsSettings", OpenSettings));
 
         foreach (var storable in SuperController.singleton
             .GetAtoms()
