@@ -82,6 +82,7 @@ public class KeybindingsScreen : MonoBehaviour
         }
 
         // TODO: Shortcuts mapped to nothing?
+        // For example, if I don't have Timeline right now I still want to know what the keybindings are for it
     }
 
     private void ClearRows()

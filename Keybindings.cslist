@@ -17,5 +17,6 @@ src/Keybindings/KeyMap.cs
 src/Keybindings/KeyMapManager.cs
 src/Keybindings/KeyMapTreeNode.cs
 src/Keybindings/RemoteCommandsManager.cs
+src/Keybindings/SelectionHistoryManager.cs
 src/Keybindings/Settings.cs
 src/Keybindings/SharedCommands.cs

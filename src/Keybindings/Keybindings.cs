@@ -10,6 +10,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
     private RemoteCommandsManager _remoteCommandsManager;
+    private SelectionHistoryManager _selectionHistoryManager;
     private KeybindingsExporter _exporter;
     private KeybindingsScreen _ui;
     private KeybindingsOverlay _overlay;
@@ -36,8 +37,10 @@ public class Keybindings : MVRScript, IActionsInvoker
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _remoteCommandsManager = new RemoteCommandsManager();
+        _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
         _exporter = new KeybindingsExporter(this);
         _fuzzyFinder = new FuzzyFinder();
+
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
 
@@ -82,6 +85,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     public void OnDestroy()
     {
         if (_overlay != null) Destroy(_overlay.gameObject);
+        if (_selectionHistoryManager != null) Destroy(_selectionHistoryManager);
     }
 
     public void Update()
