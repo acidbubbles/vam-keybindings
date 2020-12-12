@@ -138,8 +138,6 @@ public class SharedCommands : MVRScript, ICommandsProvider
         var selectedAtom = _selectionManager != null ? _selectionManager.GetLastSelectedAtomOfType(type) : GetAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return;
 
-        SuperController.LogMessage("Wanted " + type + ", got " + selectedAtom.type);
-
         var tabName = getTabName(selectedAtom.type);
         if (tabName == null) return;
 

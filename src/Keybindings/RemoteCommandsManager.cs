@@ -7,18 +7,22 @@ using UnityEngine;
 public class RemoteCommandsManager
 {
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
-    private readonly Dictionary<string, ICommandInvoker> _actionsMap = new Dictionary<string, ICommandInvoker>();
+    private readonly Dictionary<string, List<ICommandInvoker>> _commandsMap = new Dictionary<string, List<ICommandInvoker>>();
     public List<string> names { get; } = new List<string>();
-    public IEnumerable<ICommandInvoker> commands => _actionsMap.Select(kvp => kvp.Value);
+    public IEnumerable<ICommandInvoker> commands => _commandsMap.Select(kvp => kvp.Value[0]);
 
     public bool Invoke(string name)
     {
-        ICommandInvoker commandInvoker;
-        if (!_actionsMap.TryGetValue(name, out commandInvoker))
+        List<ICommandInvoker> commandInvokers;
+        if (!_commandsMap.TryGetValue(name, out commandInvokers))
         {
             return false;
         }
 
+        // TODO: Use the SelectionHistoryManager to find the best match if there's more than one
+        var commandInvoker = commandInvokers[0];
+
+        // TODO: This can probably be merged with SelectionHistoryManager
         if (!ValidateReceiver(commandInvoker.storable))
             return false;
 
@@ -68,12 +72,21 @@ public class RemoteCommandsManager
             SuperController.LogError($"Keybindings: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
 
+        names.Clear();
+        names.AddRange(_commandsMap.Select(kvp => kvp.Key));
         names.Sort();
     }
 
     public void Add(ICommandInvoker invoker)
     {
-        _actionsMap[invoker.commandName] = invoker;
+        List<ICommandInvoker> commandInvokers;
+        if (!_commandsMap.TryGetValue(invoker.commandName, out commandInvokers))
+        {
+            commandInvokers = new List<ICommandInvoker>(1);
+            _commandsMap.Add(invoker.commandName, commandInvokers);
+        }
+        commandInvokers.Add(invoker);
+        // TODO: This line is weird
         names.Add(invoker.commandName);
     }
 
@@ -87,18 +100,20 @@ public class RemoteCommandsManager
 
     public void Remove(JSONStorable storable)
     {
-        var actionsToRemove = new List<string>();
-        foreach (var action in _actionsMap)
+        var commandToRemove = new List<string>();
+        foreach (var commandInvokers in _commandsMap)
         {
-            if (action.Value.storable == storable)
-                actionsToRemove.Add(action.Key);
+            // TODO: Single might be overkill
+            commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
+            if (commandInvokers.Value.Count == 0)
+                commandToRemove.Add(commandInvokers.Key);
         }
 
-        foreach (var action in actionsToRemove)
+        foreach (var commandName in commandToRemove)
         {
-            _actionsMap.Remove(action);
+            _commandsMap.Remove(commandName);
             // TODO: When we map multiple targets to an action name, check if it's the last
-            names.Remove(action);
+            names.Remove(commandName);
         }
     }
 
