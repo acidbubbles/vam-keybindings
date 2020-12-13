@@ -4,7 +4,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Keybindings : MVRScript, IActionsInvoker
+public interface IKeybindingsSettings
+{
+    JSONStorableBool showKeyPressesJSON { get; }
+}
+
+public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 {
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
@@ -21,6 +26,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     private bool _ctrlDown;
     private bool _altDown;
     private bool _shiftDown;
+    public JSONStorableBool showKeyPressesJSON { get; private set; }
 
     public override void Init()
     {
@@ -31,6 +37,8 @@ public class Keybindings : MVRScript, IActionsInvoker
             enabledJSON.val = false;
             return;
         }
+
+        showKeyPressesJSON = new JSONStorableBool("ShowKeypresses", false);
 
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
@@ -67,6 +75,7 @@ public class Keybindings : MVRScript, IActionsInvoker
         _ui.keyMapManager = _keyMapManager;
         _ui.remoteCommandsManager = _remoteCommandsManager;
         _ui.exporter = _exporter;
+        _ui.settings = this;
         _ui.Configure();
         if (active) go.SetActive(true);
 
@@ -136,7 +145,8 @@ public class Keybindings : MVRScript, IActionsInvoker
             }
         }
 
-        _overlay.Append(match.keyChord.ToString());
+        if (showKeyPressesJSON.val)
+            _overlay.Append(match.keyChord.ToString());
 
         if (match.next.Count == 0)
         {

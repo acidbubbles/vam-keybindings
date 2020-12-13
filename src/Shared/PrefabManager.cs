@@ -16,6 +16,7 @@ public interface IPrefabManager
 
     Text CreateText(Transform transform, string label);
     UIDynamicButton CreateButton(Transform transform, string label);
+    UIDynamicToggle CreateToggle(Transform transform, string label);
 }
 
 public class PrefabManager : IPrefabManager
@@ -27,6 +28,7 @@ public class PrefabManager : IPrefabManager
     public RectTransform triggerActionDiscretePrefab { get; private set; }
     public RectTransform triggerActionTransitionPrefab { get; private set; }
     public RectTransform buttonPrefab { get; private set; }
+    public RectTransform togglePrefab { get; private set; }
 
     public IEnumerator LoadUIAssets()
     {
@@ -36,6 +38,7 @@ public class PrefabManager : IPrefabManager
         foreach (var r in LoadUIAsset("TriggerActionDiscretePanel", x => triggerActionDiscretePrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("TriggerActionTransitionPanel", x => triggerActionTransitionPrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("DynamicButton", x => buttonPrefab = x)) yield return r;
+        foreach (var r in LoadUIAsset("DynamicToggle", x => togglePrefab = x)) yield return r;
     }
 
     public Text CreateText(Transform transform, string label)
@@ -59,6 +62,14 @@ public class PrefabManager : IPrefabManager
     public UIDynamicButton CreateButton(Transform transform, string label)
     {
         var ui = Object.Instantiate(buttonPrefab).GetComponent<UIDynamicButton>();
+        ui.gameObject.transform.SetParent(transform, false);
+        ui.label = label;
+        return ui;
+    }
+
+    public UIDynamicToggle CreateToggle(Transform transform, string label)
+    {
+        var ui = Object.Instantiate(togglePrefab).GetComponent<UIDynamicToggle>();
         ui.gameObject.transform.SetParent(transform, false);
         ui.label = label;
         return ui;

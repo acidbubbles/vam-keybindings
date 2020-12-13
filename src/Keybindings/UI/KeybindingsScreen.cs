@@ -22,6 +22,7 @@ public class KeybindingsScreen : MonoBehaviour
     public IKeyMapManager keyMapManager { get; set; }
     public RemoteCommandsManager remoteCommandsManager { get; set; }
     public KeybindingsExporter exporter { get; set; }
+    public IKeybindingsSettings settings { get; set; }
 
     public bool isRecording;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
@@ -48,13 +49,21 @@ public class KeybindingsScreen : MonoBehaviour
 
     public void Awake()
     {
-        var title = prefabManager.CreateText(transform, "<b>Keybindings</b>");
-        title.fontSize = 32;
-        title.alignment = TextAnchor.MiddleCenter;
+        var optionsTitle = prefabManager.CreateText(transform, "<b>Options</b>");
+        optionsTitle.fontSize = 32;
+        optionsTitle.alignment = TextAnchor.MiddleCenter;
 
-        var subtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
-        subtitle.alignment = TextAnchor.UpperCenter;
-        subtitle.GetComponent<LayoutElement>().preferredHeight = 70;
+        var showKeypresses = prefabManager.CreateToggle(transform, "Show key presses");
+        showKeypresses.backgroundColor = Color.clear;
+        settings.showKeyPressesJSON.toggle = showKeypresses.toggle;
+
+        var keybindingsTitle = prefabManager.CreateText(transform, "<b>Keybindings</b>");
+        keybindingsTitle.fontSize = 32;
+        keybindingsTitle.alignment = TextAnchor.MiddleCenter;
+
+        var keybindingsSubtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
+        keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
+        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
 
         var toolbarGo = new GameObject();
         toolbarGo.transform.SetParent(transform, false);
