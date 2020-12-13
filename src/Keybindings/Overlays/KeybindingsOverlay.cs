@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.XR;
 
 public class KeybindingsOverlay : MonoBehaviour
 {
@@ -14,29 +12,15 @@ public class KeybindingsOverlay : MonoBehaviour
 
         var mainCamera = Camera.main;
         if (mainCamera == null) return null;
-        // TODO: We could use something that also works for monitor mode
-        var isVR = XRDevice.isPresent;
         var go = new GameObject(nameof(KeybindingsOverlay)) {layer = 5};
         try
         {
-            // TODO: Will this allow switching from/to VR?
             go.transform.SetParent(mainCamera.transform, false);
 
             var canvas = go.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.sortingOrder = 2;
             canvas.worldCamera = mainCamera;
-            canvas.planeDistance = 10.0f;
-
-            go.AddComponent<CanvasScaler>();
-
-            var rectTransform = go.GetComponent<RectTransform>();
-            // TODO: Handle screen resize
-            rectTransform.pivot = new Vector2(1, 0);
-            rectTransform.sizeDelta = new Vector2(mainCamera.scaledPixelWidth/1.33f, mainCamera.scaledPixelHeight/12f);
-            // TODO: Move that point in screen space for Desktop, and world space in VR (the former needs to be updated as the window is resized)
-            rectTransform.localPosition = new Vector3(0.4f, -0.2f, 0.8f);
-            rectTransform.localScale = new Vector3(0.00050f, 0.00050f, 1.0f);
 
             // To make the area visible
             // var bg = go.AddComponent<Image>();
@@ -49,24 +33,23 @@ public class KeybindingsOverlay : MonoBehaviour
                 var textContainerGo = new GameObject("text") {layer = 5};
                 textContainerGo.transform.SetParent(go.transform, false);
 
-                textContainerGo.AddComponent<CanvasRenderer>();
-
                 var textRect = textContainerGo.AddComponent<RectTransform>();
                 textRect.pivot = new Vector2(1, 0);
                 textRect.anchorMin = new Vector2(0, 0);
                 textRect.anchorMax = new Vector2(1, 0);
+                textRect.anchoredPosition = new Vector2(-15, 10f);
 
                 var text = textContainerGo.AddComponent<Text>();
                 text.raycastTarget = false;
                 text.color = Color.white;
                 text.font = prefabManager.font;
-                text.fontSize = isVR ? 18 : 36;
+                text.fontSize = 36;
                 text.alignment = TextAnchor.LowerRight;
                 overlay.text = text;
 
                 var textShadow = textContainerGo.AddComponent<Shadow>();
                 textShadow.effectColor = Color.black;
-                textShadow.effectDistance = new Vector2(2f, -0.5f);
+                textShadow.effectDistance = new Vector2(2f, -3f);
             }
 
             {
@@ -74,16 +57,20 @@ public class KeybindingsOverlay : MonoBehaviour
                 textInputGo.transform.SetParent(go.transform, false);
 
                 var textRect = textInputGo.AddComponent<RectTransform>();
-                textRect.anchorMin = new Vector2(0, 1);
-                textRect.anchorMax = new Vector2(1, 1);
-                textRect.pivot = new Vector2(1, 1);
-                textRect.sizeDelta = new Vector2(400f, 40f);
+                textRect.pivot = new Vector2(1, 0);
+                textRect.anchorMin = new Vector2(0, 0);
+                textRect.anchorMax = new Vector2(1, 0);
+                textRect.anchoredPosition = new Vector2(-18, -20f);
 
                 var text = textInputGo.AddComponent<Text>();
                 text.raycastTarget = true;
                 text.font = prefabManager.font;
                 text.alignment = TextAnchor.UpperRight;
-                text.fontSize = 12;
+                text.fontSize = 16;
+
+                var textShadow = textInputGo.AddComponent<Shadow>();
+                textShadow.effectColor = Color.black;
+                textShadow.effectDistance = new Vector2(1f, -1.5f);
 
                 var input = textInputGo.AddComponent<InputField>();
                 input.textComponent = text;
@@ -91,7 +78,6 @@ public class KeybindingsOverlay : MonoBehaviour
                 overlay.input = input;
             }
 
-            X();
             return overlay;
         }
         catch (Exception e)
@@ -100,11 +86,6 @@ public class KeybindingsOverlay : MonoBehaviour
             SuperController.LogError("Keybindings: Failed creating overlays" + e);
             return null;
         }
-    }
-
-    public static object X()
-    {
-        return new object();
     }
 
     public Text text;
@@ -123,6 +104,7 @@ public class KeybindingsOverlay : MonoBehaviour
 
     public void Set(string value)
     {
+        gameObject.SetActive(true);
         text.text = value;
         _clearTime = Time.unscaledTime + autoClear;
         if (_autoClearCoroutine == null) _autoClearCoroutine = StartCoroutine(AutoClearCoroutine());
@@ -136,6 +118,6 @@ public class KeybindingsOverlay : MonoBehaviour
         }
         text.text = "";
         _autoClearCoroutine = null;
-        // TODO: We could completely disable the canvas here
+        gameObject.SetActive(false);
     }
 }
