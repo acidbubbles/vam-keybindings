@@ -43,7 +43,7 @@ public class KeybindingsOverlay : MonoBehaviour
                 text.raycastTarget = false;
                 text.color = Color.white;
                 text.font = prefabManager.font;
-                text.fontSize = 36;
+                text.fontSize = 28;
                 text.alignment = TextAnchor.LowerRight;
                 overlay.text = text;
 

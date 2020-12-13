@@ -3,26 +3,39 @@ using System.Text;
 
 public class FuzzyFinder
 {
-    private List<string> _values;
+    public string current => _matches.Count > 0 ? _matches[tabIndex] : null;
+
+    private List<string> _valuesReference;
     private readonly StringBuilder _colorizedStringBuilder = new StringBuilder();
+    private readonly List<string> _matches = new List<string>();
+    private string _lastQuery;
+    public int tabIndex { get; set; }
+    public int matches => _matches.Count;
 
     public void Init(List<string> values)
     {
-        _values = values;
+        _valuesReference = values;
     }
 
-    public string FuzzyFind(string query)
+    public bool FuzzyFind(string query)
     {
         if (string.IsNullOrEmpty(query))
-            return null;
+            return false;
+
+        if (query == _lastQuery) return _matches.Count > 0;
+        _lastQuery = query;
+
+        tabIndex = 0;
+        _matches.Clear();
 
         // TODO: Optimize
         // TODO: Keep track of the results subset so we can accelerate fuzzy finding
-        foreach (var value in _values)
+        for (var i = 0; i < _valuesReference.Count; i++)
         {
-            if(value.Length < query.Length) continue;
+            var value = _valuesReference[i];
+            if (value.Length < query.Length) continue;
             var queryIndex = 0;
-            for(var valueIndex = 0; valueIndex < value.Length; valueIndex++)
+            for (var valueIndex = 0; valueIndex < value.Length; valueIndex++)
             {
                 var queryChar = query[queryIndex];
                 var valueChar = value[valueIndex];
@@ -30,11 +43,13 @@ public class FuzzyFinder
                 if (!isMatch) continue;
 
                 queryIndex++;
-                if (queryIndex > query.Length - 1)
-                    return value;
+                if (queryIndex <= query.Length - 1) continue;
+                _matches.Add(value);
+                break;
             }
         }
-        return null;
+
+        return _matches.Count > 0;
     }
 
     public string ColorizeMatch(string commandName, string query)
@@ -76,6 +91,9 @@ public class FuzzyFinder
 
     public void Clear()
     {
-        _values = null;
+        _lastQuery = null;
+        tabIndex = 0;
+        _matches.Clear();
+        _valuesReference = null;
     }
 }
