@@ -1,0 +1,63 @@
+{ 
+   "keybindings" : [ 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus"
+            }
+         ], 
+         "action" : "SharedCommands.AddAtom"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "P", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Keybindings.FindCommand"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "K", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "S", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Keybindings.KeybindingsSettings"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "S", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "SharedCommands.SaveScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "SharedCommands.LoadScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "M", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "SharedCommands.ToggleErrorLog"
+      }
+   ]
+}

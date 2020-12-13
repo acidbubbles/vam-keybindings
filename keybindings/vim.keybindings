@@ -1,0 +1,52 @@
+{ 
+   "keybindings" : [ 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }, 
+            { 
+               "key" : "Q"
+            }
+         ], 
+         "action" : "SharedCommands.Exit"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }, 
+            { 
+               "key" : "W"
+            }
+         ], 
+         "action" : "SharedCommands.SaveScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Keybindings.FindCommand"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }, 
+            { 
+               "key" : "B"
+            }, 
+            { 
+               "key" : "D"
+            }
+         ], 
+         "action" : "SharedCommands.CloseAllPanels"
+      }
+   ]
+}

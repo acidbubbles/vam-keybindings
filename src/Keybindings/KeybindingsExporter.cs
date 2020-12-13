@@ -1,4 +1,6 @@
-﻿using MVR.FileManagementSecure;
+﻿using System.Collections.Generic;
+using MVR.FileManagement;
+using MVR.FileManagementSecure;
 using SimpleJSON;
 
 public class KeybindingsExporter
@@ -24,7 +26,7 @@ public class KeybindingsExporter
                 },
                 _saveExt,
                 _saveFolder,
-                false,
+                true,
                 true,
                 false,
                 null,
@@ -50,7 +52,7 @@ public class KeybindingsExporter
     {
             FileManagerSecure.CreateDirectory(_saveFolder);
             var fileBrowserUI = SuperController.singleton.fileBrowserUI;
-            fileBrowserUI.SetTitle("Save colliders preset");
+            fileBrowserUI.SetTitle("Save keybindings");
             fileBrowserUI.fileRemovePrefix = null;
             fileBrowserUI.hideExtension = false;
             fileBrowserUI.keepOpen = false;
@@ -59,6 +61,14 @@ public class KeybindingsExporter
             fileBrowserUI.showDirs = true;
             fileBrowserUI.shortCuts = null;
             fileBrowserUI.browseVarFilesAsDirectories = false;
+            var shortCuts = new List<ShortCut>
+            {
+                new ShortCut {path = @"Saves\keybindings", displayName = "Custom keybindings"},
+            };
+            const string devKeybindingsPath = @"Custom\Scripts\Dev\vam-vimvam\keybindings";
+            if (FileManagerSecure.DirectoryExists(devKeybindingsPath))
+                shortCuts.Add(new ShortCut {path = devKeybindingsPath, displayName = "Built-in keybindings"});
+            fileBrowserUI.shortCuts = shortCuts;
             fileBrowserUI.SetTextEntry(true);
             fileBrowserUI.Show(path => {
                 fileBrowserUI.fileFormat = null;

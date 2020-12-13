@@ -94,6 +94,9 @@
     <Compile Include="src\Keybindings\Keybindings.cs" />
     <Compile Include="src\Keybindings\UI\KeybindingsScreen.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="keybindings" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

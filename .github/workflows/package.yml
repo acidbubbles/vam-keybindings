@@ -20,6 +20,8 @@ jobs:
       run: |
         mkdir -p publish/Custom/Scripts/AcidBubbles/VimVam
         cp *.cs publish/Custom/Scripts/AcidBubbles/VimVam/
+        mkdir -p publish/Saves/keybindings
+        cp *.keybindings publish/Saves/keybindings/
         cp meta.json publish/
         sed -i 's/v0.0.0/${{ steps.get_version.outputs.VERSION }}/' publish/meta.json
         cd publish
