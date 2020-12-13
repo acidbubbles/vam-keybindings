@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SharedCommands : MVRScript, ICommandsProvider
 {
     private readonly List<JSONStorableAction> _commands = new List<JSONStorableAction>();
     private SelectionHistoryManager _selectionManager;
+    // ReSharper disable once Unity.NoNullCoalescing
+    private ISelectionHistoryManager selectionManager => _selectionManager ?? (_selectionManager = transform.parent.GetComponentInChildren<SelectionHistoryManager>() ?? gameObject.AddComponent<SelectionHistoryManager>());
 
     public override void Init()
     {
@@ -101,9 +104,11 @@ public class SharedCommands : MVRScript, ICommandsProvider
         // Selection
         CreateAction("DeselectAtom", () => SuperController.singleton.SelectController(null));
         CreateAction("SelectPreviousAtom", SelectPrevious);
-        // TODO: LastSelected, SelectionHistoryBack and Forward
+        // TODO: LastSelected, oSelectionHistoryBack and Forward
 
         // TODO: Special: Reload a specific plugin and re-open the tab?
+        // Dev
+        CreateAction("ReloadKeybindingsPlugin", () => Reload());
 
         // TODO: Add atom types (AddAtomPerson, AddAtomCube, etc.)
 
@@ -132,8 +137,38 @@ public class SharedCommands : MVRScript, ICommandsProvider
         }
     }
 
-    // ReSharper disable once Unity.NoNullCoalescing
-    private ISelectionHistoryManager selectionManager => _selectionManager ?? (_selectionManager = transform.parent.GetComponentInChildren<SelectionHistoryManager>() ?? gameObject.AddComponent<SelectionHistoryManager>());
+    private void Reload()
+    {
+        var pluginsList = SuperController.singleton.mainHUD
+            .Find("MainUICanvas")
+            .Find("Panel")
+            .Find("Content")
+            .Find("TabSessionPlugins")
+            .Find("Scroll View")
+            .Find("Viewport")
+            .Find("Content");
+        for (var i = 0; i < pluginsList.childCount; i++)
+        {
+            var pluginPanel = pluginsList.GetChild(i);
+            var pluginPanelContent = pluginPanel.Find("Content");
+            for (var j = 0; j < pluginPanelContent.childCount; j++)
+            {
+                var scriptPanel = pluginPanelContent.GetChild(j);
+                var uid = scriptPanel
+                    .Find("UID")
+                    .GetComponent<Text>()
+                    .text;
+                if (uid == storeId)
+                {
+                    var reloadButton = pluginPanel.Find("ReloadButton")
+                        .GetComponent<Button>();
+                    reloadButton.onClick.Invoke();
+                    return;
+                }
+            }
+        }
+        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
+    }
 
     private static void CloseAllPanels()
     {
