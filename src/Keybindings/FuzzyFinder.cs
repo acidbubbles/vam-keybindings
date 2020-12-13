@@ -49,6 +49,8 @@ public class FuzzyFinder
             }
         }
 
+        _matches.Sort((x, y) => x.Length.CompareTo(y.Length));
+
         return _matches.Count > 0;
     }
 

@@ -29,6 +29,10 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("ClearMessageLog", SuperController.singleton.ClearMessages);
         CreateAction("ClearErrorLog", SuperController.singleton.ClearErrors);
 
+        // Mode
+        CreateAction("ChangeGameModePlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
+        CreateAction("ChangeGameModeEditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
+
         // Main menu
         CreateAction("SaveScene", SuperController.singleton.SaveSceneDialog);
         CreateAction("LoadScene", SuperController.singleton.LoadSceneDialog);
@@ -42,13 +46,38 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("CloseAllPanels", CloseAllPanels);
 
         // Selected Tabs
-        // TODO: Add all known tabs
-        // TODO: OpenAtomMenu
-        CreateAction("OpenControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
-        CreateAction("OpenPluginsTab", () => OpenTab(_ => "Plugins"));
-        CreateAction("OpenClothingTab", () => OpenTab(_ => "Clothing", "Person"));
-        CreateAction("OpenHairTab", () => OpenTab(_ => "Hair", "Person"));
-        // TODO: Automatically focus on the search fields for clothing tab
+        // Common
+        CreateAction("OpenAtomMenu", () => SuperController.singleton.SetActiveUI("SelectedOptions"));
+        CreateAction("OpenAtomControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
+        CreateAction("OpenAtomPresetTab", () => OpenTab(_ => "Preset"));
+        CreateAction("OpenAtomMoveTab", () => OpenTab(_ => "Move"));
+        CreateAction("OpenAtomAnimationTab", () => OpenTab(_ => "Animation"));
+        CreateAction("OpenAtomPhysicsControlTab", () => OpenTab(_ => "Physics Control"));
+        CreateAction("OpenAtomPhysicsObjectTab", () => OpenTab(_ => "Physics Object"));
+        CreateAction("OpenAtomCollisionTriggerTab", () => OpenTab(_ => "Collision Trigger"));
+        CreateAction("OpenAtomMaterialTab", () => OpenTab(_ => "Material"));
+        CreateAction("OpenAtomPluginsTab", () => OpenTab(_ => "Plugins"));
+        // Animation Pattern
+        CreateAction("OpenAnimationPatternAtomAnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
+        CreateAction("OpenAnimationPatternAtomAnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
+        // Custom Unity Asset
+        CreateAction("OpenCustomUnityAssetAtomAssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
+        // Audio Source
+        CreateAction("OpenAudioSourceAtomAudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
+        // Person
+        CreateAction("OpenPersonAtomClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("OpenPersonAtomClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("OpenPersonAtomHairTab", () => OpenTab(_ => "Hair", "Person"));
+        CreateAction("OpenPersonAtomAppearancePresets", () => OpenTab(_ => "Appearance Presets", "Person"));
+        CreateAction("OpenPersonAtomGeneralPresets", () => OpenTab(_ => "General Presets", "Person"));
+        CreateAction("OpenPersonAtomPosePresets", () => OpenTab(_ => "Pose Presets", "Person"));
+        CreateAction("OpenPersonAtomSkinPresets", () => OpenTab(_ => "Skin Presets", "Person"));
+        CreateAction("OpenPersonAtomPluginsPresets", () => OpenTab(_ => "Plugins Presets", "Person"));
+        CreateAction("OpenPersonAtomMorphsPresets", () => OpenTab(_ => "Morphs Presets", "Person"));
+        CreateAction("OpenPersonAtomHairPresets", () => OpenTab(_ => "Hair Presets", "Person"));
+        CreateAction("OpenPersonAtomClothingPresets", () => OpenTab(_ => "Clothing Presets", "Person"));
+        CreateAction("OpenPersonAtomMaleMorphs", () => OpenTab(_ => "Male Morphs", "Person"));
+        CreateAction("OpenPersonAtomFemaleMorphs", () => OpenTab(_ => "Female Morphs", "Person"));
         // TODO: Add links to the plugins by #, e.g. OpenPluginsTabPlugin1CustomUI
 
         // Main Tabs
@@ -70,7 +99,8 @@ public class SharedCommands : MVRScript, ICommandsProvider
         // TODO: Next/Previous tab
 
         // Selection
-        CreateAction("Deselect", () => SuperController.singleton.SelectController(null));
+        CreateAction("DeselectAtom", () => SuperController.singleton.SelectController(null));
+        CreateAction("SelectPreviousAtom", SelectPrevious);
         // TODO: LastSelected, SelectionHistoryBack and Forward
 
         // TODO: Special: Reload a specific plugin and re-open the tab?
@@ -83,6 +113,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     public void OnDestroy()
     {
+        if(_selectionManager != null && _selectionManager.gameObject == gameObject) Destroy(_selectionManager);
         SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
@@ -100,6 +131,9 @@ public class SharedCommands : MVRScript, ICommandsProvider
             bindings.Add(action);
         }
     }
+
+    // ReSharper disable once Unity.NoNullCoalescing
+    private ISelectionHistoryManager selectionManager => _selectionManager ?? (_selectionManager = transform.parent.GetComponentInChildren<SelectionHistoryManager>() ?? gameObject.AddComponent<SelectionHistoryManager>());
 
     private static void CloseAllPanels()
     {
@@ -133,9 +167,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private void OpenTab(Func<string, string> getTabName, string type = null)
     {
-        // TODO: Access it directly if possible
-        if(_selectionManager == null) _selectionManager = transform.parent.GetComponentInChildren<SelectionHistoryManager>();
-        var selectedAtom = _selectionManager != null ? _selectionManager.GetLastSelectedAtomOfType(type) : GetAtomOfType(type);
+        var selectedAtom = _selectionManager.GetLastSelectedAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return;
 
         var tabName = getTabName(selectedAtom.type);
@@ -166,5 +198,15 @@ public class SharedCommands : MVRScript, ICommandsProvider
             selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == type);
 
         return selectedAtom;
+    }
+
+    private void SelectPrevious()
+    {
+        var selectedController = SuperController.singleton.GetSelectedController();
+        var mainController = SuperController.singleton.GetSelectedAtom()?.mainController;
+        if (selectedController != mainController)
+            SuperController.singleton.SelectController(mainController);
+        else if (selectionManager.history.Count > 1)
+            SuperController.singleton.SelectController(selectionManager.history[selectionManager.history.Count - 2].mainController);
     }
 }

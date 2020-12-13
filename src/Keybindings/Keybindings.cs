@@ -246,6 +246,12 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     private void HandleControlMode()
     {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            LeaveCommandMode();
+            return;
+        }
+
         var query = _overlay.input.text;
 
         if (Input.GetKeyDown(KeyCode.Return))
@@ -254,12 +260,6 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
             LeaveCommandMode();
             if (selectedAction != null)
                 Invoke(selectedAction);
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            LeaveCommandMode();
             return;
         }
 

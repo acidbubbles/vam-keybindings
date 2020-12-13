@@ -10,8 +10,26 @@ public interface ISelectionHistoryManager
 
 public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager
 {
+    private int _lastValidCheck = Time.frameCount;
     private readonly List<Atom> _history = new List<Atom>();
-    public IList<Atom> history => _history;
+    public IList<Atom> history
+    {
+        get
+        {
+            if (_lastValidCheck == Time.frameCount)
+                return _history;
+
+            _lastValidCheck = Time.frameCount;
+            for (var i = 0; i < _history.Count; i++)
+            {
+                if (_history[i] != null) continue;
+                _history.RemoveAt(i);
+                i--;
+            }
+
+            return _history;
+        }
+    }
 
     public void Update()
     {
@@ -21,14 +39,9 @@ public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager
         {
             var current = _history[_history.Count - 1];
             if (current == atom) return;
-            _history.Remove(current);
+            _history.Remove(atom);
         }
         _history.Add(atom);
-    }
-
-    public Atom GetLastSelectedAtomSupportingNamespace(string ns)
-    {
-        throw new NotImplementedException("Find a storable with the desired types. We can rely on the remote actions manager to tell us if an atom has the desired storable");
     }
 
     public Atom GetLastSelectedAtomOfType(string type)
@@ -51,5 +64,4 @@ public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager
 
         return SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == type);
     }
-
 }
