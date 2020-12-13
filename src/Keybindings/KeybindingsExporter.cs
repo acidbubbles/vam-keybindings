@@ -7,23 +7,46 @@ public class KeybindingsExporter
     private const string _saveFolder = "Saves\\keybindings";
 
     private readonly MVRScript _plugin;
+    private readonly KeyMapManager _keyMapManager;
 
-    public KeybindingsExporter(MVRScript plugin)
+    public KeybindingsExporter(MVRScript plugin, KeyMapManager keyMapManager)
     {
         _plugin = plugin;
+        _keyMapManager = keyMapManager;
     }
 
-    public void Import()
+    public void OpenImportDialog(bool clear)
     {
             var shortcuts = FileManagerSecure.GetShortCutsForDirectory(_saveFolder);
-            SuperController.singleton.GetMediaPathDialog((string path) => {
-                if (string.IsNullOrEmpty(path)) return;
-                var jc = (JSONClass)_plugin.LoadJSON(path);
-                _plugin.RestoreFromJSON(jc);
-            }, _saveExt, _saveFolder, false, true, false, null, false, shortcuts);
+            SuperController.singleton.GetMediaPathDialog(path =>
+                {
+                    Import(clear, path);
+                },
+                _saveExt,
+                _saveFolder,
+                false,
+                true,
+                false,
+                null,
+                false,
+                shortcuts);
     }
 
-    public void Export()
+    private void Import(bool clear, string path)
+    {
+        if (string.IsNullOrEmpty(path)) return;
+        if (clear) _keyMapManager.Clear();
+        var jc = (JSONClass) _plugin.LoadJSON(path);
+        _keyMapManager.RestoreFromJSON(jc["keybindings"]);
+    }
+
+    public void ImportDefaults()
+    {
+        // TODO: Check if the defaults doesn't exist in the user's folder, if it fallbacks to the plugin's version
+        Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings");
+    }
+
+    public void OpenExportDialog()
     {
             FileManagerSecure.CreateDirectory(_saveFolder);
             var fileBrowserUI = SuperController.singleton.fileBrowserUI;
@@ -37,14 +60,27 @@ public class KeybindingsExporter
             fileBrowserUI.shortCuts = null;
             fileBrowserUI.browseVarFilesAsDirectories = false;
             fileBrowserUI.SetTextEntry(true);
-            fileBrowserUI.Show((string path) => {
+            fileBrowserUI.Show(path => {
                 fileBrowserUI.fileFormat = null;
-                if (string.IsNullOrEmpty(path)) return;
-                if (!path.ToLower().EndsWith($".{_saveExt}")) path += $".{_saveExt}";
-                var jc = _plugin.GetJSON();
-                jc.Remove("id");
-                _plugin.SaveJSON(jc, path);
+                Export(path);
             });
             fileBrowserUI.ActivateFileNameField();
+    }
+
+    public void Export(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return;
+        if (!path.ToLower().EndsWith($".{_saveExt}")) path += $".{_saveExt}";
+        var jc = new JSONClass
+        {
+            {"keybindings", _keyMapManager.GetJSON()}
+        };
+        _plugin.SaveJSON(jc, path);
+    }
+
+    public void ExportDefault()
+    {
+        FileManagerSecure.CreateDirectory(_saveFolder);
+        Export(SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings");
     }
 }

@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
+using UnityEngine.Events;
 
-public interface IKeyMapManager
+public interface IKeyMapManager : IDisposable
 {
+    UnityEvent onChanged { get; }
     List<KeyMap> maps { get; }
     void RebuildTree();
     KeyMap GetMapByName(string name);
@@ -11,6 +14,7 @@ public interface IKeyMapManager
 
 public class KeyMapManager : IKeyMapManager
 {
+    public UnityEvent onChanged { get; } = new UnityEvent();
     public List<KeyMap> maps { get; } = new List<KeyMap>();
     public KeyMapTreeNode root { get; } = new KeyMapTreeNode();
 
@@ -70,15 +74,25 @@ public class KeyMapManager : IKeyMapManager
 
     public void RestoreFromJSON(JSONNode mapsJSON)
     {
-        maps.Clear();
-        // TODO: Restore defaults and overwrite as needed
         foreach (JSONNode mapJSON in mapsJSON.AsArray)
         {
             var map = new KeyMap();
             map.RestoreFromJSON(mapJSON);
             maps.Add(map);
         }
-
         RebuildTree();
+        onChanged.Invoke();
+    }
+
+    public void Clear()
+    {
+        maps.Clear();
+        RebuildTree();
+        onChanged.Invoke();
+    }
+
+    public void Dispose()
+    {
+        onChanged.RemoveAllListeners();
     }
 }

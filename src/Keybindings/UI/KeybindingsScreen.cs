@@ -62,27 +62,51 @@ public class KeybindingsScreen : MonoBehaviour
         var group = toolbarGo.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 20;
 
-        var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import");
-        importBtn.button.onClick.AddListener(exporter.Import);
+        // TODO: Import (Overwrite), Import (Add), Export, Make Default
+        // TODO: Load defaults on load from saves, or self
+        // TODO: Use .json for keybindings
+        var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (overwrite)");
+        importBtn.button.onClick.AddListener(() => exporter.OpenImportDialog(true));
+
+        var addBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (add)");
+        addBtn.button.onClick.AddListener(() => exporter.OpenImportDialog(false));
 
         var exportBtn = prefabManager.CreateButton(toolbarGo.transform, "Export");
-        exportBtn.button.onClick.AddListener(exporter.Export);
+        exportBtn.button.onClick.AddListener(exporter.OpenExportDialog);
+
+        var makeDefaultBtn = prefabManager.CreateButton(toolbarGo.transform, "Make default");
+        makeDefaultBtn.button.onClick.AddListener(() => exporter.ExportDefault());
     }
 
     public void OnEnable()
     {
+        CreateRows();
+
+        // TODO: Shortcuts mapped to nothing?
+        // For example, if I don't have Timeline right now I still want to know what the keybindings are for it
+
+        keyMapManager.onChanged.AddListener(OnKeybindingsChanged);
+    }
+
+    private void CreateRows()
+    {
         foreach (var group in remoteCommandsManager.commands.GroupBy(c => c.ns))
         {
-            AddGroupRow(group.Key);
+            AddGroupRow(@group.Key);
 
-            foreach (var command in group)
+            foreach (var command in @group)
             {
                 AddEditRow(command);
             }
         }
+    }
 
-        // TODO: Shortcuts mapped to nothing?
-        // For example, if I don't have Timeline right now I still want to know what the keybindings are for it
+    public void OnDisable()
+    {
+        keyMapManager.onChanged.RemoveListener(OnKeybindingsChanged);
+
+        StopRecording();
+        ClearRows();
     }
 
     private void ClearRows()
@@ -90,6 +114,14 @@ public class KeybindingsScreen : MonoBehaviour
         foreach (var row in _rows)
             Destroy(row.container);
         _rows.Clear();
+    }
+
+    private void OnKeybindingsChanged()
+    {
+        // TODO: Instead we could try to just update existing bindings and create/remove rows but this is easier
+        StopRecording();
+        ClearRows();
+        CreateRows();
     }
 
     private void AddGroupRow(string groupName)
@@ -242,11 +274,5 @@ public class KeybindingsScreen : MonoBehaviour
         return mapped != null
             ? mapped.chords.GetKeyChordsAsString()
             : "-";
-    }
-
-    public void OnDisable()
-    {
-        ClearRows();
-        StopRecording();
     }
 }

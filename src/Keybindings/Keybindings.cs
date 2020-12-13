@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using SimpleJSON;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -18,7 +17,6 @@ public class Keybindings : MVRScript, IActionsInvoker
     private KeyMapTreeNode _current;
     private FuzzyFinder _fuzzyFinder;
     private bool _valid;
-    private bool _loaded;
     private bool _commandMode;
     private bool _ctrlDown;
     private bool _altDown;
@@ -38,21 +36,16 @@ public class Keybindings : MVRScript, IActionsInvoker
         _keyMapManager = new KeyMapManager();
         _remoteCommandsManager = new RemoteCommandsManager();
         _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
-        _exporter = new KeybindingsExporter(this);
+        _exporter = new KeybindingsExporter(this, _keyMapManager);
         _fuzzyFinder = new FuzzyFinder();
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
-        SuperController.singleton.StartCoroutine(DeferredInit());
+
+        AcquireAllAvailableBroadcastingPlugins();
+
+        _exporter.ImportDefaults();
 
         _valid = true;
-        AcquireAllAvailableBroadcastingPlugins();
-    }
-
-    private IEnumerator DeferredInit()
-    {
-        yield return new WaitForEndOfFrame();
-        if (this == null) yield break;
-        if (!_loaded) containingAtom.RestoreFromLast(this);
     }
 
     public override void InitUI()
@@ -86,6 +79,7 @@ public class Keybindings : MVRScript, IActionsInvoker
     {
         if (_overlay != null) Destroy(_overlay.gameObject);
         if (_selectionHistoryManager != null) Destroy(_selectionHistoryManager);
+        _keyMapManager?.Dispose();
     }
 
     public void Update()
@@ -279,47 +273,6 @@ public class Keybindings : MVRScript, IActionsInvoker
         SuperController.singleton.SetActiveUI("MainMenu");
         SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
         UITransform.gameObject.SetActive(true);
-    }
-
-    #endregion
-
-    #region Save
-
-    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
-    {
-        var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
-
-        if (!_valid) return json;
-
-        try
-        {
-            json["keybindings"] = _keyMapManager.GetJSON();
-            needsStore = true;
-        }
-        catch (Exception exc)
-        {
-            SuperController.LogError($"{nameof(Keybindings)}.{nameof(GetJSON)} (Serialize): {exc}");
-        }
-
-        return json;
-    }
-
-    public override void RestoreFromJSON(JSONClass jc, bool restorePhysical = true, bool restoreAppearance = true,
-        JSONArray presetAtoms = null, bool setMissingToDefault = true)
-    {
-        base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
-
-        if (!_valid) return;
-
-        try
-        {
-            _loaded = true;
-            _keyMapManager.RestoreFromJSON(jc["keybindings"]);
-        }
-        catch (Exception exc)
-        {
-            SuperController.LogError($"{nameof(Keybindings)}.{nameof(RestoreFromJSON)}: {exc}");
-        }
     }
 
     #endregion
