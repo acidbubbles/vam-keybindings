@@ -42,8 +42,8 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
-        _remoteCommandsManager = new RemoteCommandsManager();
         _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
+        _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
         _exporter = new KeybindingsExporter(this, _keyMapManager);
         _fuzzyFinder = new FuzzyFinder();
 

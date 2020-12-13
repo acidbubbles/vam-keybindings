@@ -6,10 +6,19 @@ using UnityEngine;
 
 public class RemoteCommandsManager
 {
+    private static readonly Regex _pluginNameRegex = new Regex("^plugin#[0-9]+_(.+)$", RegexOptions.Compiled);
+
+    private readonly SelectionHistoryManager _selectionHistoryManager;
+
     // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
     private readonly Dictionary<string, List<ICommandInvoker>> _commandsMap = new Dictionary<string, List<ICommandInvoker>>();
     public List<string> names { get; } = new List<string>();
     public IEnumerable<ICommandInvoker> commands => _commandsMap.Select(kvp => kvp.Value[0]);
+
+    public RemoteCommandsManager(SelectionHistoryManager selectionHistoryManager)
+    {
+        _selectionHistoryManager = selectionHistoryManager;
+    }
 
     public bool Invoke(string name)
     {
@@ -20,7 +29,7 @@ public class RemoteCommandsManager
         }
 
         // TODO: Use the SelectionHistoryManager to find the best match if there's more than one
-        var commandInvoker = commandInvokers[0];
+        var commandInvoker = SelectCommandInvoker(commandInvokers);
 
         // TODO: This can probably be merged with SelectionHistoryManager
         if (!ValidateReceiver(commandInvoker.storable))
@@ -36,6 +45,23 @@ public class RemoteCommandsManager
             SuperController.LogError($"Failed invoking {commandInvoker.commandName}: {exc}");
             return false;
         }
+    }
+
+    private ICommandInvoker SelectCommandInvoker(IList<ICommandInvoker> commandInvokers)
+    {
+        for (var i = _selectionHistoryManager.history.Count - 1; i >= 0; i--)
+        {
+            for (var invokerIndex = 0; invokerIndex < commandInvokers.Count; invokerIndex++)
+            {
+                var commandInvoker = commandInvokers[invokerIndex];
+                if (commandInvoker.storable.containingAtom == _selectionHistoryManager.history[i])
+                {
+                    return commandInvoker;
+                }
+            }
+        }
+
+        return commandInvokers[0];
     }
 
     public void TryRegister(JSONStorable storable)
@@ -89,8 +115,6 @@ public class RemoteCommandsManager
         // TODO: This line is weird
         names.Add(invoker.commandName);
     }
-
-    private static readonly Regex _pluginNameRegex = new Regex("^plugin#[0-9]+_(.+)$", RegexOptions.Compiled);
 
     private static string GetNamespace(string storableName)
     {

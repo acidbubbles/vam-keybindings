@@ -5,12 +5,13 @@ using UnityEngine;
 
 public interface ISelectionHistoryManager
 {
-    Atom GetLastSelectedAtomSupportingNamespace(string ns);
+    IList<Atom> history { get; }
 }
 
 public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager
 {
     private readonly List<Atom> _history = new List<Atom>();
+    public IList<Atom> history => _history;
 
     public void Update()
     {
