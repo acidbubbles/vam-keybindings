@@ -19,9 +19,10 @@ jobs:
       id: zip
       run: |
         mkdir -p publish/Custom/Scripts/AcidBubbles/Keybindings
-        cp *.cs publish/Custom/Scripts/AcidBubbles/Keybindings/
+        cp -r src publish/Custom/Scripts/AcidBubbles/Keybindings/
+        cp *.cslist publish/Custom/Scripts/AcidBubbles/Keybindings/
         mkdir -p publish/Saves/keybindings
-        cp *.keybindings publish/Saves/keybindings/
+        cp keybindings/*.keybindings publish/Saves/keybindings/
         cp meta.json publish/
         sed -i 's/v0.0.0/${{ steps.get_version.outputs.VERSION }}/' publish/meta.json
         cd publish
