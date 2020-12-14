@@ -29,12 +29,12 @@ public class SharedCommands : MVRScript, ICommandsProvider
         ));
 
         // Logging
-        CreateAction("ClearMessageLog", SuperController.singleton.ClearMessages);
-        CreateAction("ClearErrorLog", SuperController.singleton.ClearErrors);
+        CreateAction("Clear_MessageLog", SuperController.singleton.ClearMessages);
+        CreateAction("Clear_ErrorLog", SuperController.singleton.ClearErrors);
 
         // Mode
-        CreateAction("ChangeGameModePlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
-        CreateAction("ChangeGameModeEditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
+        CreateAction("Change_GameMode_PlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
+        CreateAction("Change_GameMode_EditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
 
         // Main menu
         CreateAction("SaveScene", SuperController.singleton.SaveSceneDialog);
@@ -42,81 +42,102 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
         CreateAction("Exit", SuperController.singleton.Quit);
         CreateAction("ScreenshotMode", SuperController.singleton.SelectModeScreenshot);
-        CreateAction("OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
-        CreateAction("MainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
-        CreateAction("ToggleErrorLog", ToggleErrorLog);
-        CreateAction("ToggleMessageLog", ToggleMessageLog);
-        CreateAction("CloseAllPanels", CloseAllPanels);
+        CreateAction("Open_OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
+        CreateAction("Open_MainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
+        CreateAction("Toggle_ErrorLog", ToggleErrorLog);
+        CreateAction("Toggle_MessageLog", ToggleMessageLog);
+        CreateAction("Close_AllPanels", CloseAllPanels);
 
         // Selected Tabs
         // Common
-        CreateAction("OpenAtomMenu", () => SuperController.singleton.SetActiveUI("SelectedOptions"));
-        CreateAction("OpenAtomControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
-        CreateAction("OpenAtomPresetTab", () => OpenTab(_ => "Preset"));
-        CreateAction("OpenAtomMoveTab", () => OpenTab(_ => "Move"));
-        CreateAction("OpenAtomAnimationTab", () => OpenTab(_ => "Animation"));
-        CreateAction("OpenAtomPhysicsControlTab", () => OpenTab(_ => "Physics Control"));
-        CreateAction("OpenAtomPhysicsObjectTab", () => OpenTab(_ => "Physics Object"));
-        CreateAction("OpenAtomCollisionTriggerTab", () => OpenTab(_ => "Collision Trigger"));
-        CreateAction("OpenAtomMaterialTab", () => OpenTab(_ => "Material"));
-        CreateAction("OpenAtomPluginsTab", () => OpenTab(_ => "Plugins"));
+        CreateAction("Open_Atom_Menu", () => SuperController.singleton.SetActiveUI("SelectedOptions"));
+        CreateAction("Open_Atom_ControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
+        CreateAction("Open_Atom_PresetTab", () => OpenTab(_ => "Preset"));
+        CreateAction("Open_Atom_MoveTab", () => OpenTab(_ => "Move"));
+        CreateAction("Open_Atom_AnimationTab", () => OpenTab(_ => "Animation"));
+        CreateAction("Open_Atom_PhysicsControlTab", () => OpenTab(_ => "Physics Control"));
+        CreateAction("Open_Atom_PhysicsObjectTab", () => OpenTab(_ => "Physics Object"));
+        CreateAction("Open_Atom_CollisionTriggerTab", () => OpenTab(_ => "Collision Trigger"));
+        CreateAction("Open_Atom_MaterialTab", () => OpenTab(_ => "Material"));
+        CreateAction("Open_Atom_PluginsTab", () => OpenTab(_ => "Plugins"));
+        CreateAction("Open_Atom_PluginsTab_Plugin#0", () => OpenPlugin(0));
         // Animation Pattern
-        CreateAction("OpenAnimationPatternAtomAnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
-        CreateAction("OpenAnimationPatternAtomAnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
+        CreateAction("Open_AnimationPatternAtom_AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
+        CreateAction("Open_AnimationPatternAtom_AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
         // Custom Unity Asset
-        CreateAction("OpenCustomUnityAssetAtomAssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
+        CreateAction("Open_CustomUnityAssetAtom_AssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
         // Audio Source
-        CreateAction("OpenAudioSourceAtomAudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
+        CreateAction("Open_AudioSourceAtom_AudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
         // Person
-        CreateAction("OpenPersonAtomClothingTab", () => OpenTab(_ => "Clothing", "Person"));
-        CreateAction("OpenPersonAtomClothingTab", () => OpenTab(_ => "Clothing", "Person"));
-        CreateAction("OpenPersonAtomHairTab", () => OpenTab(_ => "Hair", "Person"));
-        CreateAction("OpenPersonAtomAppearancePresets", () => OpenTab(_ => "Appearance Presets", "Person"));
-        CreateAction("OpenPersonAtomGeneralPresets", () => OpenTab(_ => "General Presets", "Person"));
-        CreateAction("OpenPersonAtomPosePresets", () => OpenTab(_ => "Pose Presets", "Person"));
-        CreateAction("OpenPersonAtomSkinPresets", () => OpenTab(_ => "Skin Presets", "Person"));
-        CreateAction("OpenPersonAtomPluginsPresets", () => OpenTab(_ => "Plugins Presets", "Person"));
-        CreateAction("OpenPersonAtomMorphsPresets", () => OpenTab(_ => "Morphs Presets", "Person"));
-        CreateAction("OpenPersonAtomHairPresets", () => OpenTab(_ => "Hair Presets", "Person"));
-        CreateAction("OpenPersonAtomClothingPresets", () => OpenTab(_ => "Clothing Presets", "Person"));
-        CreateAction("OpenPersonAtomMaleMorphs", () => OpenTab(_ => "Male Morphs", "Person"));
-        CreateAction("OpenPersonAtomFemaleMorphs", () => OpenTab(_ => "Female Morphs", "Person"));
-        // TODO: Add links to the plugins by #, e.g. OpenPluginsTabPlugin1CustomUI
+        CreateAction("Open_PersonAtom_ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("Open_PersonAtom_ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("Open_PersonAtom_HairTab", () => OpenTab(_ => "Hair", "Person"));
+        CreateAction("Open_PersonAtom_AppearancePresets", () => OpenTab(_ => "Appearance Presets", "Person"));
+        CreateAction("Open_PersonAtom_GeneralPresets", () => OpenTab(_ => "General Presets", "Person"));
+        CreateAction("Open_PersonAtom_PosePresets", () => OpenTab(_ => "Pose Presets", "Person"));
+        CreateAction("Open_PersonAtom_SkinPresets", () => OpenTab(_ => "Skin Presets", "Person"));
+        CreateAction("Open_PersonAtom_PluginsPresets", () => OpenTab(_ => "Plugins Presets", "Person"));
+        CreateAction("Open_PersonAtom_MorphsPresets", () => OpenTab(_ => "Morphs Presets", "Person"));
+        CreateAction("Open_PersonAtom_HairPresets", () => OpenTab(_ => "Hair Presets", "Person"));
+        CreateAction("Open_PersonAtom_ClothingPresets", () => OpenTab(_ => "Clothing Presets", "Person"));
+        CreateAction("Open_PersonAtom_MaleMorphs", () => OpenTab(_ => "Male Morphs", "Person"));
+        CreateAction("Open_PersonAtom_FemaleMorphs", () => OpenTab(_ => "Female Morphs", "Person"));
 
         // Main Tabs
-        CreateAction("OpenMainMenu", () => OpenMainTab(null));
-        CreateAction("OpenMainMenuFileTab", () => OpenMainTab("TabFile"));
-        CreateAction("OpenMainMenuUserPrefsTab", () => OpenMainTab("TabUserPrefs"));
-        CreateAction("OpenMainMenuNavigationTab", () => OpenMainTab("TabNavigation"));
-        CreateAction("OpenMainMenuSelectTab", () => OpenMainTab("TabSelect"));
-        CreateAction("OpenMainMenuSessionPluginPresetsTab", () => OpenMainTab("TabSessionPluginPresets"));
-        CreateAction("OpenMainMenuSessionPluginsTab", () => OpenMainTab("TabSessionPlugins"));
-        CreateAction("OpenMainMenuScenePluginsTab", () => OpenMainTab("TabScenePlugins"));
-        CreateAction("OpenMainMenuScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
-        CreateAction("OpenMainMenuSceneLightingTab", () => OpenMainTab("TabSceneLighting"));
-        CreateAction("OpenMainMenuSceneMiscTab", () => OpenMainTab("TabSceneMisc"));
-        CreateAction("OpenMainMenuSceneAnimationTab", () => OpenMainTab("TabSceneAnimation"));
-        CreateAction("OpenMainMenuAddAtomTab", () => OpenMainTab("TabAddAtom"));
-        CreateAction("OpenMainMenuAudioTab", () => OpenMainTab("TabAudio"));
+        CreateAction("Open_MainMenu", () => OpenMainTab(null));
+        CreateAction("Open_MainMenu_FileTab", () => OpenMainTab("TabFile"));
+        CreateAction("Open_MainMenu_UserPrefsTab", () => OpenMainTab("TabUserPrefs"));
+        CreateAction("Open_MainMenu_NavigationTab", () => OpenMainTab("TabNavigation"));
+        CreateAction("Open_MainMenu_SelectTab", () => OpenMainTab("TabSelect"));
+        CreateAction("Open_MainMenu_SessionPluginPresetsTab", () => OpenMainTab("TabSessionPluginPresets"));
+        CreateAction("Open_MainMenu_SessionPluginsTab", () => OpenMainTab("TabSessionPlugins"));
+        CreateAction("Open_MainMenu_ScenePluginsTab", () => OpenMainTab("TabScenePlugins"));
+        CreateAction("Open_MainMenu_ScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
+        CreateAction("Open_MainMenu_SceneLightingTab", () => OpenMainTab("TabSceneLighting"));
+        CreateAction("Open_MainMenu_SceneMiscTab", () => OpenMainTab("TabSceneMisc"));
+        CreateAction("Open_MainMenu_SceneAnimationTab", () => OpenMainTab("TabSceneAnimation"));
+        CreateAction("Open_MainMenu_AddAtomTab", () => OpenMainTab("TabAddAtom"));
+        CreateAction("Open_MainMenu_AudioTab", () => OpenMainTab("TabAudio"));
         // CreateAction("OpenMainMenuDebugTab", () => OpenMainTab("TabDebug"));
         // TODO: Next/Previous tab
 
         // Selection
-        CreateAction("DeselectAtom", () => SuperController.singleton.SelectController(null));
-        CreateAction("SelectPreviousAtom", SelectPrevious);
-        // TODO: LastSelected, oSelectionHistoryBack and Forward
+        CreateAction("Deselect_Atom", () => SuperController.singleton.SelectController(null));
+        CreateAction("Select_HistoryBack", SelectHistoryBack);
+        CreateAction("Select_PreviousAtom", () => SelectPreviousAtom());
+        CreateAction("Select_NextAtom", () => SelectNextAtom());
+        CreateAction("Select_PreviousPersonAtom", () => SelectPreviousAtom("Person"));
+        CreateAction("Select_NextPersonAtom", () => SelectNextAtom("Person"));
 
-        // TODO: Special: Reload a specific plugin and re-open the tab?
         // Dev
-        CreateAction("ReloadKeybindingsPlugin", ReloadKeybindingsPlugin);
-        CreateAction("ReloadAllScenePlugins", ReloadAllScenePlugins);
+        CreateAction("Reload_KeybindingsPlugin", ReloadKeybindingsPlugin);
+        CreateAction("Reload_AllScenePlugins", ReloadAllScenePlugins);
 
-        // TODO: Add atom types (AddAtomPerson, AddAtomCube, etc.)
+        // Add atom
+        CreateAction("AddAtom_AnimationPattern", () => SuperController.singleton.AddAtomByType("AnimationPattern", true, true, true));
+        CreateAction("AddAtom_FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
+        CreateAction("AddAtom_FloorsAndWalls_AtomWall", () => SuperController.singleton.AddAtomByType("Wall", true, true, true));
+        CreateAction("AddAtom_FloorsAndWalls_AtomWoodPanel", () => SuperController.singleton.AddAtomByType("WoodPanel", true, true, true));
+        CreateAction("AddAtom_Light_InvisibleLight", () => SuperController.singleton.AddAtomByType("InvisibleLight", true, true, true));
+        CreateAction("AddAtom_Misc_Empty", () => SuperController.singleton.AddAtomByType("Empty", true, true, true));
+        CreateAction("AddAtom_Misc_CustomUnityAsset", () => SuperController.singleton.AddAtomByType("CustomUnityAsset", true, true, true));
+        CreateAction("AddAtom_People_Person", () => SuperController.singleton.AddAtomByType("Person", true, true, true));
+        CreateAction("AddAtom_Reflective_Glass", () => SuperController.singleton.AddAtomByType("Glass", true, true, true));
+        CreateAction("AddAtom_Reflective_ReflectiveSlate", () => SuperController.singleton.AddAtomByType("ReflectiveSlate", true, true, true));
+        CreateAction("AddAtom_Reflective_ReflectiveWoodPanel", () => SuperController.singleton.AddAtomByType("ReflectiveWoodPanel", true, true, true));
+        CreateAction("AddAtom_Shapes_Cube", () => SuperController.singleton.AddAtomByType("Cube", true, true, true));
+        CreateAction("AddAtom_Shapes_Sphere", () => SuperController.singleton.AddAtomByType("Sphere", true, true, true));
+        CreateAction("AddAtom_Shapes_Capsule", () => SuperController.singleton.AddAtomByType("Capsule", true, true, true));
+        CreateAction("AddAtom_Sound_AudioSource", () => SuperController.singleton.AddAtomByType("AudioSource", true, true, true));
+        CreateAction("AddAtom_Triggers_CollisionTrigger", () => SuperController.singleton.AddAtomByType("CollisionTrigger", true, true, true));
+        CreateAction("AddAtom_Triggers_LookAtTrigger", () => SuperController.singleton.AddAtomByType("LookAtTrigger", true, true, true));
+        CreateAction("AddAtom_Triggers_UIButton", () => SuperController.singleton.AddAtomByType("UIButton", true, true, true));
+        CreateAction("AddAtom_Triggers_UISlider", () => SuperController.singleton.AddAtomByType("UISlider", true, true, true));
+        CreateAction("AddAtom_Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
+        CreateAction("AddAtom_Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
         // Broadcast
         SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
-
-        ReloadAllScenePlugins();
     }
 
     public void OnDestroy()
@@ -235,42 +256,44 @@ public class SharedCommands : MVRScript, ICommandsProvider
             SuperController.singleton.SetMainMenuTab(tabName);
     }
 
-    private void OpenTab(Func<string, string> getTabName, string type = null)
+    private Atom OpenTab(Func<string, string> getTabName, string type = null)
     {
-        var selectedAtom = _selectionManager.GetLastSelectedAtomOfType(type);
-        if (ReferenceEquals(selectedAtom, null)) return;
+        SuperController.LogError("1");
+        var selectedAtom = selectionManager.GetLastSelectedAtomOfType(type);
+        if (ReferenceEquals(selectedAtom, null)) return null;
 
+        SuperController.LogError("2");
         var tabName = getTabName(selectedAtom.type);
-        if (tabName == null) return;
+        if (tabName == null) return null;
 
+        SuperController.LogError("3");
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
-        if (selector == null) return;
+        if (selector == null) return null;
 
+        SuperController.LogError("4");
         SuperController.singleton.SelectController(selectedAtom.mainController);
         SuperController.singleton.SetActiveUI("SelectedOptions");
         /*
         foreach (Transform t in selector.toggleContainer)
             SuperController.LogMessage(t.name);
         */
-        selector.SetActiveTab(getTabName(selectedAtom.type));
-    }
-
-    private static Atom GetAtomOfType(string type)
-    {
-        var selectedAtom = SuperController.singleton.GetSelectedAtom();
-        // TODO: Remember last selected atom
-        if (selectedAtom != null && (type == null || selectedAtom.type == type))
-            return null;
-
-        if (type == null)
-            selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == "Person") ?? SuperController.singleton.GetAtoms().FirstOrDefault();
-        else
-            selectedAtom = SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == type);
-
+        SuperController.LogError("5");
+        selector.SetActiveTab(tabName);
         return selectedAtom;
     }
 
-    private void SelectPrevious()
+    private void OpenPlugin(int i)
+    {
+        var atom = OpenTab(_ => "Plugins");
+        if (atom == null) return;
+        var uid = atom.GetStorableIDs().FirstOrDefault(s => s.StartsWith($"plugin#{i}_"));
+        if (uid == null) return;
+        var plugin = atom.GetStorableByID(uid) as MVRScript;
+        if (plugin == null) return;
+        plugin.UITransform.gameObject.SetActive(true);
+    }
+
+    private void SelectHistoryBack()
     {
         var selectedController = SuperController.singleton.GetSelectedController();
         var mainController = SuperController.singleton.GetSelectedAtom()?.mainController;
@@ -278,5 +301,41 @@ public class SharedCommands : MVRScript, ICommandsProvider
             SuperController.singleton.SelectController(mainController);
         else if (selectionManager.history.Count > 1)
             SuperController.singleton.SelectController(selectionManager.history[selectionManager.history.Count - 2].mainController);
+    }
+
+    private static void SelectPreviousAtom(string type = null)
+    {
+        var atoms = SuperController.singleton.GetAtoms().Where(a => type == null || a.type == type).ToList();
+        if (atoms.Count == 0) return;
+        var index = atoms.IndexOf(SuperController.singleton.GetSelectedAtom());
+        if (index == -1)
+        {
+            SuperController.singleton.SelectController(atoms[atoms.Count - 1].mainController);
+            return;
+        }
+        if (index == 0)
+        {
+            SuperController.singleton.SelectController(atoms[atoms.Count - 1].mainController);
+            return;
+        }
+        SuperController.singleton.SelectController(atoms[index - 1].mainController);
+    }
+
+    private void SelectNextAtom(string type = null)
+    {
+        var atoms = SuperController.singleton.GetAtoms().Where(a => type == null || a.type == type).ToList();
+        if (atoms.Count == 0) return;
+        var index = atoms.IndexOf(SuperController.singleton.GetSelectedAtom());
+        if (index == -1)
+        {
+            SuperController.singleton.SelectController(atoms[0].mainController);
+            return;
+        }
+        if (index == atoms.Count - 1)
+        {
+            SuperController.singleton.SelectController(atoms[0].mainController);
+            return;
+        }
+        SuperController.singleton.SelectController(atoms[index + 1].mainController);
     }
 }

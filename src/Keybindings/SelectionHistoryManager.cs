@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public interface ISelectionHistoryManager
 {
     IList<Atom> history { get; }
+    Atom GetLastSelectedAtomOfType(string type);
 }
 
 public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager

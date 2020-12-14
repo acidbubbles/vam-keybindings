@@ -49,6 +49,7 @@ public class FuzzyFinder
             }
         }
 
+        // TODO: Score based on how close the matched characters were from the string start. "cl" should match "Close_All" before "Open_ScenePlugins"
         _matches.Sort((x, y) => x.Length.CompareTo(y.Length));
 
         return _matches.Count > 0;
