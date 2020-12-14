@@ -3,11 +3,17 @@ using System.Text;
 
 public class FuzzyFinder
 {
-    public string current => _matches.Count > 0 ? _matches[tabIndex] : null;
+    private struct FuzzyMatch
+    {
+        public string value;
+        public int score;
+    }
+
+    public string current => _matches.Count > 0 ? _matches[tabIndex].value : null;
 
     private List<string> _valuesReference;
     private readonly StringBuilder _colorizedStringBuilder = new StringBuilder();
-    private readonly List<string> _matches = new List<string>();
+    private readonly List<FuzzyMatch> _matches = new List<FuzzyMatch>();
     private string _lastQuery;
     public int tabIndex { get; set; }
     public int matches => _matches.Count;
@@ -34,23 +40,27 @@ public class FuzzyFinder
         {
             var value = _valuesReference[i];
             if (value.Length < query.Length) continue;
+            var score = -value.Length * 2; // The shorter the better
             var queryIndex = 0;
             for (var valueIndex = 0; valueIndex < value.Length; valueIndex++)
             {
                 var queryChar = query[queryIndex];
                 var valueChar = value[valueIndex];
                 var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(valueChar) : queryChar == valueChar;
-                if (!isMatch) continue;
+                if (!isMatch)
+                {
+                    score--; // Clumped matches are better
+                    continue;
+                }
 
                 queryIndex++;
                 if (queryIndex <= query.Length - 1) continue;
-                _matches.Add(value);
+                _matches.Add(new FuzzyMatch{ value = value, score = score});
                 break;
             }
         }
 
-        // TODO: Score based on how close the matched characters were from the string start. "cl" should match "Close_All" before "Open_ScenePlugins"
-        _matches.Sort((x, y) => x.Length.CompareTo(y.Length));
+        _matches.Sort((x, y) => y.score.CompareTo(x.score));
 
         return _matches.Count > 0;
     }

@@ -53,6 +53,8 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
         _exporter.ImportDefaults();
 
+        // TODO: Map multiple bindings to the same action?
+
         _valid = true;
     }
 
