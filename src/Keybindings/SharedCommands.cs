@@ -171,7 +171,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
             .Find("Scroll View")
             .Find("Viewport")
             .Find("Content");
-        if (ReloadPlugins(pluginsList)) return;
+        if (ReloadPlugins(pluginsList, storeId)) return;
         SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
     }
 
@@ -200,7 +200,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         }
     }
 
-    private static bool ReloadPlugins(Transform pluginsList)
+    private static bool ReloadPlugins(Transform pluginsList, string uidFilter = null)
     {
         var reloadButtons = new List<Button>();
         for (var i = 0; i < pluginsList.childCount; i++)
@@ -214,7 +214,8 @@ public class SharedCommands : MVRScript, ICommandsProvider
                     .Find("UID")
                     .GetComponent<Text>()
                     .text;
-               reloadButtons.Add(pluginPanel.Find("ReloadButton").GetComponent<Button>());
+                if (uidFilter == null || uidFilter == uid)
+                    reloadButtons.Add(pluginPanel.Find("ReloadButton").GetComponent<Button>());
             }
         }
 
