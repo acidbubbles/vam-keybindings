@@ -68,6 +68,13 @@ public class YourPlugin : MVRScript
 }
 ```
 
+## Credits
+
+- [LFE](https://github.com/lfe999) who made the original Keyboard Shortcuts plugin and provided his insight
+- [Hazmox](https://hub.virtamate.com/members/hazmhox.351/) who made overlays work in his VAMOverlays plugin
+- [MacGruber](https://www.patreon.com/MacGruber_Laboratory/) who's always a great source of inspiration and a pioneer
+- All of my [patrons](https://www.patreon.com/acidbubbles) and vammers who give meaning to what I do!",
+
 ## License
 
 [MIT](LICENSE.md)
