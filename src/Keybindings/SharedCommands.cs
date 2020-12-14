@@ -108,12 +108,15 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
         // TODO: Special: Reload a specific plugin and re-open the tab?
         // Dev
-        CreateAction("ReloadKeybindingsPlugin", () => Reload());
+        CreateAction("ReloadKeybindingsPlugin", ReloadKeybindingsPlugin);
+        CreateAction("ReloadAllScenePlugins", ReloadAllScenePlugins);
 
         // TODO: Add atom types (AddAtomPerson, AddAtomCube, etc.)
 
         // Broadcast
         SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
+
+        ReloadAllScenePlugins();
     }
 
     public void OnDestroy()
@@ -137,7 +140,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         }
     }
 
-    private void Reload()
+    private void ReloadKeybindingsPlugin()
     {
         var pluginsList = SuperController.singleton.mainHUD
             .Find("MainUICanvas")
@@ -147,6 +150,38 @@ public class SharedCommands : MVRScript, ICommandsProvider
             .Find("Scroll View")
             .Find("Viewport")
             .Find("Content");
+        if (ReloadPlugins(pluginsList)) return;
+        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
+    }
+
+    private void ReloadAllScenePlugins()
+    {
+        foreach (var atom in SuperController.singleton.GetAtoms().Where(a => !ReferenceEquals(a, containingAtom)))
+        {
+            if (atom.UITransform == null) continue;
+            var pluginsList = atom.UITransform
+                .GetChild(0)
+                .Find("Canvas")
+                .Find("Panel")
+                .Find("Content")
+                .Find("Plugins")
+                .Find("Scroll View")
+                .Find("Viewport")
+                .Find("Content");
+            if (ReloadPlugins(pluginsList)) return;
+            foreach (var script in atom
+                .GetStorableIDs()
+                .Select(id => atom.GetStorableByID(id))
+                .OfType<MVRScript>())
+            {
+                atom.RestoreFromLast(script);
+            }
+        }
+    }
+
+    private static bool ReloadPlugins(Transform pluginsList)
+    {
+        var reloadButtons = new List<Button>();
         for (var i = 0; i < pluginsList.childCount; i++)
         {
             var pluginPanel = pluginsList.GetChild(i);
@@ -158,16 +193,16 @@ public class SharedCommands : MVRScript, ICommandsProvider
                     .Find("UID")
                     .GetComponent<Text>()
                     .text;
-                if (uid == storeId)
-                {
-                    var reloadButton = pluginPanel.Find("ReloadButton")
-                        .GetComponent<Button>();
-                    reloadButton.onClick.Invoke();
-                    return;
-                }
+               reloadButtons.Add(pluginPanel.Find("ReloadButton").GetComponent<Button>());
             }
         }
-        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
+
+        foreach (var reloadButton in reloadButtons)
+        {
+            reloadButton.onClick.Invoke();
+        }
+
+        return reloadButtons.Count > 0;
     }
 
     private static void CloseAllPanels()
