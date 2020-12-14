@@ -4,7 +4,7 @@
    "packageName" : "Keybindings",
    "includeVersionsInReferences" : "true", 
    "description" : "v0.0.0 Advanced keybindings, commands fuzzy search and other productivity features",
-   "credits" : "Hazmox who made overlays work, MacGruber who's always a great source of inspiration and all of my patrons and vammers who give meaning to what I do!",
+   "credits" : "LFE who made the original Keyboard Shortcuts plugin and provided his insight, Hazmox who made overlays work in his VAMOverlays plugin, MacGruber who's always a great source of inspiration and all of my patrons and vammers who give meaning to what I do!",
    "instructions" : "Add Keybindings.cslist in your session plugins. Use FindCommand to use the fuzzy search feature which will let you easily navigate vam without additional shortcuts. Add CustomCommands.cslist on an atom to create custom trigger shortcuts.",
    "promotionalLink" : "https://github.com/AcidBubbles/vam-keybindings",
    "programVersion" : "1.20.0.10", 
