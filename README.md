@@ -13,13 +13,13 @@
 `Keybindings.cslist` is the main plugin, and should be installed as a session plugin. This is what controls the keyboard shortcuts and provides the "shared commands", e.g. adding atoms and opening panels.
 
 1. Add `Keybindings.cslist` in your Session Plugins. You can automatically load it by going to Session Plugin Presets and selecting "Change User Defaults".
-2. Open the `Keybindings` custom UI. By default, nothing will be bound. You can import some, or create your own. You should at least bind the `FindCommand` command. For example, let's bind it to `F12`. Note that the box will be red for one second. You can type multiple keys if you want to use a multi-key binding, and you can use `Ctrl`, `Shift` and `Alt` if you want.
-3. Now press `F12` (or the shortcut you have chosen). On the bottom left you should see a text field. Try typing `add`, and you'll see a command appear. Continue typing to filter out commands, `Tab` to cycle through the commands, or `Shift+Tab` to cycle back. Press `Enter` to execute the command, or `Esc` to cancel. This uses fuzzy searching, so you can type "oppclo" to find "Open_PersonAtom_ClothingTab" quickly.
+2. Open the `Keybindings` custom UI. By default, nothing will be bound. You can import some, or create your own. You should at least bind the `FindCommand` command. For example, let's bind it to <kbd>F12</kbd>. Note that the box will be red for one second. You can type multiple keys if you want to use a multi-key binding, and you can use <kbd>Ctrl</kbd>, <kbd>Shift</kbd> and <kbd>Alt</kbd> if you want.
+3. Now press <kbd>F12</kbd> (or the shortcut you have chosen). On the bottom left you should see a text field. Try typing `add`, and you'll see a command appear. Continue typing to filter out commands, <kbd>Tab</kbd> to cycle through the commands, or <kbd>Shift</kbd> + <kbd>Tab</kbd> to cycle back. Press <kbd>Enter</kbd> to execute the command, or <kbd>Esc</kbd> to cancel. This uses fuzzy searching, so you can type "oppclo" to find "Open_PersonAtom_ClothingTab" quickly.
 4. You can quickly open the keybindings at any time by finding the command `KeybindingsSettings`.
 
 ## How to use custom triggers
 
-`CustomCommands.cslist` can be used to create commands in your scene that you can bind. For example, you could bind "F5" to "Play_Animation", and if your scene contains an atom with this command, it will be executed. If more than one atom has this command, the current or the last atom containing this command will be executed.
+`CustomCommands.cslist` can be used to create commands in your scene that you can bind. For example, you could bind <kbd>F5</kbd> to "Play_Animation", and if your scene contains an atom with this command, it will be executed. If more than one atom has this command, the current or the last atom containing this command will be executed.
 
 1. Add `CustomCommands.cslist` to an atom in your scene.
 2. Open the `CustomCommands` custom UI. The list of commands will be empty.
@@ -27,17 +27,46 @@
 4. Press `Edit` on the command you have just created. It will open the Virt-A-Mate Trigger interface.
 5. Enter a name. This is the name that will be used to invoke your command. Let's call it `Log_HelloWorld`
 6. Choose a trigger. By default, the current atom will be automatically selected. You can also look at the `ParameterizedTriggers` storable receiver for additional functionality such as logging messages, quick-selecting this atom and reloading plugins.
-7. You can use the Find Commands feature (`F12` if you followed the previous tutorial) to invoke your new command. Type `hello` and you should see your command. You can also bind it now in the `Keybindings` custom UI.
+7. You can use the Find Commands feature (<kbd>F12</kbd> if you followed the previous tutorial) to invoke your new command. Type `hello` and you should see your command. You can also bind it now in the `Keybindings` custom UI.
 
 ## Gotchas
 
-This is still being developed! Here are some gotchas:
+This plugin is still being actively developed! Here are some gotchas:
 
 - A lot of keybindings are controlled by Virt-A-Mate. The next version will allow Keybindings to take control over those shortcuts too, thanks to [Meshed being very responsive](https://hub.virtamate.com/threads/1-20-1-6-ability-to-disable-or-override-built-in-shortcuts-quick-win.3841/#post-9675)!
 - If you bound a shortcut to a scene command, when that command is not available the binding will be "hidden" and cannot be edited.
 - Only actions can be invoked. Eventually floats and toggles could be implemented.
 - There is no search (yet) in the keybindings screen, so there might be some scrolling involved.
 - Not all useful commands have been implemented, let me know if some of your favorites might be missing! Naming is also subject to change.
+
+## Integrating your plugins
+
+You can publish your own commands to be used by Keybindings. It will use the [vam-plugins-interop-specs](https://github.com/vam-community/vam-plugins-interop-specs) specifications.
+
+In short, you simply need to call `OnActionsProviderAvailable` when your plugin is ready to receive shortcuts, and implement `OnBindingsListRequested` to add the `JSONStorableAction` you want to make available.
+
+```c#
+public class YourPlugin : MVRScript
+{
+    public void Init()
+    {
+        // Call this when ready to receive shortcuts or when shortcuts have changed
+        SuperController.singleton.BroadcastMessage("OnActionsProviderAvailable", this, SendMessageOptions.DontRequireReceiver);
+    }
+
+    public void OnDestroy()
+    {
+        // Call this when this plugin should not receive shortcuts anymore
+        SuperController.singleton.BroadcastMessage("OnActionsProviderDestroyed", this, SendMessageOptions.DontRequireReceiver);
+    }
+
+    // This method will be called by Keybindings when it is ready.
+    public void OnBindingsListRequested(List<object> bindings)
+    {
+        bindings.Add(new JSONStorableAction("SayHi", () => SuperController.LogMessage("Hi!")));
+    }
+}
+```
 
 ## License
 
