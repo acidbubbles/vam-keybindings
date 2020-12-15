@@ -1,6 +1,7 @@
 ﻿src/Shared/ICommandsInvoker.cs
 src/Shared/ICommandsProvider.cs
 src/Shared/PrefabManager.cs
+src/Shared/TransformExtensions.cs
 src/Keybindings/CommandInvokers/ActionCommandInvoker.cs
 src/Keybindings/CommandInvokers/CommandInvokerBase.cs
 src/Keybindings/CommandInvokers/ICommandInvoker.cs

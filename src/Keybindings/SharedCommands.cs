@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SharedCommands : MVRScript, ICommandsProvider
 {
@@ -110,7 +110,6 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Select_NextPersonAtom", () => SelectNextAtom("Person"));
 
         // Dev
-        CreateAction("Reload_KeybindingsPlugin", ReloadKeybindingsPlugin);
         CreateAction("Reload_AllScenePlugins", ReloadAllScenePlugins);
 
         // Add atom
@@ -161,35 +160,15 @@ public class SharedCommands : MVRScript, ICommandsProvider
         }
     }
 
-    private void ReloadKeybindingsPlugin()
-    {
-        var pluginsList = SuperController.singleton.mainHUD
-            .Find("MainUICanvas")
-            .Find("Panel")
-            .Find("Content")
-            .Find("TabSessionPlugins")
-            .Find("Scroll View")
-            .Find("Viewport")
-            .Find("Content");
-        if (ReloadPlugins(pluginsList, storeId)) return;
-        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
-    }
-
     private void ReloadAllScenePlugins()
     {
         foreach (var atom in SuperController.singleton.GetAtoms().Where(a => !ReferenceEquals(a, containingAtom)))
         {
             if (atom.UITransform == null) continue;
-            var pluginsList = atom.UITransform
+            if (atom.UITransform
                 .GetChild(0)
-                .Find("Canvas")
-                .Find("Panel")
-                .Find("Content")
-                .Find("Plugins")
-                .Find("Scroll View")
-                .Find("Viewport")
-                .Find("Content");
-            if (ReloadPlugins(pluginsList)) return;
+                .ReloadPlugins("Canvas", "Plugins", storeId))
+                continue;
             foreach (var script in atom
                 .GetStorableIDs()
                 .Select(id => atom.GetStorableByID(id))
@@ -198,33 +177,6 @@ public class SharedCommands : MVRScript, ICommandsProvider
                 atom.RestoreFromLast(script);
             }
         }
-    }
-
-    private static bool ReloadPlugins(Transform pluginsList, string uidFilter = null)
-    {
-        var reloadButtons = new List<Button>();
-        for (var i = 0; i < pluginsList.childCount; i++)
-        {
-            var pluginPanel = pluginsList.GetChild(i);
-            var pluginPanelContent = pluginPanel.Find("Content");
-            for (var j = 0; j < pluginPanelContent.childCount; j++)
-            {
-                var scriptPanel = pluginPanelContent.GetChild(j);
-                var uid = scriptPanel
-                    .Find("UID")
-                    .GetComponent<Text>()
-                    .text;
-                if (uidFilter == null || uidFilter == uid)
-                    reloadButtons.Add(pluginPanel.Find("ReloadButton").GetComponent<Button>());
-            }
-        }
-
-        foreach (var reloadButton in reloadButtons)
-        {
-            reloadButton.onClick.Invoke();
-        }
-
-        return reloadButtons.Count > 0;
     }
 
     private static void CloseAllPanels()

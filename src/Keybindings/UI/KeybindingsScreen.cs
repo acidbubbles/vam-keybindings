@@ -7,9 +7,7 @@ using UnityEngine.UI;
 public class KeybindingsScreen : MonoBehaviour
 {
     // TODO: Provide helpful labels (how could we do that?)
-    // TODO: Group by plugin/storable
     // TODO: Do we really need Invoke in there?
-    // TODO: Search (just hide the rows)
 
     private class CommandBindingRow
     {
@@ -53,17 +51,19 @@ public class KeybindingsScreen : MonoBehaviour
         optionsTitle.fontSize = 32;
         optionsTitle.alignment = TextAnchor.MiddleCenter;
 
-        var showKeypresses = prefabManager.CreateToggle(transform, "Show key presses");
+        var showKeypresses = prefabManager.CreateToggle(transform, "Show key presses as you type them (desktop)");
         showKeypresses.backgroundColor = Color.clear;
         settings.showKeyPressesJSON.toggle = showKeypresses.toggle;
 
-        var keybindingsTitle = prefabManager.CreateText(transform, "<b>Keybindings</b>");
-        keybindingsTitle.fontSize = 32;
-        keybindingsTitle.alignment = TextAnchor.MiddleCenter;
+        prefabManager.CreateSpacer(transform, 10f);
 
-        var keybindingsSubtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
-        keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
-        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
+        var importTitle = prefabManager.CreateText(transform, "<b>Import / Export</b>");
+        importTitle.fontSize = 32;
+        importTitle.alignment = TextAnchor.MiddleCenter;
+
+        var importSubtitle = prefabManager.CreateText(transform, "<i>Import an existing scheme, and use 'Make default' to save your current mappings.</i>");
+        importSubtitle.alignment = TextAnchor.UpperCenter;
+        importSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
 
         var toolbarGo = new GameObject();
         toolbarGo.transform.SetParent(transform, false);
@@ -85,6 +85,74 @@ public class KeybindingsScreen : MonoBehaviour
 
         var makeDefaultBtn = prefabManager.CreateButton(toolbarGo.transform, "Make default");
         makeDefaultBtn.button.onClick.AddListener(() => exporter.ExportDefault());
+
+        prefabManager.CreateSpacer(transform, 10f);
+
+        var keybindingsTitle = prefabManager.CreateText(transform, "<b>Keybindings</b>");
+        keybindingsTitle.fontSize = 32;
+        keybindingsTitle.alignment = TextAnchor.MiddleCenter;
+
+        var keybindingsSubtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
+        keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
+        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
+
+
+        {
+            var searchGo = new GameObject();
+            searchGo.transform.SetParent(transform, false);
+
+            var layout = searchGo.AddComponent<LayoutElement>();
+            layout.preferredHeight = 40f;
+
+            var searchBackground = searchGo.AddComponent<Image>();
+            searchBackground.raycastTarget = false;
+            searchBackground.color = Color.white;
+
+            var searchFieldGo = new GameObject();
+            searchFieldGo.transform.SetParent(searchGo.transform, false);
+
+            var searchFieldRect = searchFieldGo.AddComponent<RectTransform>();
+            searchFieldRect.anchorMin = new Vector2(0f, 0f);
+            searchFieldRect.anchorMax = new Vector2(1f, 1f);
+            searchFieldRect.sizeDelta = new Vector2(1f, 1f);
+
+            var text = searchFieldGo.AddComponent<Text>();
+            text.font = prefabManager.font;
+            text.color = Color.black;
+            text.fontSize = 30;
+            text.alignment = TextAnchor.MiddleLeft;
+
+            var placeholderGo = new GameObject();
+            placeholderGo.transform.SetParent(searchGo.transform, false);
+
+            var placeholderRect = placeholderGo.AddComponent<RectTransform>();
+            placeholderRect.anchorMin = new Vector2(0f, 0f);
+            placeholderRect.anchorMax = new Vector2(1f, 1f);
+            placeholderRect.sizeDelta = new Vector2(1f, 1f);
+
+            var placeholderText = placeholderGo.AddComponent<Text>();
+            placeholderText.raycastTarget = false;
+            placeholderText.font = prefabManager.font;
+            placeholderText.color = Color.gray;
+            placeholderText.fontStyle = FontStyle.Italic;
+            placeholderText.fontSize = 30;
+            placeholderText.alignment = TextAnchor.MiddleLeft;
+            placeholderText.text = "Search commands...";
+
+            var input = searchFieldGo.AddComponent<InputField>();
+            input.textComponent = text;
+            input.placeholder = placeholderText;
+            input.onValueChanged.AddListener(OnSearchValueChanged);
+        }
+    }
+
+    private void OnSearchValueChanged(string query)
+    {
+        foreach (var row in _rows)
+        {
+            if (row.commandName == null) continue;
+            row.container.SetActive(FuzzyFinder.Match(row.commandName, query));
+        }
     }
 
     public void OnEnable()

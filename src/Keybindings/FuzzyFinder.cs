@@ -65,6 +65,27 @@ public class FuzzyFinder
         return _matches.Count > 0;
     }
 
+    // TODO: Almost the same implementation as the method before
+    public static bool Match(string value, string query)
+    {
+        if (query.Length == 0) return true;
+        if (value.Length < query.Length) return false;
+        var queryIndex = 0;
+        for (var valueIndex = 0; valueIndex < value.Length; valueIndex++)
+        {
+            var queryChar = query[queryIndex];
+            var valueChar = value[valueIndex];
+            var isMatch = char.IsLower(queryChar) ? queryChar == char.ToLowerInvariant(valueChar) : queryChar == valueChar;
+            if (!isMatch)
+                continue;
+
+            queryIndex++;
+            if (queryIndex <= query.Length - 1) continue;
+            return true;
+        }
+        return false;
+    }
+
     public string ColorizeMatch(string commandName, string query)
     {
         var lengthWithColors = commandName.Length + query.Length * 20;

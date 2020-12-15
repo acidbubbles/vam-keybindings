@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -278,23 +279,13 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     #endregion
 
-    #region Settings
-
-    private void OpenSettings()
-    {
-        SuperController.singleton.SetActiveUI("MainMenu");
-        SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
-        UITransform.gameObject.SetActive(true);
-    }
-
-    #endregion
-
     #region Interop
 
     private void AcquireAllAvailableBroadcastingPlugins()
     {
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleCommandMode));
-        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "KeybindingsSettings", OpenSettings));
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "Settings", OpenSettings));
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "ReloadPlugin", ReloadPlugin));
 
         foreach (var storable in SuperController.singleton
             .GetAtoms()
@@ -324,6 +315,23 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     {
         if (!_valid) return;
         _remoteCommandsManager.Remove(storable);
+    }
+
+    #endregion
+
+    #region Built-in commands
+
+    private void OpenSettings()
+    {
+        SuperController.singleton.SetActiveUI("MainMenu");
+        SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
+        UITransform.gameObject.SetActive(true);
+    }
+
+    private void ReloadPlugin()
+    {
+        if(SuperController.singleton.mainHUD.ReloadPlugins("MainUICanvas", "TabSessionPlugins", storeId)) return;
+        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
     }
 
     #endregion

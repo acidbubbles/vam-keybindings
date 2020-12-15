@@ -14,6 +14,7 @@ public interface IPrefabManager
     RectTransform triggerActionDiscretePrefab { get; }
     RectTransform triggerActionTransitionPrefab { get; }
 
+    Transform CreateSpacer(Transform transform, float height);
     Text CreateText(Transform transform, string label);
     UIDynamicButton CreateButton(Transform transform, string label);
     UIDynamicToggle CreateToggle(Transform transform, string label);
@@ -39,6 +40,16 @@ public class PrefabManager : IPrefabManager
         foreach (var r in LoadUIAsset("TriggerActionTransitionPanel", x => triggerActionTransitionPrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("DynamicButton", x => buttonPrefab = x)) yield return r;
         foreach (var r in LoadUIAsset("DynamicToggle", x => togglePrefab = x)) yield return r;
+    }
+
+    public Transform CreateSpacer(Transform transform, float height)
+    {
+        var go = new GameObject();
+        go.transform.SetParent(transform, false);
+
+        go.AddComponent<LayoutElement>().minHeight = height;
+
+        return go.transform;
     }
 
     public Text CreateText(Transform transform, string label)
