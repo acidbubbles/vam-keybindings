@@ -278,7 +278,6 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
                 _fuzzyFinder.tabIndex = _fuzzyFinder.tabIndex == 0 ? _fuzzyFinder.matches - 1 : (_fuzzyFinder.tabIndex - 1);
             else
                 _fuzzyFinder.tabIndex = (_fuzzyFinder.tabIndex + 1) % _fuzzyFinder.matches;
-            return;
         }
 
         _overlay.Set(!_fuzzyFinder.FuzzyFind(query) ? "" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");

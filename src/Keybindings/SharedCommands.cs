@@ -260,14 +260,25 @@ public class SharedCommands : MVRScript, ICommandsProvider
         var selectedController = SuperController.singleton.GetSelectedController();
         var mainController = SuperController.singleton.GetSelectedAtom()?.mainController;
         if (selectedController != mainController)
+        {
             SuperController.singleton.SelectController(mainController);
-        else if (selectionManager.history.Count > 1)
+            return;
+        }
+        if (selectionManager.history.Count > 1)
+        {
             SuperController.singleton.SelectController(selectionManager.history[selectionManager.history.Count - 2].mainController);
+            selectionManager.history.RemoveAt(selectionManager.history.Count - 1);
+            return;
+        }
     }
 
     private static void SelectPreviousAtom(string type = null)
     {
-        var atoms = SuperController.singleton.GetAtoms().Where(a => type == null || a.type == type).ToList();
+        var atoms = SuperController.singleton
+            .GetAtoms()
+            .Where(a => type == null || a.type == type)
+            .Where(a => a.mainController != null)
+            .ToList();
         if (atoms.Count == 0) return;
         var index = atoms.IndexOf(SuperController.singleton.GetSelectedAtom());
         if (index == -1)
@@ -285,7 +296,11 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private void SelectNextAtom(string type = null)
     {
-        var atoms = SuperController.singleton.GetAtoms().Where(a => type == null || a.type == type).ToList();
+        var atoms = SuperController.singleton
+            .GetAtoms()
+            .Where(a => type == null || a.type == type)
+            .Where(a => a.mainController != null)
+            .ToList();
         if (atoms.Count == 0) return;
         var index = atoms.IndexOf(SuperController.singleton.GetSelectedAtom());
         if (index == -1)
