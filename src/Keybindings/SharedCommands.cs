@@ -47,6 +47,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Toggle_ErrorLog", ToggleErrorLog);
         CreateAction("Toggle_MessageLog", ToggleMessageLog);
         CreateAction("Close_AllPanels", CloseAllPanels);
+        CreateAction("Toggle_ShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
 
         // Selected Tabs
         // Common
@@ -117,9 +118,21 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("AddAtom_FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
         CreateAction("AddAtom_FloorsAndWalls_AtomWall", () => SuperController.singleton.AddAtomByType("Wall", true, true, true));
         CreateAction("AddAtom_FloorsAndWalls_AtomWoodPanel", () => SuperController.singleton.AddAtomByType("WoodPanel", true, true, true));
+        CreateAction("AddAtom_Force_CycleForce", () => SuperController.singleton.AddAtomByType("CycleForce", true, true, true));
+        CreateAction("AddAtom_Force_GrabPoint", () => SuperController.singleton.AddAtomByType("GrabPoint", true, true, true));
+        CreateAction("AddAtom_Force_RhythmForce", () => SuperController.singleton.AddAtomByType("RhythmForce", true, true, true));
+        CreateAction("AddAtom_Force_SyncForce", () => SuperController.singleton.AddAtomByType("SyncForce", true, true, true));
         CreateAction("AddAtom_Light_InvisibleLight", () => SuperController.singleton.AddAtomByType("InvisibleLight", true, true, true));
-        CreateAction("AddAtom_Misc_Empty", () => SuperController.singleton.AddAtomByType("Empty", true, true, true));
+        CreateAction("AddAtom_Misc_ClothGrabSphere", () => SuperController.singleton.AddAtomByType("ClothGrabSphere", true, true, true));
         CreateAction("AddAtom_Misc_CustomUnityAsset", () => SuperController.singleton.AddAtomByType("CustomUnityAsset", true, true, true));
+        CreateAction("AddAtom_Misc_Empty", () => SuperController.singleton.AddAtomByType("Empty", true, true, true));
+        CreateAction("AddAtom_Misc_ImagePanel", () => SuperController.singleton.AddAtomByType("ImagePanel", true, true, true));
+        CreateAction("AddAtom_Misc_SimpleSign", () => SuperController.singleton.AddAtomByType("SimpleSign", true, true, true));
+        CreateAction("AddAtom_Misc_SubScene", () => SuperController.singleton.AddAtomByType("SubScene", true, true, true));
+        CreateAction("AddAtom_Misc_UIText", () => SuperController.singleton.AddAtomByType("UIText", true, true, true));
+        CreateAction("AddAtom_Misc_VaMLogo", () => SuperController.singleton.AddAtomByType("VaMLogo", true, true, true));
+        CreateAction("AddAtom_Misc_WebBrowser", () => SuperController.singleton.AddAtomByType("WebBrowser", true, true, true));
+        CreateAction("AddAtom_Misc_WebPanel", () => SuperController.singleton.AddAtomByType("WebPanel", true, true, true));
         CreateAction("AddAtom_People_Person", () => SuperController.singleton.AddAtomByType("Person", true, true, true));
         CreateAction("AddAtom_Reflective_Glass", () => SuperController.singleton.AddAtomByType("Glass", true, true, true));
         CreateAction("AddAtom_Reflective_ReflectiveSlate", () => SuperController.singleton.AddAtomByType("ReflectiveSlate", true, true, true));
@@ -128,6 +141,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("AddAtom_Shapes_Sphere", () => SuperController.singleton.AddAtomByType("Sphere", true, true, true));
         CreateAction("AddAtom_Shapes_Capsule", () => SuperController.singleton.AddAtomByType("Capsule", true, true, true));
         CreateAction("AddAtom_Sound_AudioSource", () => SuperController.singleton.AddAtomByType("AudioSource", true, true, true));
+        CreateAction("AddAtom_Toys_Dildo", () => SuperController.singleton.AddAtomByType("Dildo", true, true, true));
         CreateAction("AddAtom_Triggers_CollisionTrigger", () => SuperController.singleton.AddAtomByType("CollisionTrigger", true, true, true));
         CreateAction("AddAtom_Triggers_LookAtTrigger", () => SuperController.singleton.AddAtomByType("LookAtTrigger", true, true, true));
         CreateAction("AddAtom_Triggers_UIButton", () => SuperController.singleton.AddAtomByType("UIButton", true, true, true));
@@ -211,26 +225,21 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private Atom OpenTab(Func<string, string> getTabName, string type = null)
     {
-        SuperController.LogError("1");
         var selectedAtom = selectionManager.GetLastSelectedAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return null;
 
-        SuperController.LogError("2");
         var tabName = getTabName(selectedAtom.type);
         if (tabName == null) return null;
 
-        SuperController.LogError("3");
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
         if (selector == null) return null;
 
-        SuperController.LogError("4");
         SuperController.singleton.SelectController(selectedAtom.mainController);
         SuperController.singleton.SetActiveUI("SelectedOptions");
         /*
         foreach (Transform t in selector.toggleContainer)
             SuperController.LogMessage(t.name);
         */
-        SuperController.LogError("5");
         selector.SetActiveTab(tabName);
         return selectedAtom;
     }

@@ -23,10 +23,11 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     private KeyMapTreeNode _current;
     private FuzzyFinder _fuzzyFinder;
     private bool _valid;
-    private bool _commandMode;
+    private bool _findCommandMode;
     private bool _ctrlDown;
     private bool _altDown;
     private bool _shiftDown;
+    private string _lastSelectedAction;
     public JSONStorableBool showKeyPressesJSON { get; private set; }
 
     public override void Init()
@@ -103,7 +104,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
             // Don't waste resources
             if (!Input.anyKeyDown) return;
 
-            if (_commandMode)
+            if (_findCommandMode)
             {
                 HandleControlMode();
                 return;
@@ -141,7 +142,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
             {
                 if (Input.GetKeyDown(KeyCode.Semicolon) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
                 {
-                    StartCommandMode();
+                    StartFindCommandMode();
                 }
 
                 return;
@@ -216,29 +217,30 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     #region Control mode
 
-    private void ToggleCommandMode()
+    private void ToggleFindCommandMode()
     {
-        if (_commandMode)
-            LeaveCommandMode();
+        if (_findCommandMode)
+            LeaveFindCommandMode();
         else
-            StartCommandMode();
+            StartFindCommandMode();
     }
 
-    private void StartCommandMode()
+    private void StartFindCommandMode()
     {
-        _commandMode = true;
+        _findCommandMode = true;
         _fuzzyFinder.Init(_remoteCommandsManager.names);
         _overlay.autoClear = float.PositiveInfinity;
         _overlay.Set(":");
         EventSystem.current.SetSelectedGameObject(_overlay.input.gameObject);
-        _overlay.input.text = "";
+        _overlay.input.text = _lastSelectedAction;
         _overlay.input.ActivateInputField();
         _overlay.input.Select();
+        if (_lastSelectedAction != null) _fuzzyFinder.FuzzyFind(_lastSelectedAction);
     }
 
-    private void LeaveCommandMode()
+    private void LeaveFindCommandMode()
     {
-        _commandMode = false;
+        _findCommandMode = false;
         _fuzzyFinder.Clear();
         _overlay.input.text = "";
         _overlay.input.DeactivateInputField();
@@ -251,27 +253,32 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Mouse0))
         {
-            LeaveCommandMode();
+            LeaveFindCommandMode();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            var selectedAction =  _fuzzyFinder.current;
+            LeaveFindCommandMode();
+            if (selectedAction != null)
+            {
+                Invoke(selectedAction);
+                _lastSelectedAction = selectedAction;
+            }
             return;
         }
 
         var query = _overlay.input.text;
 
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            var selectedAction = _fuzzyFinder.current;
-            LeaveCommandMode();
-            if (selectedAction != null)
-                Invoke(selectedAction);
-            return;
-        }
-
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            if (query.Length == 0) return;
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                 _fuzzyFinder.tabIndex = _fuzzyFinder.tabIndex == 0 ? _fuzzyFinder.matches - 1 : (_fuzzyFinder.tabIndex - 1);
             else
                 _fuzzyFinder.tabIndex = (_fuzzyFinder.tabIndex + 1) % _fuzzyFinder.matches;
+            return;
         }
 
         _overlay.Set(!_fuzzyFinder.FuzzyFind(query) ? "" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
@@ -283,7 +290,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     private void AcquireAllAvailableBroadcastingPlugins()
     {
-        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleCommandMode));
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleFindCommandMode));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "Settings", OpenSettings));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "ReloadPlugin", ReloadPlugin));
 

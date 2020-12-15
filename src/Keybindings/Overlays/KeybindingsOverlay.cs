@@ -75,6 +75,7 @@ public class KeybindingsOverlay : MonoBehaviour
                 var input = textInputGo.AddComponent<InputField>();
                 input.textComponent = text;
                 input.interactable = true;
+                input.selectionColor = new Color(0f, 0.3f, 0f, 0.1f);
                 overlay.input = input;
             }
 

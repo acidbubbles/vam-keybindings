@@ -148,8 +148,9 @@ public class KeybindingsScreen : MonoBehaviour
 
     private void OnSearchValueChanged(string query)
     {
-        foreach (var row in _rows)
+        for (var i = 0; i < _rows.Count; i++)
         {
+            var row = _rows[i];
             if (row.commandName == null) continue;
             row.container.SetActive(FuzzyFinder.Match(row.commandName, query));
         }
