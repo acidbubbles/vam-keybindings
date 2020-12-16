@@ -71,7 +71,7 @@ public class CustomCommands : MVRScript, ICommandsProvider
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"{nameof(CustomActions)}.{nameof(GetJSON)} (Serialize): {exc}");
+            SuperController.LogError($"Keybindings: {nameof(CustomActions)}.{nameof(GetJSON)}: {exc}");
         }
 
         return json;
@@ -91,7 +91,7 @@ public class CustomCommands : MVRScript, ICommandsProvider
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"{nameof(CustomActions)}.{nameof(RestoreFromJSON)}: {exc}");
+            SuperController.LogError($"Keybindings: {nameof(CustomActions)}.{nameof(RestoreFromJSON)}: {exc}");
         }
     }
 

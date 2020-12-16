@@ -85,7 +85,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
         _overlay = KeybindingsOverlay.CreateOverlayGameObject(_prefabManager);
         _overlay.autoClear = Settings.TimeoutLen;
-        _overlay.Append("VimVam Ready!");
+        // _overlay.Append("Keybindings ready!");
     }
 
     public void OnDestroy()
@@ -337,7 +337,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     private void ReloadPlugin()
     {
         if(SuperController.singleton.mainHUD.ReloadPlugins("MainUICanvas", "TabSessionPlugins", storeId)) return;
-        SuperController.LogError($"Shortcuts: Could not find plugin {storeId} in the session plugin panel.");
+        SuperController.LogError($"Keybindings: Could not find plugin {storeId} in the session plugin panel.");
     }
 
     #endregion

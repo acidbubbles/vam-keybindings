@@ -84,7 +84,7 @@ namespace CustomActions
                         action = new DiscreteTriggerCommand(_containingAtom, _prefabManager);
                         break;
                     default:
-                        SuperController.LogError($"Unknown command type {commandType}");
+                        SuperController.LogError($"Keybindings: Unknown command type {commandType}");
                         continue;
                 }
 

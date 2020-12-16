@@ -112,6 +112,6 @@ public class ParameterizedTriggers : MVRScript
             containingAtom.RestoreFromLast(script);
         }
         if (reloadButtons.Count == 0)
-            SuperController.LogError($"Shortcuts: Could not find any plugins containing {val} in atoms nor session plugins.");
+            SuperController.LogError($"Keybindings: Could not find any plugins containing {val} in atoms nor session plugins.");
     }
 }

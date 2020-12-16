@@ -15,7 +15,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
     {
         if (containingAtom.type != "SessionPluginManager")
         {
-            SuperController.LogError("Shared commands plugin can only be installed as a session plugin.");
+            SuperController.LogError("Keybindings: Shared commands plugin can only be installed as a session plugin.");
             CreateTextField(new JSONStorableString("Error", "Shared commands plugin can only be installed as a session plugin."));
             enabledJSON.val = false;
             return;
@@ -162,7 +162,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
     {
         var jsa = new JSONStorableAction(jsaName, fn);
-        RegisterAction(jsa)EADME
+        RegisterAction(jsa);
         _commands.Add(jsa);
     }
 

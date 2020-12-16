@@ -18,7 +18,7 @@ namespace DefaultNamespace
                 .Find("Content");
             if (pluginsList == null)
             {
-                SuperController.LogError($"Failed to find the plugins UI with panel {uiPanelCanvasName} and tab {tabName}");
+                SuperController.LogError($"Keybindings: Failed to find the plugins UI with panel {uiPanelCanvasName} and tab {tabName}");
                 return false;
             }
             return ReloadPlugins(pluginsList, uidFilter);

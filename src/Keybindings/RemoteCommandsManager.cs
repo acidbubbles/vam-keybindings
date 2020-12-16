@@ -43,7 +43,7 @@ public class RemoteCommandsManager
         }
         catch (Exception exc)
         {
-            SuperController.LogError($"Failed invoking {commandInvoker.commandName}: {exc}");
+            SuperController.LogError($"Keybindings: Failed invoking {commandInvoker.commandName}: {exc}");
             return false;
         }
     }

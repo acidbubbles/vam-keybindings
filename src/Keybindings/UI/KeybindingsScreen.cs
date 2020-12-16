@@ -337,7 +337,7 @@ public class KeybindingsScreen : MonoBehaviour
                 var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
                     conflictRow.bindingBtn.label = "-";
-                SuperController.LogError($"Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
+                SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
             keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.commandName));

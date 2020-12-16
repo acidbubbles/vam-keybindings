@@ -91,7 +91,7 @@ public class PrefabManager : IPrefabManager
         var request = AssetBundleManager.LoadAssetAsync("z_ui2", assetName, typeof(GameObject));
         if (request == null)
         {
-            SuperController.LogError($"Request for {assetName} in z_ui2 assetbundle failed");
+            SuperController.LogError($"Keybindings: Request for {assetName} in z_ui2 assetbundle failed");
             yield break;
         }
 
@@ -100,14 +100,14 @@ public class PrefabManager : IPrefabManager
         var go = request.GetAsset<GameObject>();
         if (go == null)
         {
-            SuperController.LogError("Failed to load asset's GameObject");
+            SuperController.LogError($"Keybindings: Failed to load asset {assetName} GameObject");
             yield break;
         }
 
         var rectTransform = go.GetComponent<RectTransform>();
         if (rectTransform == null)
         {
-            SuperController.LogError("Failed to get asset RectTransform");
+            SuperController.LogError($"Keybindings: Failed to get asset {assetName} RectTransform");
             yield break;
         }
 
