@@ -68,6 +68,20 @@ public class YourPlugin : MVRScript
 }
 ```
 
+You can also optionally provide additional settings to Keybindings by returning an `IEnumerable<string, string>` in the `OnBindingListRequested` method:
+
+```c#
+    public void OnBindingsListRequested(List<object> bindings)
+    {
+        bindings.Add(new Dictionary<string, string>
+        {
+            // This will determine the "prefix" for your commands, e.g. MySuperPlugin.SayHi
+            { "Namespace", "MySuperPlugin" }
+        });
+        bindings.Add(new JSONStorableAction("SayHi", () => SuperController.LogMessage("Hi!")));
+    }
+```
+
 ## Credits
 
 - [LFE](https://github.com/lfe999) who made the original Keyboard Shortcuts plugin and provided his insight

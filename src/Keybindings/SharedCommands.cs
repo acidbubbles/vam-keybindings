@@ -162,12 +162,13 @@ public class SharedCommands : MVRScript, ICommandsProvider
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
     {
         var jsa = new JSONStorableAction(jsaName, fn);
-        RegisterAction(jsa);
+        RegisterAction(jsa)EADME
         _commands.Add(jsa);
     }
 
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
+        bindings.Add(CommandSettings.Create("Global"));
         foreach (var action in _commands)
         {
             bindings.Add(action);

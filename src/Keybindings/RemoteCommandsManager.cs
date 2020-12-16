@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DefaultNamespace;
 using UnityEngine;
 
 public class RemoteCommandsManager
@@ -85,8 +86,30 @@ public class RemoteCommandsManager
 
         var commandNamespace = GetNamespace(storable.name);
 
+        var first = true;
         foreach (var binding in bindings)
         {
+            if (first)
+            {
+                first = false;
+                var settings = binding as IEnumerable<KeyValuePair<string, string>>;
+                if (settings != null)
+                {
+                    foreach (var setting in settings)
+                    {
+                        switch (setting.Key)
+                        {
+                            case CommandSettings.NamespaceKey:
+                                commandNamespace = setting.Value;
+                                break;
+                            default:
+                                continue;
+                        }
+                    }
+                    continue;
+                }
+            }
+
             var storableAction = binding as JSONStorableAction;
             if (storableAction != null)
             {

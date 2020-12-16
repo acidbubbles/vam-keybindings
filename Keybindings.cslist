@@ -1,4 +1,5 @@
-﻿src/Shared/ICommandsInvoker.cs
+﻿src/Shared/CommandSettings.cs
+src/Shared/ICommandsInvoker.cs
 src/Shared/ICommandsProvider.cs
 src/Shared/PrefabManager.cs
 src/Shared/TransformExtensions.cs
