@@ -273,7 +273,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (query.Length == 0) return;
+            if (query.Length == 0 || _fuzzyFinder.matches < 2) return;
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                 _fuzzyFinder.tabIndex = _fuzzyFinder.tabIndex == 0 ? _fuzzyFinder.matches - 1 : (_fuzzyFinder.tabIndex - 1);
             else
