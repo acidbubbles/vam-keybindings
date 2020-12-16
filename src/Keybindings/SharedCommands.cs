@@ -149,6 +149,16 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("AddAtom_Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
         CreateAction("AddAtom_Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
+        // Animation
+        CreateAction("SceneAnimation_StartPlayback", () => SuperController.singleton.StartPlayback());
+        CreateAction("SceneAnimation_StopPlayback", () => SuperController.singleton.StopPlayback());
+        CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.ResetAnimation());
+        CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.GetCurrentTimeCounter());
+        // TODO: Add more options
+
+        // TODO: Time scale
+        // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
+
         // Broadcast
         SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
