@@ -182,7 +182,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
             if (atom.UITransform == null) continue;
             if (atom.UITransform
                 .GetChild(0)
-                .ReloadPlugins("Canvas", "Plugins", storeId))
+                .ReloadPlugins("Canvas", "Plugins", null))
                 continue;
             foreach (var script in atom
                 .GetStorableIDs()
