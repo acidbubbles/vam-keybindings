@@ -110,36 +110,36 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Select_PreviousPersonAtom", () => SelectPreviousAtom("Person"));
         CreateAction("Select_NextPersonAtom", () => SelectNextAtom("Person"));
         CreateAction("Select_Controller_RootControl", () => SelectControllerByName("control"));
-        CreateAction("Select_Controller_hipControl", () => SelectControllerByName("hipControl"));
-        CreateAction("Select_Controller_pelvisControl", () => SelectControllerByName("pelvisControl"));
-        CreateAction("Select_Controller_chestControl", () => SelectControllerByName("chestControl"));
-        CreateAction("Select_Controller_headControl", () => SelectControllerByName("headControl"));
-        CreateAction("Select_Controller_rHandControl", () => SelectControllerByName("rHandControl"));
-        CreateAction("Select_Controller_lHandControl", () => SelectControllerByName("lHandControl"));
-        CreateAction("Select_Controller_rFootControl", () => SelectControllerByName("rFootControl"));
-        CreateAction("Select_Controller_lFootControl", () => SelectControllerByName("lFootControl"));
-        CreateAction("Select_Controller_neckControl", () => SelectControllerByName("neckControl"));
-        CreateAction("Select_Controller_eyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
-        CreateAction("Select_Controller_rNippleControl", () => SelectControllerByName("rNippleControl"));
-        CreateAction("Select_Controller_lNippleControl", () => SelectControllerByName("lNippleControl"));
-        CreateAction("Select_Controller_testesControl", () => SelectControllerByName("testesControl"));
-        CreateAction("Select_Controller_penisBaseControl", () => SelectControllerByName("penisBaseControl"));
-        CreateAction("Select_Controller_penisMidControl", () => SelectControllerByName("penisMidControl"));
-        CreateAction("Select_Controller_penisTipControl", () => SelectControllerByName("penisTipControl"));
-        CreateAction("Select_Controller_rElbowControl", () => SelectControllerByName("rElbowControl"));
-        CreateAction("Select_Controller_lElbowControl", () => SelectControllerByName("lElbowControl"));
-        CreateAction("Select_Controller_rKneeControl", () => SelectControllerByName("rKneeControl"));
-        CreateAction("Select_Controller_lKneeControl", () => SelectControllerByName("lKneeControl"));
-        CreateAction("Select_Controller_rToeControl", () => SelectControllerByName("rToeControl"));
-        CreateAction("Select_Controller_lToeControl", () => SelectControllerByName("lToeControl"));
-        CreateAction("Select_Controller_abdomenControl", () => SelectControllerByName("abdomenControl"));
-        CreateAction("Select_Controller_abdomen2Control", () => SelectControllerByName("abdomen2Control"));
-        CreateAction("Select_Controller_rThighControl", () => SelectControllerByName("rThighControl"));
-        CreateAction("Select_Controller_lThighControl", () => SelectControllerByName("lThighControl"));
-        CreateAction("Select_Controller_lArmControl", () => SelectControllerByName("lArmControl"));
-        CreateAction("Select_Controller_rArmControl", () => SelectControllerByName("rArmControl"));
-        CreateAction("Select_Controller_rShoulderControl", () => SelectControllerByName("rShoulderControl"));
-        CreateAction("Select_Controller_lShoulderControl", () => SelectControllerByName("lShoulderControl"));
+        CreateAction("Select_Controller_HipControl", () => SelectControllerByName("hipControl"));
+        CreateAction("Select_Controller_PelvisControl", () => SelectControllerByName("pelvisControl"));
+        CreateAction("Select_Controller_ChestControl", () => SelectControllerByName("chestControl"));
+        CreateAction("Select_Controller_HeadControl", () => SelectControllerByName("headControl"));
+        CreateAction("Select_Controller_RHandControl", () => SelectControllerByName("rHandControl"));
+        CreateAction("Select_Controller_LHandControl", () => SelectControllerByName("lHandControl"));
+        CreateAction("Select_Controller_RFootControl", () => SelectControllerByName("rFootControl"));
+        CreateAction("Select_Controller_LFootControl", () => SelectControllerByName("lFootControl"));
+        CreateAction("Select_Controller_NeckControl", () => SelectControllerByName("neckControl"));
+        CreateAction("Select_Controller_EyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
+        CreateAction("Select_Controller_RNippleControl", () => SelectControllerByName("rNippleControl"));
+        CreateAction("Select_Controller_LNippleControl", () => SelectControllerByName("lNippleControl"));
+        CreateAction("Select_Controller_TestesControl", () => SelectControllerByName("testesControl"));
+        CreateAction("Select_Controller_PenisBaseControl", () => SelectControllerByName("penisBaseControl"));
+        CreateAction("Select_Controller_PenisMidControl", () => SelectControllerByName("penisMidControl"));
+        CreateAction("Select_Controller_PenisTipControl", () => SelectControllerByName("penisTipControl"));
+        CreateAction("Select_Controller_RElbowControl", () => SelectControllerByName("rElbowControl"));
+        CreateAction("Select_Controller_LElbowControl", () => SelectControllerByName("lElbowControl"));
+        CreateAction("Select_Controller_RKneeControl", () => SelectControllerByName("rKneeControl"));
+        CreateAction("Select_Controller_LKneeControl", () => SelectControllerByName("lKneeControl"));
+        CreateAction("Select_Controller_RToeControl", () => SelectControllerByName("rToeControl"));
+        CreateAction("Select_Controller_LToeControl", () => SelectControllerByName("lToeControl"));
+        CreateAction("Select_Controller_AbdomenControl", () => SelectControllerByName("abdomenControl"));
+        CreateAction("Select_Controller_Abdomen2Control", () => SelectControllerByName("abdomen2Control"));
+        CreateAction("Select_Controller_RThighControl", () => SelectControllerByName("rThighControl"));
+        CreateAction("Select_Controller_LThighControl", () => SelectControllerByName("lThighControl"));
+        CreateAction("Select_Controller_LArmControl", () => SelectControllerByName("lArmControl"));
+        CreateAction("Select_Controller_RArmControl", () => SelectControllerByName("rArmControl"));
+        CreateAction("Select_Controller_RShoulderControl", () => SelectControllerByName("rShoulderControl"));
+        CreateAction("Select_Controller_LShoulderControl", () => SelectControllerByName("lShoulderControl"));
 
         // Dev
         CreateAction("Reload_AllScenePlugins", ReloadAllScenePlugins);
@@ -188,7 +188,12 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.GetCurrentTimeCounter());
         // TODO: Add more options
 
-        // TODO: Time scale
+        // Time
+        CreateAction("TimeScale_Set_Normal", () => TimeControl.singleton.currentScale = 1f);
+        CreateAction("TimeScale_Set_Half", () => TimeControl.singleton.currentScale = 0.5f);
+        CreateAction("TimeScale_Set_Quarter", () => TimeControl.singleton.currentScale = 0.25f);
+        CreateAction("TimeScale_Set_Minimum", () => TimeControl.singleton.currentScale = 0.1f);
+        CreateAction("Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // Broadcast

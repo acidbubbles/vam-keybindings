@@ -65,7 +65,6 @@ public class KeyMapManager : IKeyMapManager
         var mapsJSON = new JSONArray();
         foreach (var map in maps)
         {
-            // TODO: Do not save "default" mappings, and deal with session-level v.s. scene-level
             mapsJSON.Add(map.GetJSON());
         }
         return mapsJSON;

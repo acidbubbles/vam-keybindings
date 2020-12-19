@@ -71,9 +71,6 @@ public class KeybindingsScreen : MonoBehaviour
         var group = toolbarGo.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 20;
 
-        // TODO: Import (Overwrite), Import (Add), Export, Make Default
-        // TODO: Load defaults on load from saves, or self
-        // TODO: Use .json for keybindings
         var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (overwrite)");
         importBtn.button.onClick.AddListener(() => exporter.OpenImportDialog(true));
 
@@ -159,9 +156,6 @@ public class KeybindingsScreen : MonoBehaviour
     public void OnEnable()
     {
         CreateRows();
-
-        // TODO: Shortcuts mapped to nothing?
-        // For example, if I don't have Timeline right now I still want to know what the keybindings are for it
 
         keyMapManager.onChanged.AddListener(OnKeybindingsChanged);
     }
@@ -307,7 +301,6 @@ public class KeybindingsScreen : MonoBehaviour
     private IEnumerator SetKeybinding()
     {
         isRecording = true;
-        // TODO: Multi-key shortcuts might confuse people. Make it optional?
         var expire = float.MaxValue;
         while (Time.unscaledTime < expire)
         {
