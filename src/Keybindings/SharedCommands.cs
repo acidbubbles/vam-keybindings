@@ -109,6 +109,37 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Select_NextAtom", () => SelectNextAtom());
         CreateAction("Select_PreviousPersonAtom", () => SelectPreviousAtom("Person"));
         CreateAction("Select_NextPersonAtom", () => SelectNextAtom("Person"));
+        CreateAction("Select_Controller_RootControl", () => SelectControllerByName("control"));
+        CreateAction("Select_Controller_hipControl", () => SelectControllerByName("hipControl"));
+        CreateAction("Select_Controller_pelvisControl", () => SelectControllerByName("pelvisControl"));
+        CreateAction("Select_Controller_chestControl", () => SelectControllerByName("chestControl"));
+        CreateAction("Select_Controller_headControl", () => SelectControllerByName("headControl"));
+        CreateAction("Select_Controller_rHandControl", () => SelectControllerByName("rHandControl"));
+        CreateAction("Select_Controller_lHandControl", () => SelectControllerByName("lHandControl"));
+        CreateAction("Select_Controller_rFootControl", () => SelectControllerByName("rFootControl"));
+        CreateAction("Select_Controller_lFootControl", () => SelectControllerByName("lFootControl"));
+        CreateAction("Select_Controller_neckControl", () => SelectControllerByName("neckControl"));
+        CreateAction("Select_Controller_eyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
+        CreateAction("Select_Controller_rNippleControl", () => SelectControllerByName("rNippleControl"));
+        CreateAction("Select_Controller_lNippleControl", () => SelectControllerByName("lNippleControl"));
+        CreateAction("Select_Controller_testesControl", () => SelectControllerByName("testesControl"));
+        CreateAction("Select_Controller_penisBaseControl", () => SelectControllerByName("penisBaseControl"));
+        CreateAction("Select_Controller_penisMidControl", () => SelectControllerByName("penisMidControl"));
+        CreateAction("Select_Controller_penisTipControl", () => SelectControllerByName("penisTipControl"));
+        CreateAction("Select_Controller_rElbowControl", () => SelectControllerByName("rElbowControl"));
+        CreateAction("Select_Controller_lElbowControl", () => SelectControllerByName("lElbowControl"));
+        CreateAction("Select_Controller_rKneeControl", () => SelectControllerByName("rKneeControl"));
+        CreateAction("Select_Controller_lKneeControl", () => SelectControllerByName("lKneeControl"));
+        CreateAction("Select_Controller_rToeControl", () => SelectControllerByName("rToeControl"));
+        CreateAction("Select_Controller_lToeControl", () => SelectControllerByName("lToeControl"));
+        CreateAction("Select_Controller_abdomenControl", () => SelectControllerByName("abdomenControl"));
+        CreateAction("Select_Controller_abdomen2Control", () => SelectControllerByName("abdomen2Control"));
+        CreateAction("Select_Controller_rThighControl", () => SelectControllerByName("rThighControl"));
+        CreateAction("Select_Controller_lThighControl", () => SelectControllerByName("lThighControl"));
+        CreateAction("Select_Controller_lArmControl", () => SelectControllerByName("lArmControl"));
+        CreateAction("Select_Controller_rArmControl", () => SelectControllerByName("rArmControl"));
+        CreateAction("Select_Controller_rShoulderControl", () => SelectControllerByName("rShoulderControl"));
+        CreateAction("Select_Controller_lShoulderControl", () => SelectControllerByName("lShoulderControl"));
 
         // Dev
         CreateAction("Reload_AllScenePlugins", ReloadAllScenePlugins);
@@ -327,5 +358,30 @@ public class SharedCommands : MVRScript, ICommandsProvider
             return;
         }
         SuperController.singleton.SelectController(atoms[index + 1].mainController);
+    }
+
+    private void SelectControllerByName(string controllerName)
+    {
+        for (var i = selectionManager.history.Count - 1; i >= 0; i--)
+        {
+            var atom = selectionManager.history[i];
+
+            var controller = atom.freeControllers.FirstOrDefault(fc => fc.name == controllerName);
+            if (controller != null)
+            {
+                SuperController.singleton.SelectController(controller);
+                return;
+            }
+        }
+
+        foreach(var atom in SuperController.singleton.GetAtoms())
+        {
+            var controller = atom.freeControllers.FirstOrDefault(fc => fc.name == controllerName);
+            if (controller != null)
+            {
+                SuperController.singleton.SelectController(controller);
+                return;
+            }
+        }
     }
 }
