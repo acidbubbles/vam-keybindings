@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 public class KeybindingsScreen : MonoBehaviour
 {
-    // TODO: Provide helpful labels (how could we do that?)
-    // TODO: Do we really need Invoke in there?
+    private const string _notBoundButtonLabel = "";
 
     private class CommandBindingRow
     {
@@ -281,12 +280,14 @@ public class KeybindingsScreen : MonoBehaviour
         editLayout.preferredWidth = 80f;
 
         var clearBtn = prefabManager.CreateButton(go.transform, "X");
+        clearBtn.buttonColor = Color.red;
+        clearBtn.textColor = Color.white;
         clearBtn.button.onClick.AddListener(() =>
         {
             var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
             if (mapped != null)
                 keyMapManager.maps.Remove(mapped);
-            bindingBtn.label = "-";
+            bindingBtn.label = _notBoundButtonLabel;
         });
         var clearLayout = clearBtn.GetComponent<LayoutElement>();
         clearLayout.minWidth = 40f;
@@ -352,7 +353,7 @@ public class KeybindingsScreen : MonoBehaviour
                 keyMapManager.maps.Remove(conflictMap);
                 var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
-                    conflictRow.bindingBtn.label = "-";
+                    conflictRow.bindingBtn.label = _notBoundButtonLabel;
                 SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
             }
             // TODO: Detect when a key binding already exists and will be overwritten
@@ -367,6 +368,6 @@ public class KeybindingsScreen : MonoBehaviour
         var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
         return mapped != null
             ? mapped.chords.GetKeyChordsAsString()
-            : "-";
+            : _notBoundButtonLabel;
     }
 }
