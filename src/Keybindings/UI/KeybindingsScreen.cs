@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -168,13 +169,27 @@ public class KeybindingsScreen : MonoBehaviour
 
     private void CreateRows()
     {
+        var unloadedCommands = keyMapManager.maps.Select(m => m.commandName).ToList();
         foreach (var group in remoteCommandsManager.commands.GroupBy(c => c.ns))
         {
             AddGroupRow(@group.Key);
 
             foreach (var command in @group)
             {
-                AddEditRow(command);
+                AddEditRow(command, true);
+                unloadedCommands.Remove(command.commandName);
+            }
+        }
+
+        if (unloadedCommands.Count == 0) return;
+        foreach (var group in unloadedCommands.Select(c => new DisabledCommandInvoker(c)).GroupBy(c => c.ns))
+        {
+            AddGroupRow($"[unloaded] {@group.Key}");
+
+            foreach (var command in @group)
+            {
+                AddEditRow(command, false);
+                unloadedCommands.Remove(command.commandName);
             }
         }
     }
@@ -225,7 +240,7 @@ public class KeybindingsScreen : MonoBehaviour
         text.alignment = TextAnchor.MiddleLeft;
     }
 
-    private void AddEditRow(ICommandInvoker commandInvoker)
+    private void AddEditRow(ICommandInvoker commandInvoker, bool invokable)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
@@ -258,11 +273,12 @@ public class KeybindingsScreen : MonoBehaviour
         bindingLayout.minWidth = 400f;
         bindingLayout.preferredWidth = 400f;
 
-        var editBtn = prefabManager.CreateButton(go.transform, "Invoke");
+        var editBtn = prefabManager.CreateButton(go.transform, "Try");
         editBtn.button.onClick.AddListener(commandInvoker.Invoke);
+        editBtn.button.interactable = invokable;
         var editLayout = editBtn.GetComponent<LayoutElement>();
-        editLayout.minWidth = 160f;
-        editLayout.preferredWidth = 160f;
+        editLayout.minWidth = 80f;
+        editLayout.preferredWidth = 80f;
 
         var clearBtn = prefabManager.CreateButton(go.transform, "X");
         clearBtn.button.onClick.AddListener(() =>

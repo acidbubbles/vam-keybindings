@@ -5,6 +5,7 @@ src/Shared/PrefabManager.cs
 src/Shared/TransformExtensions.cs
 src/Keybindings/CommandInvokers/ActionCommandInvoker.cs
 src/Keybindings/CommandInvokers/CommandInvokerBase.cs
+src/Keybindings/CommandInvokers/DisabledCommandInvoker.cs
 src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs

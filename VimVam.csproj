@@ -73,6 +73,7 @@
     <Compile Include="src\CustomCommands\UI\CustomCommandsScreen.cs" />
     <Compile Include="src\Keybindings\CommandInvokers\ActionCommandInvoker.cs" />
     <Compile Include="src\Keybindings\CommandInvokers\CommandInvokerBase.cs" />
+    <Compile Include="src\Keybindings\CommandInvokers\DisabledCommandInvoker.cs" />
     <Compile Include="src\Keybindings\KeybindingsExporter.cs" />
     <Compile Include="src\Keybindings\SelectionHistoryManager.cs" />
     <Compile Include="src\Shared\CommandSettings.cs" />
