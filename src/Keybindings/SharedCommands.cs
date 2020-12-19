@@ -51,7 +51,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
         // Selected Tabs
         // Common
-        CreateAction("Open_Atom_Menu", () => SuperController.singleton.SetActiveUI("SelectedOptions"));
+        CreateAction("Open_Atom_Menu", () => OpenTab(null));
         CreateAction("Open_Atom_ControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
         CreateAction("Open_Atom_PresetTab", () => OpenTab(_ => "Preset"));
         CreateAction("Open_Atom_MoveTab", () => OpenTab(_ => "Move"));
@@ -150,6 +150,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("AddAtom_Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
         // Animation
+        // TODO: Does not work?
         CreateAction("SceneAnimation_StartPlayback", () => SuperController.singleton.StartPlayback());
         CreateAction("SceneAnimation_StopPlayback", () => SuperController.singleton.StopPlayback());
         CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.ResetAnimation());
@@ -239,14 +240,15 @@ public class SharedCommands : MVRScript, ICommandsProvider
         var selectedAtom = selectionManager.GetLastSelectedAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return null;
 
-        var tabName = getTabName(selectedAtom.type);
+        SuperController.singleton.SelectController(selectedAtom.mainController);
+        SuperController.singleton.SetActiveUI("SelectedOptions");
+
+        var tabName = getTabName?.Invoke(selectedAtom.type);
         if (tabName == null) return null;
 
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
         if (selector == null) return null;
 
-        SuperController.singleton.SelectController(selectedAtom.mainController);
-        SuperController.singleton.SetActiveUI("SelectedOptions");
         /*
         foreach (Transform t in selector.toggleContainer)
             SuperController.LogMessage(t.name);

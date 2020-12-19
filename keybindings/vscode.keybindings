@@ -3,6 +3,30 @@
       { 
          "chords" : [ 
             { 
+               "key" : "S"
+            }
+         ], 
+         "action" : "SharedCommands.SaveScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O"
+            }
+         ], 
+         "action" : "SharedCommands.LoadScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "M"
+            }
+         ], 
+         "action" : "SharedCommands.ToggleErrorLog"
+      }, 
+      { 
+         "chords" : [ 
+            { 
                "key" : "KeypadPlus"
             }
          ], 
@@ -12,8 +36,7 @@
          "chords" : [ 
             { 
                "key" : "P", 
-               "ctrl" : "true", 
-               "shift" : "true"
+               "ctrl" : "true"
             }
          ], 
          "action" : "Keybindings.FindCommand"
@@ -29,25 +52,16 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Keybindings.KeybindingsSettings"
+         "action" : "Keybindings.Settings"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "S", 
+               "key" : "R", 
                "ctrl" : "true"
             }
          ], 
-         "action" : "SharedCommands.SaveScene"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "O", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "SharedCommands.LoadScene"
+         "action" : "Keybindings.ReloadPlugin"
       }, 
       { 
          "chords" : [ 
@@ -57,7 +71,35 @@
                "shift" : "true"
             }
          ], 
-         "action" : "SharedCommands.ToggleErrorLog"
+         "action" : "Global.Clear_ErrorLog"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "S", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Global.SaveScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Global.LoadScene"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Global.MergeLoadScene"
       }
    ]
 }

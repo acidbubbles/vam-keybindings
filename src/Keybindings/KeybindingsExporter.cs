@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MVR.FileManagementSecure;
 using SimpleJSON;
+using UnityEngine;
 
 public class KeybindingsExporter
 {
@@ -33,18 +34,24 @@ public class KeybindingsExporter
                 shortcuts);
     }
 
-    private void Import(bool clear, string path)
+    private bool Import(bool clear, string path)
     {
-        if (string.IsNullOrEmpty(path)) return;
+        if (string.IsNullOrEmpty(path)) return false;
         if (clear) _keyMapManager.Clear();
-        var jc = (JSONClass) _plugin.LoadJSON(path);
+        if (!FileManagerSecure.FileExists(path)) return false;
+        var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
+        if (jc == null) return false;
         _keyMapManager.RestoreFromJSON(jc["keybindings"]);
+        return true;
     }
 
     public void ImportDefaults()
     {
         // TODO: Check if the defaults doesn't exist in the user's folder, if it fallbacks to the plugin's version
-        Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings");
+        if (Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings")) return;
+
+        // TODO: Replace this by an actual default
+        _keyMapManager.maps.Add(new KeyMap(new KeyChord[] {new KeyChord(KeyCode.Semicolon, false, false, true)}, "Keybindings.FindCommand"));
     }
 
     public void OpenExportDialog()

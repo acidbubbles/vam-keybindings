@@ -67,7 +67,6 @@ public class RemoteCommandsManager
 
     public void TryRegister(JSONStorable storable)
     {
-        // TODO: Does not work afaik
         Remove(storable);
 
         var bindings = new List<object>();
