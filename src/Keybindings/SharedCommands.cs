@@ -190,11 +190,9 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("AddAtom_Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
         // Animation
-        // TODO: Does not work?
-        CreateAction("SceneAnimation_StartPlayback", () => SuperController.singleton.StartPlayback());
-        CreateAction("SceneAnimation_StopPlayback", () => SuperController.singleton.StopPlayback());
+        CreateAction("SceneAnimation_StartPlayback", () => SuperController.singleton.motionAnimationMaster.StartPlayback());
+        CreateAction("SceneAnimation_StopPlayback", () => SuperController.singleton.motionAnimationMaster.StopPlayback());
         CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.ResetAnimation());
-        CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.GetCurrentTimeCounter());
         // TODO: Add more options
 
         // Time
