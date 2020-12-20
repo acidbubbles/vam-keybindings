@@ -62,6 +62,15 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Open_Atom_MaterialTab", () => OpenTab(_ => "Material"));
         CreateAction("Open_Atom_PluginsTab", () => OpenTab(_ => "Plugins"));
         CreateAction("Open_Atom_PluginsTab_Plugin#0", () => OpenPlugin(0));
+        CreateAction("Open_Atom_PluginsTab_Plugin#1", () => OpenPlugin(1));
+        CreateAction("Open_Atom_PluginsTab_Plugin#2", () => OpenPlugin(2));
+        CreateAction("Open_Atom_PluginsTab_Plugin#3", () => OpenPlugin(3));
+        CreateAction("Open_Atom_PluginsTab_Plugin#4", () => OpenPlugin(4));
+        CreateAction("Open_Atom_PluginsTab_Plugin#5", () => OpenPlugin(5));
+        CreateAction("Open_Atom_PluginsTab_Plugin#6", () => OpenPlugin(6));
+        CreateAction("Open_Atom_PluginsTab_Plugin#7", () => OpenPlugin(7));
+        CreateAction("Open_Atom_PluginsTab_Plugin#8", () => OpenPlugin(8));
+        CreateAction("Open_Atom_PluginsTab_Plugin#9", () => OpenPlugin(9));
         // Animation Pattern
         CreateAction("Open_AnimationPatternAtom_AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
         CreateAction("Open_AnimationPatternAtom_AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
