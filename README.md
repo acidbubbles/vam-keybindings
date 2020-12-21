@@ -26,7 +26,7 @@
 3. Press `Add a custom command`. This will create an unnamed trigger. You _must_ name your commands for them to be invokable by Keybindings.
 4. Press `Edit` on the command you have just created. It will open the Virt-A-Mate Trigger interface.
 5. Enter a name. This is the name that will be used to invoke your command. Let's call it `Log_HelloWorld`
-6. Choose a trigger. By default, the current atom will be automatically selected. You can also look at the `ParameterizedTriggers` storable receiver for additional functionality such as logging messages, quick-selecting this atom and reloading plugins.
+6. Choose a trigger. By default, the current atom will be automatically selected. You can also look at the `plugin#0_CustomCommands` storable receiver for additional functionality such as logging messages, quick-selecting this atom and reloading plugins.
 7. You can use the Find Commands feature (<kbd>F12</kbd> if you followed the previous tutorial) to invoke your new command. Type `hello` and you should see your command. You can also bind it now in the `Keybindings` custom UI.
 
 ## Gotchas
