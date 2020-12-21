@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public class ParameterizedTriggers : MVRScript
+public class ParameterizedTriggers
 {
-    public override void Init()
-    {
-        CreateTextField(new JSONStorableString(
-            "Description",
-            $"Use the {nameof(CustomCommands)} plugin to create custom commands. This plugin is used to offer additional storables that can be invoked using the custom triggers."
-        ));
+    private readonly MVRScript _script;
 
+    public ParameterizedTriggers(MVRScript script)
+    {
+        _script = script;
+    }
+
+    public void Init()
+    {
         // Logging
         CreateActionWithParam("LogMessage", SuperController.LogMessage);
         CreateActionWithParam("LogError", SuperController.LogError);
 
         // Selection
         CreateAction("SelectThis",
-            () => SuperController.singleton.SelectController(containingAtom.mainController)
+            () => SuperController.singleton.SelectController(_script.containingAtom.mainController)
         );
         CreateActionWithChoice("SelectAtom",
             val => SuperController.singleton.SelectController(SuperController.singleton.GetAtomByUid(val).mainController),
@@ -32,7 +34,7 @@ public class ParameterizedTriggers : MVRScript
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
     {
         var jsa = new JSONStorableAction(jsaName, fn);
-        RegisterAction(jsa);
+        _script.RegisterAction(jsa);
     }
 
     private void CreateActionWithParam(string jssName, Action<string> fn)
@@ -42,7 +44,7 @@ public class ParameterizedTriggers : MVRScript
             isStorable = false,
             isRestorable = false
         };
-        RegisterString(jss);
+        _script.RegisterString(jss);
         jss.setCallbackFunction = val =>
         {
             fn(val);
@@ -58,7 +60,7 @@ public class ParameterizedTriggers : MVRScript
             isStorable = false,
             isRestorable = false
         };
-        RegisterStringChooser(jss);
+        _script.RegisterStringChooser(jss);
         jss.setCallbackFunction = val =>
         {
             fn(val);
@@ -69,7 +71,7 @@ public class ParameterizedTriggers : MVRScript
 
     private void ReloadPluginsByName(string val)
     {
-        var pluginsList = UITransform
+        var pluginsList = _script.UITransform
             .GetChild(0)
             .Find("Canvas")
             .Find("Panel")
@@ -102,14 +104,14 @@ public class ParameterizedTriggers : MVRScript
         {
             reloadButton.onClick.Invoke();
         }
-        foreach (var script in containingAtom
+        foreach (var script in _script.containingAtom
             .GetStorableIDs()
-            .Select(id => containingAtom.GetStorableByID(id))
+            .Select(id => _script.containingAtom.GetStorableByID(id))
             .OfType<MVRScript>()
             .Where(s => s.storeId.Contains(val))
             .Where(s => !ReferenceEquals(s, this)))
         {
-            containingAtom.RestoreFromLast(script);
+            _script.containingAtom.RestoreFromLast(script);
         }
         if (reloadButtons.Count == 0)
             SuperController.LogError($"Keybindings: Could not find any plugins containing {val} in atoms nor session plugins.");

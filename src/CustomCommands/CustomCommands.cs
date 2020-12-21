@@ -9,17 +9,21 @@ public class CustomCommands : MVRScript, ICommandsProvider
 {
     private CustomCommandsRepository _customCommands;
     private PrefabManager _prefabManager;
-    private bool _loaded;
     private CustomCommandsScreen _ui;
+    private ParameterizedTriggers _parameterizedTriggers;
+    private bool _loaded;
 
     public override void Init()
     {
         _prefabManager = new PrefabManager();
         _customCommands = new CustomCommandsRepository(containingAtom, _prefabManager);
         _customCommands.onChange.AddListener(OnActionsChanged);
+        _parameterizedTriggers = new ParameterizedTriggers(this);
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
         SuperController.singleton.StartCoroutine(DeferredInit());
         SuperController.singleton.onAtomUIDRenameHandlers += OnAtomRename;
+
+        _parameterizedTriggers.Init();
     }
 
     private IEnumerator DeferredInit()
