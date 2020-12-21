@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -80,6 +81,11 @@ public class RemoteCommandsManager
             return;
         }
 
+        TryRegister(storable, bindings);
+    }
+
+    public void TryRegister(JSONStorable storable, ICollection bindings)
+    {
         if (bindings.Count <= 0)
             return;
 
@@ -105,6 +111,7 @@ public class RemoteCommandsManager
                                 continue;
                         }
                     }
+
                     continue;
                 }
             }
@@ -117,7 +124,8 @@ public class RemoteCommandsManager
                 continue;
             }
 
-            SuperController.LogError($"Keybindings: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
+            SuperController.LogError(
+                $"Keybindings: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
 
         names.Clear();

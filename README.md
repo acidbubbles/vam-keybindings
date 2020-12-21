@@ -82,6 +82,13 @@ You can also optionally provide additional settings to Keybindings by returning 
     }
 ```
 
+## Not implemented yet (todo)
+
+- VR controllers and gamepad support
+- Move and rotate controllers
+- Bind more than one key to the same command
+- Merge split plugins into only one
+
 ## Credits
 
 - [LFE](https://github.com/lfe999) who made the original Keyboard Shortcuts plugin and provided his insight

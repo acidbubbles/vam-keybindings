@@ -4,30 +4,20 @@ using System.Linq;
 using DefaultNamespace;
 using UnityEngine;
 
-public class SharedCommands : MVRScript, ICommandsProvider
+public class GlobalCommands : ICommandsProvider
 {
+    private readonly Atom _containingAtom;
+    private readonly ISelectionHistoryManager _selectionHistoryManager;
     private readonly List<JSONStorableAction> _commands = new List<JSONStorableAction>();
-    private SelectionHistoryManager _selectionManager;
-    // ReSharper disable once Unity.NoNullCoalescing
-    private ISelectionHistoryManager selectionManager => _selectionManager ?? (_selectionManager = transform.parent.GetComponentInChildren<SelectionHistoryManager>() ?? gameObject.AddComponent<SelectionHistoryManager>());
 
-    public override void Init()
+    public GlobalCommands(Atom containingAtom, ISelectionHistoryManager selectionHistoryManager)
     {
-        if (containingAtom.type != "SessionPluginManager")
-        {
-            SuperController.LogError("Keybindings: Shared commands plugin can only be installed as a session plugin.");
-            CreateTextField(new JSONStorableString("Error", "Shared commands plugin can only be installed as a session plugin."));
-            enabledJSON.val = false;
-            return;
-        }
+        _containingAtom = containingAtom;
+        _selectionHistoryManager = selectionHistoryManager;
+    }
 
-        _commands.Clear();
-
-        CreateTextField(new JSONStorableString(
-            "Description",
-            "This plugin implements the different commands you can bind shortcuts to. Customize keybindings in the Keybindings plugin."
-        ));
-
+    public void Init()
+    {
         // Logging
         CreateAction("Clear_MessageLog", SuperController.singleton.ClearMessages);
         CreateAction("Clear_ErrorLog", SuperController.singleton.ClearErrors);
@@ -105,7 +95,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("Open_MainMenu_ScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
         CreateAction("Open_MainMenu_SceneLightingTab", () => OpenMainTab("TabSceneLighting"));
         CreateAction("Open_MainMenu_SceneMiscTab", () => OpenMainTab("TabSceneMisc"));
-        CreateAction("Open_MainMenu_SceneAnimationTab", () => OpenMainTab("TabSceneAnimation"));
+        CreateAction("Open_MainMenu_SceneAnimationTab", () => OpenMainTab("TabAnimation"));
         CreateAction("Open_MainMenu_AddAtomTab", () => OpenMainTab("TabAddAtom"));
         CreateAction("Open_MainMenu_AudioTab", () => OpenMainTab("TabAudio"));
         // CreateAction("OpenMainMenuDebugTab", () => OpenMainTab("TabDebug"));
@@ -202,21 +192,11 @@ public class SharedCommands : MVRScript, ICommandsProvider
         CreateAction("TimeScale_Set_Minimum", () => TimeControl.singleton.currentScale = 0.1f);
         CreateAction("Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
-
-        // Broadcast
-        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
-    }
-
-    public void OnDestroy()
-    {
-        if(_selectionManager != null && _selectionManager.gameObject == gameObject) Destroy(_selectionManager);
-        SuperController.singleton.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
     private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
     {
         var jsa = new JSONStorableAction(jsaName, fn);
-        RegisterAction(jsa);
         _commands.Add(jsa);
     }
 
@@ -231,7 +211,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private void ReloadAllScenePlugins()
     {
-        foreach (var atom in SuperController.singleton.GetAtoms().Where(a => !ReferenceEquals(a, containingAtom)))
+        foreach (var atom in SuperController.singleton.GetAtoms().Where(a => !ReferenceEquals(a, _containingAtom)))
         {
             if (atom.UITransform == null) continue;
             if (atom.UITransform
@@ -280,7 +260,7 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private Atom OpenTab(Func<string, string> getTabName, string type = null)
     {
-        var selectedAtom = selectionManager.GetLastSelectedAtomOfType(type);
+        var selectedAtom = _selectionHistoryManager.GetLastSelectedAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return null;
 
         SuperController.singleton.SelectController(selectedAtom.mainController);
@@ -320,10 +300,10 @@ public class SharedCommands : MVRScript, ICommandsProvider
             SuperController.singleton.SelectController(mainController);
             return;
         }
-        if (selectionManager.history.Count > 1)
+        if (_selectionHistoryManager.history.Count > 1)
         {
-            SuperController.singleton.SelectController(selectionManager.history[selectionManager.history.Count - 2].mainController);
-            selectionManager.history.RemoveAt(selectionManager.history.Count - 1);
+            SuperController.singleton.SelectController(_selectionHistoryManager.history[_selectionHistoryManager.history.Count - 2].mainController);
+            _selectionHistoryManager.history.RemoveAt(_selectionHistoryManager.history.Count - 1);
             return;
         }
     }
@@ -374,9 +354,9 @@ public class SharedCommands : MVRScript, ICommandsProvider
 
     private void SelectControllerByName(string controllerName)
     {
-        for (var i = selectionManager.history.Count - 1; i >= 0; i--)
+        for (var i = _selectionHistoryManager.history.Count - 1; i >= 0; i--)
         {
-            var atom = selectionManager.history[i];
+            var atom = _selectionHistoryManager.history[i];
 
             var controller = atom.freeControllers.FirstOrDefault(fc => fc.name == controllerName);
             if (controller != null)

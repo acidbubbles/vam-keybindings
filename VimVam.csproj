@@ -82,7 +82,7 @@
     <Compile Include="src\Shared\PrefabManager.cs" />
     <Compile Include="src\Keybindings\CommandInvokers\ICommandInvoker.cs" />
     <Compile Include="src\Keybindings\CommandInvokers\JSONStorableActionCommandInvoker.cs" />
-    <Compile Include="src\Keybindings\SharedCommands.cs" />
+    <Compile Include="src\Keybindings\GlobalCommands.cs" />
     <Compile Include="src\Keybindings\FuzzyFinder.cs" />
     <Compile Include="src\Keybindings\KeyChordExtensions.cs" />
     <Compile Include="src\Keybindings\KeyCodes.cs" />

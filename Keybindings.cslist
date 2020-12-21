@@ -11,6 +11,7 @@ src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
 src/Keybindings/Overlays/KeybindingsOverlay.cs
 src/Keybindings/FuzzyFinder.cs
+src/Keybindings/GlobalCommands.cs
 src/Keybindings/Keybindings.cs
 src/Keybindings/KeybindingsExporter.cs
 src/Keybindings/KeyChord.cs
@@ -22,4 +23,3 @@ src/Keybindings/KeyMapTreeNode.cs
 src/Keybindings/RemoteCommandsManager.cs
 src/Keybindings/SelectionHistoryManager.cs
 src/Keybindings/Settings.cs
-src/Keybindings/SharedCommands.cs

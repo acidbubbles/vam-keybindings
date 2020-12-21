@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
 using UnityEngine;
@@ -28,6 +29,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     private bool _altDown;
     private bool _shiftDown;
     private string _lastSelectedAction;
+    private GlobalCommands _globalCommands;
     public JSONStorableBool showKeyPressesJSON { get; private set; }
 
     public override void Init()
@@ -45,12 +47,17 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
+        _globalCommands = new GlobalCommands(containingAtom, _selectionHistoryManager);
         _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
         _exporter = new KeybindingsExporter(this, _keyMapManager);
         _fuzzyFinder = new FuzzyFinder();
 
+        _globalCommands.Init();
+
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
 
+        AcquireBuildInCommands();
+        AcquireGlobalCommands();
         AcquireAllAvailableBroadcastingPlugins();
 
         _exporter.ImportDefaults();
@@ -287,12 +294,22 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     #region Interop
 
-    private void AcquireAllAvailableBroadcastingPlugins()
+    private void AcquireBuildInCommands()
     {
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleFindCommandMode));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "Settings", OpenSettings));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "ReloadPlugin", ReloadPlugin));
+    }
 
+    private void AcquireGlobalCommands()
+    {
+        var bindings = new List<object>();
+        _globalCommands.OnBindingsListRequested(bindings);
+        _remoteCommandsManager.TryRegister(this, bindings);
+    }
+
+    private void AcquireAllAvailableBroadcastingPlugins()
+    {
         foreach (var storable in SuperController.singleton
             .GetAtoms()
             .SelectMany(atom => atom.GetStorableIDs()
