@@ -87,7 +87,7 @@ You can also optionally provide additional settings to Keybindings by returning 
 - VR controllers and gamepad support
 - Move and rotate controllers
 - Bind more than one key to the same command
-- Merge split plugins into only one
+- Fuzzy find by plugin name and atom name
 
 ## Credits
 

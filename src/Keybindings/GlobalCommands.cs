@@ -1,212 +1,212 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
-using UnityEngine;
 
-public class GlobalCommands : ICommandsProvider
+public class GlobalCommands
 {
+    private readonly JSONStorable _owner;
     private readonly Atom _containingAtom;
     private readonly ISelectionHistoryManager _selectionHistoryManager;
-    private readonly List<JSONStorableAction> _commands = new List<JSONStorableAction>();
+    private readonly RemoteCommandsManager _remoteCommandsManager;
 
-    public GlobalCommands(Atom containingAtom, ISelectionHistoryManager selectionHistoryManager)
+    public GlobalCommands(JSONStorable owner, Atom containingAtom, ISelectionHistoryManager selectionHistoryManager, RemoteCommandsManager remoteCommandsManager)
     {
+        _owner = owner;
         _containingAtom = containingAtom;
         _selectionHistoryManager = selectionHistoryManager;
+        _remoteCommandsManager = remoteCommandsManager;
     }
 
     public void Init()
     {
-        // Logging
-        CreateAction("Clear_MessageLog", SuperController.singleton.ClearMessages);
-        CreateAction("Clear_ErrorLog", SuperController.singleton.ClearErrors);
-
         // Mode
-        CreateAction("Change_GameMode_PlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
-        CreateAction("Change_GameMode_EditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
+        CreateAction("GameMode", "PlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
+        CreateAction("GameMode", "EditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
 
         // Main menu
-        CreateAction("SaveScene", SuperController.singleton.SaveSceneDialog);
-        CreateAction("LoadScene", SuperController.singleton.LoadSceneDialog);
-        CreateAction("MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
-        CreateAction("Exit", SuperController.singleton.Quit);
-        CreateAction("ScreenshotMode", SuperController.singleton.SelectModeScreenshot);
-        CreateAction("Open_OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
-        CreateAction("Open_MainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
-        CreateAction("Toggle_ErrorLog", ToggleErrorLog);
-        CreateAction("Toggle_MessageLog", ToggleMessageLog);
-        CreateAction("Close_AllPanels", CloseAllPanels);
-        CreateAction("Toggle_ShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
+        CreateAction("Global", "SaveScene", SuperController.singleton.SaveSceneDialog);
+        CreateAction("Global", "LoadScene", SuperController.singleton.LoadSceneDialog);
+        CreateAction("Global", "MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
+        CreateAction("Global", "Exit", SuperController.singleton.Quit);
+        CreateAction("Global", "ScreenshotMode", SuperController.singleton.SelectModeScreenshot);
+        CreateAction("Global", "OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
+        CreateAction("Global", "OpenMainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
+        CreateAction("Global", "ToggleShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
 
-        // Selected Tabs
-        // Common
-        CreateAction("Open_Atom_Menu", () => OpenTab(null));
-        CreateAction("Open_Atom_ControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
-        CreateAction("Open_Atom_PresetTab", () => OpenTab(_ => "Preset"));
-        CreateAction("Open_Atom_MoveTab", () => OpenTab(_ => "Move"));
-        CreateAction("Open_Atom_AnimationTab", () => OpenTab(_ => "Animation"));
-        CreateAction("Open_Atom_PhysicsControlTab", () => OpenTab(_ => "Physics Control"));
-        CreateAction("Open_Atom_PhysicsObjectTab", () => OpenTab(_ => "Physics Object"));
-        CreateAction("Open_Atom_CollisionTriggerTab", () => OpenTab(_ => "Collision Trigger"));
-        CreateAction("Open_Atom_MaterialTab", () => OpenTab(_ => "Material"));
-        CreateAction("Open_Atom_PluginsTab", () => OpenTab(_ => "Plugins"));
-        CreateAction("Open_Atom_PluginsTab_Plugin#0", () => OpenPlugin(0));
-        CreateAction("Open_Atom_PluginsTab_Plugin#1", () => OpenPlugin(1));
-        CreateAction("Open_Atom_PluginsTab_Plugin#2", () => OpenPlugin(2));
-        CreateAction("Open_Atom_PluginsTab_Plugin#3", () => OpenPlugin(3));
-        CreateAction("Open_Atom_PluginsTab_Plugin#4", () => OpenPlugin(4));
-        CreateAction("Open_Atom_PluginsTab_Plugin#5", () => OpenPlugin(5));
-        CreateAction("Open_Atom_PluginsTab_Plugin#6", () => OpenPlugin(6));
-        CreateAction("Open_Atom_PluginsTab_Plugin#7", () => OpenPlugin(7));
-        CreateAction("Open_Atom_PluginsTab_Plugin#8", () => OpenPlugin(8));
-        CreateAction("Open_Atom_PluginsTab_Plugin#9", () => OpenPlugin(9));
+        // Menu
+        CreateAction("AtomUI", "CloseAllPanels", CloseAllPanels);
+        CreateAction("AtomUI", "Open", () => OpenTab(null));
+        CreateAction("AtomUI", "ControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
+        CreateAction("AtomUI", "PresetTab", () => OpenTab(_ => "Preset"));
+        CreateAction("AtomUI", "MoveTab", () => OpenTab(_ => "Move"));
+        CreateAction("AtomUI", "AnimationTab", () => OpenTab(_ => "Animation"));
+        CreateAction("AtomUI", "PhysicsControlTab", () => OpenTab(_ => "Physics Control"));
+        CreateAction("AtomUI", "PhysicsObjectTab", () => OpenTab(_ => "Physics Object"));
+        CreateAction("AtomUI", "CollisionTriggerTab", () => OpenTab(_ => "Collision Trigger"));
+        CreateAction("AtomUI", "MaterialTab", () => OpenTab(_ => "Material"));
+        CreateAction("AtomUI", "PluginsTab", () => OpenTab(_ => "Plugins"));
+        CreateAction("AtomUI", "PluginsTab_Plugin#0", () => OpenPlugin(0));
+        CreateAction("AtomUI", "PluginsTab_Plugin#1", () => OpenPlugin(1));
+        CreateAction("AtomUI", "PluginsTab_Plugin#2", () => OpenPlugin(2));
+        CreateAction("AtomUI", "PluginsTab_Plugin#3", () => OpenPlugin(3));
+        CreateAction("AtomUI", "PluginsTab_Plugin#4", () => OpenPlugin(4));
+        CreateAction("AtomUI", "PluginsTab_Plugin#5", () => OpenPlugin(5));
+        CreateAction("AtomUI", "PluginsTab_Plugin#6", () => OpenPlugin(6));
+        CreateAction("AtomUI", "PluginsTab_Plugin#7", () => OpenPlugin(7));
+        CreateAction("AtomUI", "PluginsTab_Plugin#8", () => OpenPlugin(8));
+        CreateAction("AtomUI", "PluginsTab_Plugin#9", () => OpenPlugin(9));
         // Animation Pattern
-        CreateAction("Open_AnimationPatternAtom_AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
-        CreateAction("Open_AnimationPatternAtom_AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
+        CreateAction("AtomUI", "AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
+        CreateAction("AtomUI", "AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
         // Custom Unity Asset
-        CreateAction("Open_CustomUnityAssetAtom_AssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
+        CreateAction("AtomUI", "AssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
         // Audio Source
-        CreateAction("Open_AudioSourceAtom_AudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
+        CreateAction("AtomUI", "AudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
         // Person
-        CreateAction("Open_PersonAtom_ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
-        CreateAction("Open_PersonAtom_ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
-        CreateAction("Open_PersonAtom_HairTab", () => OpenTab(_ => "Hair", "Person"));
-        CreateAction("Open_PersonAtom_AppearancePresets", () => OpenTab(_ => "Appearance Presets", "Person"));
-        CreateAction("Open_PersonAtom_GeneralPresets", () => OpenTab(_ => "General Presets", "Person"));
-        CreateAction("Open_PersonAtom_PosePresets", () => OpenTab(_ => "Pose Presets", "Person"));
-        CreateAction("Open_PersonAtom_SkinPresets", () => OpenTab(_ => "Skin Presets", "Person"));
-        CreateAction("Open_PersonAtom_PluginsPresets", () => OpenTab(_ => "Plugins Presets", "Person"));
-        CreateAction("Open_PersonAtom_MorphsPresets", () => OpenTab(_ => "Morphs Presets", "Person"));
-        CreateAction("Open_PersonAtom_HairPresets", () => OpenTab(_ => "Hair Presets", "Person"));
-        CreateAction("Open_PersonAtom_ClothingPresets", () => OpenTab(_ => "Clothing Presets", "Person"));
-        CreateAction("Open_PersonAtom_MaleMorphs", () => OpenTab(_ => "Male Morphs", "Person"));
-        CreateAction("Open_PersonAtom_FemaleMorphs", () => OpenTab(_ => "Female Morphs", "Person"));
+        CreateAction("AtomUI", "ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("AtomUI", "ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
+        CreateAction("AtomUI", "HairTab", () => OpenTab(_ => "Hair", "Person"));
+        CreateAction("AtomUI", "AppearancePresetsTab", () => OpenTab(_ => "Appearance Presets", "Person"));
+        CreateAction("AtomUI", "GeneralPresetsTab", () => OpenTab(_ => "General Presets", "Person"));
+        CreateAction("AtomUI", "PosePresetsTab", () => OpenTab(_ => "Pose Presets", "Person"));
+        CreateAction("AtomUI", "SkinPresetsTab", () => OpenTab(_ => "Skin Presets", "Person"));
+        CreateAction("AtomUI", "PluginsPresetsTab", () => OpenTab(_ => "Plugins Presets", "Person"));
+        CreateAction("AtomUI", "MorphsPresetsTab", () => OpenTab(_ => "Morphs Presets", "Person"));
+        CreateAction("AtomUI", "HairPresetsTab", () => OpenTab(_ => "Hair Presets", "Person"));
+        CreateAction("AtomUI", "ClothingPresetsTab", () => OpenTab(_ => "Clothing Presets", "Person"));
+        CreateAction("AtomUI", "MaleMorphsTab", () => OpenTab(_ => "Male Morphs", "Person"));
+        CreateAction("AtomUI", "FemaleMorphsTab", () => OpenTab(_ => "Female Morphs", "Person"));
 
         // Main Tabs
-        CreateAction("Open_MainMenu", () => OpenMainTab(null));
-        CreateAction("Open_MainMenu_FileTab", () => OpenMainTab("TabFile"));
-        CreateAction("Open_MainMenu_UserPrefsTab", () => OpenMainTab("TabUserPrefs"));
-        CreateAction("Open_MainMenu_NavigationTab", () => OpenMainTab("TabNavigation"));
-        CreateAction("Open_MainMenu_SelectTab", () => OpenMainTab("TabSelect"));
-        CreateAction("Open_MainMenu_SessionPluginPresetsTab", () => OpenMainTab("TabSessionPluginPresets"));
-        CreateAction("Open_MainMenu_SessionPluginsTab", () => OpenMainTab("TabSessionPlugins"));
-        CreateAction("Open_MainMenu_ScenePluginsTab", () => OpenMainTab("TabScenePlugins"));
-        CreateAction("Open_MainMenu_ScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
-        CreateAction("Open_MainMenu_SceneLightingTab", () => OpenMainTab("TabSceneLighting"));
-        CreateAction("Open_MainMenu_SceneMiscTab", () => OpenMainTab("TabSceneMisc"));
-        CreateAction("Open_MainMenu_SceneAnimationTab", () => OpenMainTab("TabAnimation"));
-        CreateAction("Open_MainMenu_AddAtomTab", () => OpenMainTab("TabAddAtom"));
-        CreateAction("Open_MainMenu_AudioTab", () => OpenMainTab("TabAudio"));
+        CreateAction("MainUI", "Open", () => OpenMainTab(null));
+        CreateAction("MainUI", "FileTab", () => OpenMainTab("TabFile"));
+        CreateAction("MainUI", "UserPrefsTab", () => OpenMainTab("TabUserPrefs"));
+        CreateAction("MainUI", "NavigationTab", () => OpenMainTab("TabNavigation"));
+        CreateAction("MainUI", "SelectTab", () => OpenMainTab("TabSelect"));
+        CreateAction("MainUI", "SessionPluginPresetsTab", () => OpenMainTab("TabSessionPluginPresets"));
+        CreateAction("MainUI", "SessionPluginsTab", () => OpenMainTab("TabSessionPlugins"));
+        CreateAction("MainUI", "ScenePluginsTab", () => OpenMainTab("TabScenePlugins"));
+        CreateAction("MainUI", "ScenePluginPresetsTab", () => OpenMainTab("TabScenePluginPresets"));
+        CreateAction("MainUI", "SceneLightingTab", () => OpenMainTab("TabSceneLighting"));
+        CreateAction("MainUI", "SceneMiscTab", () => OpenMainTab("TabSceneMisc"));
+        CreateAction("MainUI", "SceneAnimationTab", () => OpenMainTab("TabAnimation"));
+        CreateAction("MainUI", "AddAtomTab", () => OpenMainTab("TabAddAtom"));
+        CreateAction("MainUI", "AudioTab", () => OpenMainTab("TabAudio"));
         // CreateAction("OpenMainMenuDebugTab", () => OpenMainTab("TabDebug"));
         // TODO: Next/Previous tab
 
         // Selection
-        CreateAction("Deselect_Atom", () => SuperController.singleton.SelectController(null));
-        CreateAction("Select_HistoryBack", SelectHistoryBack);
-        CreateAction("Select_PreviousAtom", () => SelectPreviousAtom());
-        CreateAction("Select_NextAtom", () => SelectNextAtom());
-        CreateAction("Select_PreviousPersonAtom", () => SelectPreviousAtom("Person"));
-        CreateAction("Select_NextPersonAtom", () => SelectNextAtom("Person"));
-        CreateAction("Select_Controller_RootControl", () => SelectControllerByName("control"));
-        CreateAction("Select_Controller_HipControl", () => SelectControllerByName("hipControl"));
-        CreateAction("Select_Controller_PelvisControl", () => SelectControllerByName("pelvisControl"));
-        CreateAction("Select_Controller_ChestControl", () => SelectControllerByName("chestControl"));
-        CreateAction("Select_Controller_HeadControl", () => SelectControllerByName("headControl"));
-        CreateAction("Select_Controller_RHandControl", () => SelectControllerByName("rHandControl"));
-        CreateAction("Select_Controller_LHandControl", () => SelectControllerByName("lHandControl"));
-        CreateAction("Select_Controller_RFootControl", () => SelectControllerByName("rFootControl"));
-        CreateAction("Select_Controller_LFootControl", () => SelectControllerByName("lFootControl"));
-        CreateAction("Select_Controller_NeckControl", () => SelectControllerByName("neckControl"));
-        CreateAction("Select_Controller_EyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
-        CreateAction("Select_Controller_RNippleControl", () => SelectControllerByName("rNippleControl"));
-        CreateAction("Select_Controller_LNippleControl", () => SelectControllerByName("lNippleControl"));
-        CreateAction("Select_Controller_TestesControl", () => SelectControllerByName("testesControl"));
-        CreateAction("Select_Controller_PenisBaseControl", () => SelectControllerByName("penisBaseControl"));
-        CreateAction("Select_Controller_PenisMidControl", () => SelectControllerByName("penisMidControl"));
-        CreateAction("Select_Controller_PenisTipControl", () => SelectControllerByName("penisTipControl"));
-        CreateAction("Select_Controller_RElbowControl", () => SelectControllerByName("rElbowControl"));
-        CreateAction("Select_Controller_LElbowControl", () => SelectControllerByName("lElbowControl"));
-        CreateAction("Select_Controller_RKneeControl", () => SelectControllerByName("rKneeControl"));
-        CreateAction("Select_Controller_LKneeControl", () => SelectControllerByName("lKneeControl"));
-        CreateAction("Select_Controller_RToeControl", () => SelectControllerByName("rToeControl"));
-        CreateAction("Select_Controller_LToeControl", () => SelectControllerByName("lToeControl"));
-        CreateAction("Select_Controller_AbdomenControl", () => SelectControllerByName("abdomenControl"));
-        CreateAction("Select_Controller_Abdomen2Control", () => SelectControllerByName("abdomen2Control"));
-        CreateAction("Select_Controller_RThighControl", () => SelectControllerByName("rThighControl"));
-        CreateAction("Select_Controller_LThighControl", () => SelectControllerByName("lThighControl"));
-        CreateAction("Select_Controller_LArmControl", () => SelectControllerByName("lArmControl"));
-        CreateAction("Select_Controller_RArmControl", () => SelectControllerByName("rArmControl"));
-        CreateAction("Select_Controller_RShoulderControl", () => SelectControllerByName("rShoulderControl"));
-        CreateAction("Select_Controller_LShoulderControl", () => SelectControllerByName("lShoulderControl"));
+        CreateAction("Select", "Deselect", () => SuperController.singleton.SelectController(null));
+        CreateAction("Select", "HistoryBack", SelectHistoryBack);
+        CreateAction("Select", "PreviousAtom", () => SelectPreviousAtom());
+        CreateAction("Select", "NextAtom", () => SelectNextAtom());
+        CreateAction("Select", "PreviousPersonAtom", () => SelectPreviousAtom("Person"));
+        CreateAction("Select", "NextPersonAtom", () => SelectNextAtom("Person"));
+        CreateAction("Select", "RootControl", () => SelectControllerByName("control"));
+        CreateAction("Select", "HipControl", () => SelectControllerByName("hipControl"));
+        CreateAction("Select", "PelvisControl", () => SelectControllerByName("pelvisControl"));
+        CreateAction("Select", "ChestControl", () => SelectControllerByName("chestControl"));
+        CreateAction("Select", "HeadControl", () => SelectControllerByName("headControl"));
+        CreateAction("Select", "RHandControl", () => SelectControllerByName("rHandControl"));
+        CreateAction("Select", "LHandControl", () => SelectControllerByName("lHandControl"));
+        CreateAction("Select", "RFootControl", () => SelectControllerByName("rFootControl"));
+        CreateAction("Select", "LFootControl", () => SelectControllerByName("lFootControl"));
+        CreateAction("Select", "NeckControl", () => SelectControllerByName("neckControl"));
+        CreateAction("Select", "EyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
+        CreateAction("Select", "RNippleControl", () => SelectControllerByName("rNippleControl"));
+        CreateAction("Select", "LNippleControl", () => SelectControllerByName("lNippleControl"));
+        CreateAction("Select", "TestesControl", () => SelectControllerByName("testesControl"));
+        CreateAction("Select", "PenisBaseControl", () => SelectControllerByName("penisBaseControl"));
+        CreateAction("Select", "PenisMidControl", () => SelectControllerByName("penisMidControl"));
+        CreateAction("Select", "PenisTipControl", () => SelectControllerByName("penisTipControl"));
+        CreateAction("Select", "RElbowControl", () => SelectControllerByName("rElbowControl"));
+        CreateAction("Select", "LElbowControl", () => SelectControllerByName("lElbowControl"));
+        CreateAction("Select", "RKneeControl", () => SelectControllerByName("rKneeControl"));
+        CreateAction("Select", "LKneeControl", () => SelectControllerByName("lKneeControl"));
+        CreateAction("Select", "RToeControl", () => SelectControllerByName("rToeControl"));
+        CreateAction("Select", "LToeControl", () => SelectControllerByName("lToeControl"));
+        CreateAction("Select", "AbdomenControl", () => SelectControllerByName("abdomenControl"));
+        CreateAction("Select", "Abdomen2Control", () => SelectControllerByName("abdomen2Control"));
+        CreateAction("Select", "RThighControl", () => SelectControllerByName("rThighControl"));
+        CreateAction("Select", "LThighControl", () => SelectControllerByName("lThighControl"));
+        CreateAction("Select", "LArmControl", () => SelectControllerByName("lArmControl"));
+        CreateAction("Select", "RArmControl", () => SelectControllerByName("rArmControl"));
+        CreateAction("Select", "RShoulderControl", () => SelectControllerByName("rShoulderControl"));
+        CreateAction("Select", "LShoulderControl", () => SelectControllerByName("lShoulderControl"));
 
         // Dev
-        CreateAction("Reload_AllScenePlugins", ReloadAllScenePlugins);
+        CreateAction("Plugins", "ReloadAllScenePlugins", ReloadAllScenePlugins);
 
         // Add atom
-        CreateAction("AddAtom_AnimationPattern", () => SuperController.singleton.AddAtomByType("AnimationPattern", true, true, true));
-        CreateAction("AddAtom_FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
-        CreateAction("AddAtom_FloorsAndWalls_AtomWall", () => SuperController.singleton.AddAtomByType("Wall", true, true, true));
-        CreateAction("AddAtom_FloorsAndWalls_AtomWoodPanel", () => SuperController.singleton.AddAtomByType("WoodPanel", true, true, true));
-        CreateAction("AddAtom_Force_CycleForce", () => SuperController.singleton.AddAtomByType("CycleForce", true, true, true));
-        CreateAction("AddAtom_Force_GrabPoint", () => SuperController.singleton.AddAtomByType("GrabPoint", true, true, true));
-        CreateAction("AddAtom_Force_RhythmForce", () => SuperController.singleton.AddAtomByType("RhythmForce", true, true, true));
-        CreateAction("AddAtom_Force_SyncForce", () => SuperController.singleton.AddAtomByType("SyncForce", true, true, true));
-        CreateAction("AddAtom_Light_InvisibleLight", () => SuperController.singleton.AddAtomByType("InvisibleLight", true, true, true));
-        CreateAction("AddAtom_Misc_ClothGrabSphere", () => SuperController.singleton.AddAtomByType("ClothGrabSphere", true, true, true));
-        CreateAction("AddAtom_Misc_CustomUnityAsset", () => SuperController.singleton.AddAtomByType("CustomUnityAsset", true, true, true));
-        CreateAction("AddAtom_Misc_Empty", () => SuperController.singleton.AddAtomByType("Empty", true, true, true));
-        CreateAction("AddAtom_Misc_ImagePanel", () => SuperController.singleton.AddAtomByType("ImagePanel", true, true, true));
-        CreateAction("AddAtom_Misc_SimpleSign", () => SuperController.singleton.AddAtomByType("SimpleSign", true, true, true));
-        CreateAction("AddAtom_Misc_SubScene", () => SuperController.singleton.AddAtomByType("SubScene", true, true, true));
-        CreateAction("AddAtom_Misc_UIText", () => SuperController.singleton.AddAtomByType("UIText", true, true, true));
-        CreateAction("AddAtom_Misc_VaMLogo", () => SuperController.singleton.AddAtomByType("VaMLogo", true, true, true));
-        CreateAction("AddAtom_Misc_WebBrowser", () => SuperController.singleton.AddAtomByType("WebBrowser", true, true, true));
-        CreateAction("AddAtom_Misc_WebPanel", () => SuperController.singleton.AddAtomByType("WebPanel", true, true, true));
-        CreateAction("AddAtom_People_Person", () => SuperController.singleton.AddAtomByType("Person", true, true, true));
-        CreateAction("AddAtom_Reflective_Glass", () => SuperController.singleton.AddAtomByType("Glass", true, true, true));
-        CreateAction("AddAtom_Reflective_ReflectiveSlate", () => SuperController.singleton.AddAtomByType("ReflectiveSlate", true, true, true));
-        CreateAction("AddAtom_Reflective_ReflectiveWoodPanel", () => SuperController.singleton.AddAtomByType("ReflectiveWoodPanel", true, true, true));
-        CreateAction("AddAtom_Shapes_Cube", () => SuperController.singleton.AddAtomByType("Cube", true, true, true));
-        CreateAction("AddAtom_Shapes_Sphere", () => SuperController.singleton.AddAtomByType("Sphere", true, true, true));
-        CreateAction("AddAtom_Shapes_Capsule", () => SuperController.singleton.AddAtomByType("Capsule", true, true, true));
-        CreateAction("AddAtom_Sound_AudioSource", () => SuperController.singleton.AddAtomByType("AudioSource", true, true, true));
-        CreateAction("AddAtom_Toys_Dildo", () => SuperController.singleton.AddAtomByType("Dildo", true, true, true));
-        CreateAction("AddAtom_Triggers_CollisionTrigger", () => SuperController.singleton.AddAtomByType("CollisionTrigger", true, true, true));
-        CreateAction("AddAtom_Triggers_LookAtTrigger", () => SuperController.singleton.AddAtomByType("LookAtTrigger", true, true, true));
-        CreateAction("AddAtom_Triggers_UIButton", () => SuperController.singleton.AddAtomByType("UIButton", true, true, true));
-        CreateAction("AddAtom_Triggers_UISlider", () => SuperController.singleton.AddAtomByType("UISlider", true, true, true));
-        CreateAction("AddAtom_Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
-        CreateAction("AddAtom_Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
+        CreateAction("Add", "AnimationPattern", () => SuperController.singleton.AddAtomByType("AnimationPattern", true, true, true));
+        CreateAction("Add", "FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
+        CreateAction("Add", "FloorsAndWalls_AtomWall", () => SuperController.singleton.AddAtomByType("Wall", true, true, true));
+        CreateAction("Add", "FloorsAndWalls_AtomWoodPanel", () => SuperController.singleton.AddAtomByType("WoodPanel", true, true, true));
+        CreateAction("Add", "Force_CycleForce", () => SuperController.singleton.AddAtomByType("CycleForce", true, true, true));
+        CreateAction("Add", "Force_GrabPoint", () => SuperController.singleton.AddAtomByType("GrabPoint", true, true, true));
+        CreateAction("Add", "Force_RhythmForce", () => SuperController.singleton.AddAtomByType("RhythmForce", true, true, true));
+        CreateAction("Add", "Force_SyncForce", () => SuperController.singleton.AddAtomByType("SyncForce", true, true, true));
+        CreateAction("Add", "Light_InvisibleLight", () => SuperController.singleton.AddAtomByType("InvisibleLight", true, true, true));
+        CreateAction("Add", "Misc_ClothGrabSphere", () => SuperController.singleton.AddAtomByType("ClothGrabSphere", true, true, true));
+        CreateAction("Add", "Misc_CustomUnityAsset", () => SuperController.singleton.AddAtomByType("CustomUnityAsset", true, true, true));
+        CreateAction("Add", "Misc_Empty", () => SuperController.singleton.AddAtomByType("Empty", true, true, true));
+        CreateAction("Add", "Misc_ImagePanel", () => SuperController.singleton.AddAtomByType("ImagePanel", true, true, true));
+        CreateAction("Add", "Misc_SimpleSign", () => SuperController.singleton.AddAtomByType("SimpleSign", true, true, true));
+        CreateAction("Add", "Misc_SubScene", () => SuperController.singleton.AddAtomByType("SubScene", true, true, true));
+        CreateAction("Add", "Misc_UIText", () => SuperController.singleton.AddAtomByType("UIText", true, true, true));
+        CreateAction("Add", "Misc_VaMLogo", () => SuperController.singleton.AddAtomByType("VaMLogo", true, true, true));
+        CreateAction("Add", "Misc_WebBrowser", () => SuperController.singleton.AddAtomByType("WebBrowser", true, true, true));
+        CreateAction("Add", "Misc_WebPanel", () => SuperController.singleton.AddAtomByType("WebPanel", true, true, true));
+        CreateAction("Add", "People_Person", () => SuperController.singleton.AddAtomByType("Person", true, true, true));
+        CreateAction("Add", "Reflective_Glass", () => SuperController.singleton.AddAtomByType("Glass", true, true, true));
+        CreateAction("Add", "Reflective_ReflectiveSlate", () => SuperController.singleton.AddAtomByType("ReflectiveSlate", true, true, true));
+        CreateAction("Add", "Reflective_ReflectiveWoodPanel", () => SuperController.singleton.AddAtomByType("ReflectiveWoodPanel", true, true, true));
+        CreateAction("Add", "Shapes_Cube", () => SuperController.singleton.AddAtomByType("Cube", true, true, true));
+        CreateAction("Add", "Shapes_Sphere", () => SuperController.singleton.AddAtomByType("Sphere", true, true, true));
+        CreateAction("Add", "Shapes_Capsule", () => SuperController.singleton.AddAtomByType("Capsule", true, true, true));
+        CreateAction("Add", "Sound_AudioSource", () => SuperController.singleton.AddAtomByType("AudioSource", true, true, true));
+        CreateAction("Add", "Toys_Dildo", () => SuperController.singleton.AddAtomByType("Dildo", true, true, true));
+        CreateAction("Add", "Triggers_CollisionTrigger", () => SuperController.singleton.AddAtomByType("CollisionTrigger", true, true, true));
+        CreateAction("Add", "Triggers_LookAtTrigger", () => SuperController.singleton.AddAtomByType("LookAtTrigger", true, true, true));
+        CreateAction("Add", "Triggers_UIButton", () => SuperController.singleton.AddAtomByType("UIButton", true, true, true));
+        CreateAction("Add", "Triggers_UISlider", () => SuperController.singleton.AddAtomByType("UISlider", true, true, true));
+        CreateAction("Add", "Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
+        CreateAction("Add", "Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
         // Animation
-        CreateAction("SceneAnimation_StartPlayback", () => SuperController.singleton.motionAnimationMaster.StartPlayback());
-        CreateAction("SceneAnimation_StopPlayback", () => SuperController.singleton.motionAnimationMaster.StopPlayback());
-        CreateAction("SceneAnimation_Reset", () => SuperController.singleton.motionAnimationMaster.ResetAnimation());
+        CreateAction("Animations", "StartPlayback", () => SuperController.singleton.motionAnimationMaster.StartPlayback());
+        CreateAction("Animations", "StopPlayback", () => SuperController.singleton.motionAnimationMaster.StopPlayback());
+        CreateAction("Animations", "Reset", () => SuperController.singleton.motionAnimationMaster.ResetAnimation());
         // TODO: Add more options
 
         // Time
-        CreateAction("TimeScale_Set_Normal", () => TimeControl.singleton.currentScale = 1f);
-        CreateAction("TimeScale_Set_Half", () => TimeControl.singleton.currentScale = 0.5f);
-        CreateAction("TimeScale_Set_Quarter", () => TimeControl.singleton.currentScale = 0.25f);
-        CreateAction("TimeScale_Set_Minimum", () => TimeControl.singleton.currentScale = 0.1f);
-        CreateAction("Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
+        CreateAction("Time", "TimeScale_Set_Normal", () => TimeControl.singleton.currentScale = 1f);
+        CreateAction("Time", "TimeScale_Set_Half", () => TimeControl.singleton.currentScale = 0.5f);
+        CreateAction("Time", "TimeScale_Set_Quarter", () => TimeControl.singleton.currentScale = 0.25f);
+        CreateAction("Time", "TimeScale_Set_Minimum", () => TimeControl.singleton.currentScale = 0.1f);
+        CreateAction("Time", "Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
+
+        // Movement
+        // TODO: These won't do. They don't move the expected value.
+        CreateAction("Move", "Move_X_+0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, 1f));
+        CreateAction("Move", "Move_X_-0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -1f));
+        // TODO: Add camera relative and rotation
+
+        // Logging
+        CreateAction("Logs", "ClearMessageLog", SuperController.singleton.ClearMessages);
+        CreateAction("Logs", "ClearErrorLog", SuperController.singleton.ClearErrors);
+        CreateAction("Logs", "OpenErrorLog", SuperController.singleton.OpenErrorLogPanel);
+        CreateAction("Logs", "OpenMessageLog", SuperController.singleton.OpenMessageLogPanel);
+        CreateAction("Logs", "CloseErrorLog", SuperController.singleton.CloseErrorLogPanel);
+        CreateAction("Logs", "CloseMessageLog", SuperController.singleton.CloseMessageLogPanel);
+        CreateAction("Logs", "ToggleErrorLog", () => SuperController.singleton.errorLogPanel.gameObject.SetActive(!SuperController.singleton.errorLogPanel.gameObject.activeSelf));
+        CreateAction("Logs", "ToggleMessageLog", () => SuperController.singleton.msgLogPanel.gameObject.SetActive(!SuperController.singleton.msgLogPanel.gameObject.activeSelf));
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
     }
 
-    private void CreateAction(string jsaName, JSONStorableAction.ActionCallback fn)
+    private void CreateAction(string ns, string jsaName, Action fn)
     {
-        var jsa = new JSONStorableAction(jsaName, fn);
-        _commands.Add(jsa);
-    }
-
-    public void OnBindingsListRequested(ICollection<object> bindings)
-    {
-        bindings.Add(CommandSettings.Create("Global"));
-        foreach (var action in _commands)
-        {
-            bindings.Add(action);
-        }
+        _remoteCommandsManager.Add(new ActionCommandInvoker(_owner, ns, jsaName, fn));
     }
 
     private void ReloadAllScenePlugins()
@@ -233,22 +233,6 @@ public class GlobalCommands : ICommandsProvider
         SuperController.singleton.activeUI = SuperController.ActiveUI.None;
         SuperController.singleton.CloseMessageLogPanel();
         SuperController.singleton.CloseErrorLogPanel();
-    }
-
-    private static void ToggleMessageLog()
-    {
-        if (SuperController.singleton.msgLogPanel.gameObject.activeSelf)
-            SuperController.singleton.CloseMessageLogPanel();
-        else
-            SuperController.singleton.OpenMessageLogPanel();
-    }
-
-    private static void ToggleErrorLog()
-    {
-        if (SuperController.singleton.errorLogPanel.gameObject.activeSelf)
-            SuperController.singleton.CloseErrorLogPanel();
-        else
-            SuperController.singleton.OpenErrorLogPanel();
     }
 
     private static void OpenMainTab(string tabName)
@@ -300,12 +284,11 @@ public class GlobalCommands : ICommandsProvider
             SuperController.singleton.SelectController(mainController);
             return;
         }
-        if (_selectionHistoryManager.history.Count > 1)
-        {
-            SuperController.singleton.SelectController(_selectionHistoryManager.history[_selectionHistoryManager.history.Count - 2].mainController);
-            _selectionHistoryManager.history.RemoveAt(_selectionHistoryManager.history.Count - 1);
-            return;
-        }
+
+        if (_selectionHistoryManager.history.Count <= 1) return;
+
+        SuperController.singleton.SelectController(_selectionHistoryManager.history[_selectionHistoryManager.history.Count - 2].mainController);
+        _selectionHistoryManager.history.RemoveAt(_selectionHistoryManager.history.Count - 1);
     }
 
     private static void SelectPreviousAtom(string type = null)

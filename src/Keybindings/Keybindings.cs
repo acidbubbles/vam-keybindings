@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
 using UnityEngine;
@@ -47,12 +46,10 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
-        _globalCommands = new GlobalCommands(containingAtom, _selectionHistoryManager);
         _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
+        _globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
         _exporter = new KeybindingsExporter(this, _keyMapManager);
         _fuzzyFinder = new FuzzyFinder();
-
-        _globalCommands.Init();
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
 
@@ -303,9 +300,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
     private void AcquireGlobalCommands()
     {
-        var bindings = new List<object>();
-        _globalCommands.OnBindingsListRequested(bindings);
-        _remoteCommandsManager.TryRegister(this, bindings);
+        _globalCommands.Init();
     }
 
     private void AcquireAllAvailableBroadcastingPlugins()
