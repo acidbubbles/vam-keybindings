@@ -2,5 +2,5 @@
 {
     void Enter();
     void Leave();
-    void Update();
+    void OnKeyDown();
 }

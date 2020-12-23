@@ -114,7 +114,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
             // Do not listen while a keybinding is being recorded
             if (_ui.isRecording) return;
 
-            _currentModeHandler.Update();
+            _currentModeHandler.OnKeyDown();
         }
         catch (Exception e)
         {

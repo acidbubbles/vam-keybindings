@@ -1,8 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class FindModeHandler : IModeHandler
 {
+    private const string _selectByNameCommandNamespace = "Select:";
+
     private readonly IKeybindingsModeSelector _modeSelector;
     private readonly FuzzyFinder _fuzzyFinder;
     private readonly RemoteCommandsManager _remoteCommandsManager;
@@ -19,7 +23,10 @@ public class FindModeHandler : IModeHandler
 
     public void Enter()
     {
-        _fuzzyFinder.Init(_remoteCommandsManager.names);
+        var commands = new List<string>(_remoteCommandsManager.names.Count + SuperController.singleton.GetAtomUIDs().Count);
+        commands.AddRange(_remoteCommandsManager.names);
+        commands.AddRange(SuperController.singleton.GetAtomUIDsWithFreeControllers().Select(x => $"{_selectByNameCommandNamespace}{x}"));
+        _fuzzyFinder.Init(commands);
         var overlay = _overlay.value;
         overlay.autoClear = float.PositiveInfinity;
         overlay.Set(":");
@@ -41,7 +48,7 @@ public class FindModeHandler : IModeHandler
         overlay.Set("");
     }
 
-    public void Update()
+    public void OnKeyDown()
     {
 
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Mouse0))
@@ -55,7 +62,14 @@ public class FindModeHandler : IModeHandler
             var selectedAction =  _fuzzyFinder.current;
             if (selectedAction != null)
             {
-                Invoke(selectedAction);
+                if (selectedAction.StartsWith(_selectByNameCommandNamespace))
+                {
+                    SuperController.singleton.SelectController(SuperController.singleton.GetAtomByUid(selectedAction.Substring(_selectByNameCommandNamespace.Length))?.mainController);
+                }
+                else
+                {
+                    Invoke(selectedAction);
+                }
                 _lastSelectedAction = selectedAction;
             }
             _modeSelector.EnterNormalMode();
