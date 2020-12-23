@@ -1,35 +1,33 @@
 using System;
-using System.Collections;
 using System.Linq;
 using DefaultNamespace;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public interface IKeybindingsSettings
 {
     JSONStorableBool showKeyPressesJSON { get; }
 }
 
-public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
+public interface IKeybindingsModeSelector
 {
+    void EnterNormalMode();
+}
+
+public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKeybindingsModeSelector
+{
+    public JSONStorableBool showKeyPressesJSON { get; private set; }
+
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
     private RemoteCommandsManager _remoteCommandsManager;
     private SelectionHistoryManager _selectionHistoryManager;
     private KeybindingsExporter _exporter;
     private KeybindingsScreen _ui;
-    private KeybindingsOverlay _overlay;
-    private Coroutine _timeoutCoroutine;
-    private KeyMapTreeNode _current;
-    private FuzzyFinder _fuzzyFinder;
+    private FindModeHandler _findModeHandler;
+    private NormalModeHandler _normalModeHandler;
+    private IModeHandler _currentModeHandler;
+    private KeybindingsOverlayReference _overlayReference;
     private bool _valid;
-    private bool _findCommandMode;
-    private bool _ctrlDown;
-    private bool _altDown;
-    private bool _shiftDown;
-    private string _lastSelectedAction;
-    private GlobalCommands _globalCommands;
-    public JSONStorableBool showKeyPressesJSON { get; private set; }
 
     public override void Init()
     {
@@ -45,20 +43,24 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
 
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
-        _selectionHistoryManager = gameObject.AddComponent<SelectionHistoryManager>();
+        _selectionHistoryManager = new SelectionHistoryManager();
         _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
-        _globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
+        var globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
         _exporter = new KeybindingsExporter(this, _keyMapManager);
-        _fuzzyFinder = new FuzzyFinder();
+        _overlayReference = new KeybindingsOverlayReference();
+
+        _findModeHandler = new FindModeHandler(this, _remoteCommandsManager, _overlayReference);
+        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _overlayReference, _remoteCommandsManager);
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
 
-        AcquireBuildInCommands();
-        AcquireGlobalCommands();
+        AcquireBuiltInCommands();
+        globalCommands.Init();
         AcquireAllAvailableBroadcastingPlugins();
 
         _exporter.ImportDefaults();
 
+        EnterNormalMode();
         // TODO: Map multiple bindings to the same action?
 
         _valid = true;
@@ -87,15 +89,15 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
         _ui.Configure();
         if (active) go.SetActive(true);
 
-        _overlay = KeybindingsOverlay.CreateOverlayGameObject(_prefabManager);
-        _overlay.autoClear = Settings.TimeoutLen;
-        // _overlay.Append("Keybindings ready!");
+        var overlay = KeybindingsOverlay.CreateOverlayGameObject(_prefabManager);
+        overlay.autoClear = Settings.TimeoutLen;
+        _overlayReference.value = overlay;
+        // overlay.Append("Keybindings ready!");
     }
 
     public void OnDestroy()
     {
-        if (_overlay != null) Destroy(_overlay.gameObject);
-        if (_selectionHistoryManager != null) Destroy(_selectionHistoryManager);
+        if (_overlayReference?.value != null) Destroy(_overlayReference?.value.gameObject);
         _keyMapManager?.Dispose();
     }
 
@@ -103,24 +105,16 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
     {
         if (!_valid) return;
 
+        _selectionHistoryManager.Update();
+
         try
         {
             // Don't waste resources
             if (!Input.anyKeyDown) return;
-
-            if (_findCommandMode)
-            {
-                HandleControlMode();
-                return;
-            }
-
             // Do not listen while a keybinding is being recorded
             if (_ui.isRecording) return;
 
-            // <C-*> shortcuts can work even in a text field, otherwise text fields have preference
-            if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
-
-            HandleNormalMode();
+            _currentModeHandler.Update();
         }
         catch (Exception e)
         {
@@ -128,179 +122,27 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings
         }
     }
 
-    #region Normal mode
-
-    private void HandleNormalMode()
+    private void EnterFindMode()
     {
-        if (_timeoutCoroutine != null)
-            StopCoroutine(_timeoutCoroutine);
-
-        var current = _current;
-        _current = null;
-        var match = current != null ? DoMatch(current) : null;
-
-        if (match == null)
-        {
-            match = DoMatch(_keyMapManager.root);
-            if (match == null)
-            {
-                if (Input.GetKeyDown(KeyCode.Semicolon) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
-                {
-                    StartFindCommandMode();
-                }
-
-                return;
-            }
-        }
-
-        if (showKeyPressesJSON.val)
-            _overlay.Append(match.keyChord.ToString());
-
-        if (match.next.Count == 0)
-        {
-            if (match.boundCommandName != null)
-                Invoke(match.boundCommandName);
-            return;
-        }
-
-        _current = match;
-        _timeoutCoroutine = StartCoroutine(TimeoutCoroutine());
+        _currentModeHandler?.Leave();
+        _currentModeHandler = _findModeHandler;
+        _currentModeHandler.Enter();
     }
 
-    private KeyMapTreeNode DoMatch(KeyMapTreeNode node)
+    public void EnterNormalMode()
     {
-        _ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-        _altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
-        _shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-
-        for (var i = 0; i < node.next.Count; i++)
-        {
-            var child = node.next[i];
-            if (IsMatch(child.keyChord))
-                return child;
-        }
-
-        return null;
+        _currentModeHandler?.Leave();
+        _currentModeHandler = _normalModeHandler;
+        _currentModeHandler.Enter();
     }
-
-    private bool IsMatch(KeyChord keyChord)
-    {
-        if (!Input.GetKeyDown(keyChord.key)) return false;
-        if (keyChord.ctrl != _ctrlDown) return false;
-        if (keyChord.alt != _altDown) return false;
-        if (keyChord.shift != _shiftDown) return false;
-        return true;
-    }
-
-    private IEnumerator TimeoutCoroutine()
-    {
-        yield return new WaitForSecondsRealtime(Settings.TimeoutLen);
-        if (_current == null) yield break;
-        try
-        {
-            if (_current.boundCommandName != null)
-            {
-                Invoke(_current.boundCommandName);
-                _current = _keyMapManager.root;
-            }
-            _timeoutCoroutine = null;
-        }
-        catch (Exception e)
-        {
-            SuperController.LogError($"{nameof(Keybindings)}.{nameof(TimeoutCoroutine)}: {e}");
-        }
-    }
-
-    private void Invoke(string action)
-    {
-        if(!_remoteCommandsManager.Invoke(action))
-            _overlay.Set($"Action '{action}' not found");
-    }
-
-    #endregion
-
-    #region Control mode
-
-    private void ToggleFindCommandMode()
-    {
-        if (_findCommandMode)
-            LeaveFindCommandMode();
-        else
-            StartFindCommandMode();
-    }
-
-    private void StartFindCommandMode()
-    {
-        _findCommandMode = true;
-        _fuzzyFinder.Init(_remoteCommandsManager.names);
-        _overlay.autoClear = float.PositiveInfinity;
-        _overlay.Set(":");
-        EventSystem.current.SetSelectedGameObject(_overlay.input.gameObject);
-        _overlay.input.text = _lastSelectedAction;
-        _overlay.input.ActivateInputField();
-        _overlay.input.Select();
-        if (_lastSelectedAction != null) _fuzzyFinder.FuzzyFind(_lastSelectedAction);
-    }
-
-    private void LeaveFindCommandMode()
-    {
-        _findCommandMode = false;
-        _fuzzyFinder.Clear();
-        _overlay.input.text = "";
-        _overlay.input.DeactivateInputField();
-        EventSystem.current.SetSelectedGameObject(null);
-        _overlay.autoClear = Settings.TimeoutLen;
-        _overlay.Set("");
-    }
-
-    private void HandleControlMode()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            LeaveFindCommandMode();
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            var selectedAction =  _fuzzyFinder.current;
-            LeaveFindCommandMode();
-            if (selectedAction != null)
-            {
-                Invoke(selectedAction);
-                _lastSelectedAction = selectedAction;
-            }
-            return;
-        }
-
-        var query = _overlay.input.text;
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (query.Length == 0 || _fuzzyFinder.matches < 2) return;
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                _fuzzyFinder.tabIndex = _fuzzyFinder.tabIndex == 0 ? _fuzzyFinder.matches - 1 : (_fuzzyFinder.tabIndex - 1);
-            else
-                _fuzzyFinder.tabIndex = (_fuzzyFinder.tabIndex + 1) % _fuzzyFinder.matches;
-        }
-
-        _overlay.Set(!_fuzzyFinder.FuzzyFind(query) ? "" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
-    }
-
-    #endregion
 
     #region Interop
 
-    private void AcquireBuildInCommands()
+    private void AcquireBuiltInCommands()
     {
-        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", ToggleFindCommandMode));
+        _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "FindCommand", EnterFindMode));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "Settings", OpenSettings));
         _remoteCommandsManager.Add(new ActionCommandInvoker(this, nameof(Keybindings), "ReloadPlugin", ReloadPlugin));
-    }
-
-    private void AcquireGlobalCommands()
-    {
-        _globalCommands.Init();
     }
 
     private void AcquireAllAvailableBroadcastingPlugins()

@@ -8,6 +8,7 @@ public interface IKeyMapManager : IDisposable
 {
     UnityEvent onChanged { get; }
     List<KeyMap> maps { get; }
+    KeyMapTreeNode root { get; }
     void RebuildTree();
     KeyMap GetMapByName(string name);
 }

@@ -8,7 +8,7 @@ public interface ISelectionHistoryManager
     Atom GetLastSelectedAtomOfType(string type);
 }
 
-public class SelectionHistoryManager : MonoBehaviour, ISelectionHistoryManager
+public class SelectionHistoryManager : ISelectionHistoryManager
 {
     private int _lastValidCheck = Time.frameCount;
     private readonly List<Atom> _history = new List<Atom>();

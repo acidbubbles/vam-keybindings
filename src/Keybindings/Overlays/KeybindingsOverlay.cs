@@ -3,6 +3,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class KeybindingsOverlayReference
+{
+    public KeybindingsOverlay value { get; set; }
+}
+
 public class KeybindingsOverlay : MonoBehaviour
 {
     public static KeybindingsOverlay CreateOverlayGameObject(PrefabManager prefabManager)
