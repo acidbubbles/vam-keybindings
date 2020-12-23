@@ -42,7 +42,7 @@ public class FuzzyFinder
             int score;
             if (!DoFuzzyMatch(value, query, out score))
                 continue;
-            _matches.Add(new FuzzyMatch {score = score, value = value + "(" + score + ")"});
+            _matches.Add(new FuzzyMatch {score = score, value = value});
         }
 
         _matches.Sort((x, y) => y.score.CompareTo(x.score));

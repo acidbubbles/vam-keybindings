@@ -173,6 +173,9 @@ public class GlobalCommands
         CreateAction("Add", "Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
         CreateAction("Add", "Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
 
+        // Remove atom
+        CreateAction("Remove", "SelectedAtom", () => SuperController.singleton.RemoveAtom(SuperController.singleton.GetSelectedAtom()));
+
         // Animation
         CreateAction("Animations", "StartPlayback", () => SuperController.singleton.motionAnimationMaster.StartPlayback());
         CreateAction("Animations", "StopPlayback", () => SuperController.singleton.motionAnimationMaster.StopPlayback());
