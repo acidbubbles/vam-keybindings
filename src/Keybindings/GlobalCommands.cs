@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DefaultNamespace;
+using UnityEngine.UI;
 
 public class GlobalCommands
 {
@@ -204,7 +205,19 @@ public class GlobalCommands
         CreateAction("Logs", "CloseMessageLog", SuperController.singleton.CloseMessageLogPanel);
         CreateAction("Logs", "ToggleErrorLog", () => SuperController.singleton.errorLogPanel.gameObject.SetActive(!SuperController.singleton.errorLogPanel.gameObject.activeSelf));
         CreateAction("Logs", "ToggleMessageLog", () => SuperController.singleton.msgLogPanel.gameObject.SetActive(!SuperController.singleton.msgLogPanel.gameObject.activeSelf));
+
+        // Settings
+        CreateAction("Settings", "TogglePerformanceMonitor", TogglePerformanceMonitor);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
+    }
+
+    private static void TogglePerformanceMonitor()
+    {
+        var toggle = UserPreferences.singleton.transform
+            .GetComponentsInChildren<Toggle>(true)?
+            .FirstOrDefault(c => c.name == "PerfMon Toggle");
+        if (toggle == null) return;
+        toggle.isOn = !toggle.isOn;
     }
 
     private void CreateAction(string ns, string jsaName, Action fn)
