@@ -10,6 +10,8 @@ src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
 src/Keybindings/Overlays/KeybindingsOverlay.cs
+src/Keybindings/AnalogHandler.cs
+src/Keybindings/AnalogMap.cs
 src/Keybindings/AnalogMapManager.cs
 src/Keybindings/FindModeHandler.cs
 src/Keybindings/FuzzyFinder.cs

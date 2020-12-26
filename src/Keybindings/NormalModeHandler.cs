@@ -7,20 +7,15 @@ public class NormalModeHandler : IModeHandler
     private readonly MonoBehaviour _owner;
     private readonly IKeybindingsSettings _settings;
     private readonly IKeyMapManager _keyMapManager;
-    private readonly AnalogMapManager _analogMapManager;
     private readonly KeybindingsOverlayReference _overlay;
     private readonly RemoteCommandsManager _remoteCommandsManager;
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
-    private bool _ctrlDown;
-    private bool _altDown;
-    private bool _shiftDown;
 
     public NormalModeHandler(
         MonoBehaviour owner,
         IKeybindingsSettings settings,
         IKeyMapManager keyMapManager,
-        AnalogMapManager analogMapManager,
         KeybindingsOverlayReference overlay,
         RemoteCommandsManager remoteCommandsManager
         )
@@ -28,7 +23,6 @@ public class NormalModeHandler : IModeHandler
         _owner = owner;
         _settings = settings;
         _keyMapManager = keyMapManager;
-        _analogMapManager = analogMapManager;
         _overlay = overlay;
         _remoteCommandsManager = remoteCommandsManager;
     }
@@ -76,29 +70,17 @@ public class NormalModeHandler : IModeHandler
         _timeoutCoroutine = _owner.StartCoroutine(TimeoutCoroutine());
     }
 
-    private KeyMapTreeNode DoMatch(KeyMapTreeNode node)
+    private static KeyMapTreeNode DoMatch(KeyMapTreeNode node)
     {
-        _ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-        _altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
-        _shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
         for (var i = 0; i < node.next.Count; i++)
         {
             var child = node.next[i];
-            if (IsMatch(child.keyChord))
+            if (child.keyChord.IsActive())
                 return child;
         }
 
         return null;
-    }
-
-    private bool IsMatch(KeyChord keyChord)
-    {
-        if (!Input.GetKeyDown(keyChord.key)) return false;
-        if (keyChord.ctrl != _ctrlDown) return false;
-        if (keyChord.alt != _altDown) return false;
-        if (keyChord.shift != _shiftDown) return false;
-        return true;
     }
 
     private IEnumerator TimeoutCoroutine()

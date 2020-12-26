@@ -29,6 +29,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     private IModeHandler _currentModeHandler;
     private KeybindingsOverlayReference _overlayReference;
     private bool _valid;
+    private AnalogHandler _analogHandler;
 
     public override void Init()
     {
@@ -51,7 +52,8 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager);
         _overlayReference = new KeybindingsOverlayReference();
 
-        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _analogMapManager, _overlayReference, _remoteCommandsManager);
+        _analogHandler = new AnalogHandler(_analogMapManager);
+        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _overlayReference, _remoteCommandsManager);
         _findModeHandler = new FindModeHandler(this, _remoteCommandsManager, _overlayReference);
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
@@ -123,6 +125,11 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         {
             SuperController.LogError($"{nameof(Keybindings)}.{nameof(Update)}: {e}");
         }
+    }
+
+    public void FixedUpdate()
+    {
+        _analogHandler.FixedUpdate();
     }
 
     private void EnterFindMode()

@@ -23,6 +23,20 @@ public struct KeyChord
         this.shift = shift;
     }
 
+    public bool IsActive()
+    {
+        // TODO: This is called very often. Should it be cached?
+        var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+        if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
+        if (ctrl != ctrlDown) return false;
+        if (alt != altDown) return false;
+        if (shift != shiftDown) return false;
+        return true;
+    }
+
     public override string ToString()
     {
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
