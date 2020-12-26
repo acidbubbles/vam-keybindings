@@ -10,12 +10,13 @@ src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
 src/Keybindings/Overlays/KeybindingsOverlay.cs
+src/Keybindings/AnalogMapManager.cs
 src/Keybindings/FindModeHandler.cs
 src/Keybindings/FuzzyFinder.cs
 src/Keybindings/GlobalCommands.cs
 src/Keybindings/IModeHandler.cs
 src/Keybindings/Keybindings.cs
-src/Keybindings/KeybindingsExporter.cs
+src/Keybindings/KeybindingsStorage.cs
 src/Keybindings/KeyChord.cs
 src/Keybindings/KeyChordExtensions.cs
 src/Keybindings/KeyCodes.cs

@@ -18,8 +18,9 @@ public class KeybindingsScreen : MonoBehaviour
 
     public IPrefabManager prefabManager { get; set; }
     public IKeyMapManager keyMapManager { get; set; }
+    public IAnalogMapManager analogMapManager { get; set; }
     public RemoteCommandsManager remoteCommandsManager { get; set; }
-    public KeybindingsExporter exporter { get; set; }
+    public KeybindingsStorage storage { get; set; }
     public IKeybindingsSettings settings { get; set; }
 
     public bool isRecording;
@@ -72,16 +73,16 @@ public class KeybindingsScreen : MonoBehaviour
         group.spacing = 20;
 
         var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (overwrite)");
-        importBtn.button.onClick.AddListener(() => exporter.OpenImportDialog(true));
+        importBtn.button.onClick.AddListener(() => storage.OpenImportDialog(true));
 
         var addBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (add)");
-        addBtn.button.onClick.AddListener(() => exporter.OpenImportDialog(false));
+        addBtn.button.onClick.AddListener(() => storage.OpenImportDialog(false));
 
         var exportBtn = prefabManager.CreateButton(toolbarGo.transform, "Export");
-        exportBtn.button.onClick.AddListener(exporter.OpenExportDialog);
+        exportBtn.button.onClick.AddListener(storage.OpenExportDialog);
 
         var makeDefaultBtn = prefabManager.CreateButton(toolbarGo.transform, "Make default");
-        makeDefaultBtn.button.onClick.AddListener(() => exporter.ExportDefault());
+        makeDefaultBtn.button.onClick.AddListener(() => storage.ExportDefault());
 
         prefabManager.CreateSpacer(transform, 10f);
 

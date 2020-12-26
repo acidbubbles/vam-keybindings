@@ -7,6 +7,7 @@ public class NormalModeHandler : IModeHandler
     private readonly MonoBehaviour _owner;
     private readonly IKeybindingsSettings _settings;
     private readonly IKeyMapManager _keyMapManager;
+    private readonly AnalogMapManager _analogMapManager;
     private readonly KeybindingsOverlayReference _overlay;
     private readonly RemoteCommandsManager _remoteCommandsManager;
     private Coroutine _timeoutCoroutine;
@@ -15,11 +16,19 @@ public class NormalModeHandler : IModeHandler
     private bool _altDown;
     private bool _shiftDown;
 
-    public NormalModeHandler(MonoBehaviour owner, IKeybindingsSettings settings, IKeyMapManager keyMapManager, KeybindingsOverlayReference overlay, RemoteCommandsManager remoteCommandsManager)
+    public NormalModeHandler(
+        MonoBehaviour owner,
+        IKeybindingsSettings settings,
+        IKeyMapManager keyMapManager,
+        AnalogMapManager analogMapManager,
+        KeybindingsOverlayReference overlay,
+        RemoteCommandsManager remoteCommandsManager
+        )
     {
         _owner = owner;
         _settings = settings;
         _keyMapManager = keyMapManager;
+        _analogMapManager = analogMapManager;
         _overlay = overlay;
         _remoteCommandsManager = remoteCommandsManager;
     }

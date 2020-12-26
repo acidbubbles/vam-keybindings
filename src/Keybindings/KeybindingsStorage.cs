@@ -3,18 +3,20 @@ using MVR.FileManagementSecure;
 using SimpleJSON;
 using UnityEngine;
 
-public class KeybindingsExporter
+public class KeybindingsStorage
 {
     private const string _saveExt = "keybindings";
     private const string _saveFolder = "Saves\\keybindings";
 
     private readonly MVRScript _plugin;
     private readonly KeyMapManager _keyMapManager;
+    private readonly IAnalogMapManager _analogMapManager;
 
-    public KeybindingsExporter(MVRScript plugin, KeyMapManager keyMapManager)
+    public KeybindingsStorage(MVRScript plugin, KeyMapManager keyMapManager, IAnalogMapManager analogMapManager)
     {
         _plugin = plugin;
         _keyMapManager = keyMapManager;
+        _analogMapManager = analogMapManager;
     }
 
     public void OpenImportDialog(bool clear)
@@ -42,6 +44,7 @@ public class KeybindingsExporter
         var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
         if (jc == null) return false;
         _keyMapManager.RestoreFromJSON(jc["keybindings"]);
+        _analogMapManager.RestoreFromJSON(jc["analogMaps"]);
         return true;
     }
 
@@ -90,7 +93,8 @@ public class KeybindingsExporter
         if (!path.ToLower().EndsWith($".{_saveExt}")) path += $".{_saveExt}";
         var jc = new JSONClass
         {
-            {"keybindings", _keyMapManager.GetJSON()}
+            {"keybindings", _keyMapManager.GetJSON()},
+            {"analogMaps", _analogMapManager.GetJSON()},
         };
         _plugin.SaveJSON(jc, path);
     }

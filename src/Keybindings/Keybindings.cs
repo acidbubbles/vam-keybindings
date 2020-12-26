@@ -19,9 +19,10 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
 
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
+    private AnalogMapManager _analogMapManager;
     private RemoteCommandsManager _remoteCommandsManager;
     private SelectionHistoryManager _selectionHistoryManager;
-    private KeybindingsExporter _exporter;
+    private KeybindingsStorage _storage;
     private KeybindingsScreen _ui;
     private FindModeHandler _findModeHandler;
     private NormalModeHandler _normalModeHandler;
@@ -43,14 +44,15 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
 
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
+        _analogMapManager = new AnalogMapManager();
         _selectionHistoryManager = new SelectionHistoryManager();
         _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
         var globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
-        _exporter = new KeybindingsExporter(this, _keyMapManager);
+        _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager);
         _overlayReference = new KeybindingsOverlayReference();
 
+        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _analogMapManager, _overlayReference, _remoteCommandsManager);
         _findModeHandler = new FindModeHandler(this, _remoteCommandsManager, _overlayReference);
-        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _overlayReference, _remoteCommandsManager);
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
 
@@ -58,7 +60,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         globalCommands.Init();
         AcquireAllAvailableBroadcastingPlugins();
 
-        _exporter.ImportDefaults();
+        _storage.ImportDefaults();
 
         EnterNormalMode();
         // TODO: Map multiple bindings to the same action?
@@ -83,8 +85,9 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         _ui = go.AddComponent<KeybindingsScreen>();
         _ui.prefabManager = _prefabManager;
         _ui.keyMapManager = _keyMapManager;
+        _ui.analogMapManager = _analogMapManager;
         _ui.remoteCommandsManager = _remoteCommandsManager;
-        _ui.exporter = _exporter;
+        _ui.storage = _storage;
         _ui.settings = this;
         _ui.Configure();
         if (active) go.SetActive(true);
