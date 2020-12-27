@@ -1,5 +1,7 @@
-﻿public class JSONStorableActionCommandInvoker : CommandInvokerBase, ICommandInvoker
+﻿public class JSONStorableActionCommandInvoker : CommandInvokerBase, IActionCommandInvoker
 {
+    public string buttonLabel => "Try";
+
     private readonly JSONStorableAction _action;
 
     public JSONStorableActionCommandInvoker(JSONStorable storable, string ns, string localName, JSONStorableAction action)

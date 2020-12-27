@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SimpleJSON;
-using UnityEngine;
 
 public interface IAnalogMapManager
 {
@@ -8,6 +8,7 @@ public interface IAnalogMapManager
     JSONArray GetJSON();
     void RestoreFromJSON(JSONNode mapsJSON);
     void Clear();
+    AnalogMap GetMapByName(string commandName);
 }
 
 public class AnalogMapManager : IAnalogMapManager
@@ -27,21 +28,6 @@ public class AnalogMapManager : IAnalogMapManager
 
     public void RestoreFromJSON(JSONNode mapsJSON)
     {
-        // TEMP
-        // maps.Add(new AnalogMap
-        // {
-        //     axisName = "Mouse X",
-        //     chord = new KeyChord(KeyCode.None, true, false, false),
-        //     commandName = "test"
-        // });
-        //
-        // maps.Add(new AnalogMap
-        // {
-        //     axisName = "LeftStickX",
-        //     chord = new KeyChord(KeyCode.None, false, false, false),
-        //     commandName = "test"
-        // });
-
         foreach (JSONNode mapJSON in mapsJSON.AsArray)
         {
             var map = new AnalogMap();
@@ -53,5 +39,10 @@ public class AnalogMapManager : IAnalogMapManager
     public void Clear()
     {
         maps.Clear();
+    }
+
+    public AnalogMap GetMapByName(string commandName)
+    {
+        return maps.FirstOrDefault(m => m.commandName == commandName);
     }
 }

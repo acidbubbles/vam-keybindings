@@ -7,6 +7,7 @@ public static class KeyCodes
 {
     private static readonly Dictionary<KeyCode, string> _keyCodeToCharMap = new Dictionary<KeyCode, string>()
     {
+        {KeyCode.None, ""},
         {KeyCode.A, "a"},
         {KeyCode.B, "b"},
         {KeyCode.C, "c"},
@@ -110,6 +111,17 @@ public static class KeyCodes
         .ToArray();
 
     public static KeyCode GetCurrent(this KeyCode[] keyCodes)
+    {
+        for (var i = 0; i < keyCodes.Length; i++)
+        {
+            var key = keyCodes[i];
+            if (Input.GetKey(key)) return key;
+        }
+
+        return KeyCode.None;
+    }
+
+    public static KeyCode GetCurrentDown(this KeyCode[] keyCodes)
     {
         for (var i = 0; i < keyCodes.Length; i++)
         {

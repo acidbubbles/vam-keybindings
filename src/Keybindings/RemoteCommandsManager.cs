@@ -12,10 +12,11 @@ public class RemoteCommandsManager
 
     private readonly SelectionHistoryManager _selectionHistoryManager;
 
-    // NOTE: We'll want multiple actions for the same name, based on the last select atom for example.
-    private readonly Dictionary<string, List<ICommandInvoker>> _commandsMap = new Dictionary<string, List<ICommandInvoker>>();
+    private readonly Dictionary<string, List<IActionCommandInvoker>> _actionCommandsByName = new Dictionary<string, List<IActionCommandInvoker>>();
+    private readonly Dictionary<string, List<IAnalogCommandInvoker>> _analogCommandsByName = new Dictionary<string, List<IAnalogCommandInvoker>>();
     public List<string> names { get; } = new List<string>();
-    public IEnumerable<ICommandInvoker> commands => _commandsMap.Select(kvp => kvp.Value[0]);
+    public IEnumerable<IActionCommandInvoker> actionCommands => _actionCommandsByName.Select(kvp => kvp.Value[0]);
+    public IEnumerable<IAnalogCommandInvoker> analogCommands => _analogCommandsByName.Select(kvp => kvp.Value[0]);
 
     public RemoteCommandsManager(SelectionHistoryManager selectionHistoryManager)
     {
@@ -24,16 +25,14 @@ public class RemoteCommandsManager
 
     public bool Invoke(string name)
     {
-        List<ICommandInvoker> commandInvokers;
-        if (!_commandsMap.TryGetValue(name, out commandInvokers))
+        List<IActionCommandInvoker> commandInvokers;
+        if (!_actionCommandsByName.TryGetValue(name, out commandInvokers))
         {
             return false;
         }
 
-        // TODO: Use the SelectionHistoryManager to find the best match if there's more than one
         var commandInvoker = SelectCommandInvoker(commandInvokers);
 
-        // TODO: This can probably be merged with SelectionHistoryManager
         if (!ValidateReceiver(commandInvoker.storable))
             return false;
 
@@ -49,7 +48,32 @@ public class RemoteCommandsManager
         }
     }
 
-    private ICommandInvoker SelectCommandInvoker(IList<ICommandInvoker> commandInvokers)
+    public bool UpdateValue(string name, float value)
+    {
+        List<IAnalogCommandInvoker> commandInvokers;
+        if (!_analogCommandsByName.TryGetValue(name, out commandInvokers))
+        {
+            return false;
+        }
+
+        var commandInvoker = SelectCommandInvoker(commandInvokers);
+
+        if (!ValidateReceiver(commandInvoker.storable))
+            return false;
+
+        try
+        {
+            commandInvoker.UpdateValue(value);
+            return true;
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"Keybindings: Failed invoking {commandInvoker.commandName}: {exc}");
+            return false;
+        }
+    }
+
+    private T SelectCommandInvoker<T>(IList<T> commandInvokers) where T : ICommandInvoker
     {
         for (var i = _selectionHistoryManager.history.Count - 1; i >= 0; i--)
         {
@@ -124,26 +148,47 @@ public class RemoteCommandsManager
                 continue;
             }
 
+            var storableFloat = binding as JSONStorableFloat;
+            if (storableFloat != null)
+            {
+                var invoker = new JSONStorableFloatCommandInvoker(storable, commandNamespace, storableFloat.name, storableFloat);
+                Add(invoker);
+                continue;
+            }
+
             SuperController.LogError(
                 $"Keybindings: Received unknown binding type {binding.GetType()} from {storable.name} in atom {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}.");
         }
 
         names.Clear();
-        names.AddRange(_commandsMap.Select(kvp => kvp.Key));
+        names.AddRange(_actionCommandsByName.Select(kvp => kvp.Key));
         names.Sort();
     }
 
-    public void Add(ICommandInvoker invoker)
+    public void Add(IActionCommandInvoker invoker)
     {
-        List<ICommandInvoker> commandInvokers;
-        if (!_commandsMap.TryGetValue(invoker.commandName, out commandInvokers))
+        Add(_actionCommandsByName, invoker, true);
+    }
+
+    public void Add(IAnalogCommandInvoker invoker)
+    {
+        Add(_analogCommandsByName, invoker, false);
+    }
+
+    private void Add<T>(Dictionary<string, List<T>> commandsByName, T invoker, bool findable) where T : ICommandInvoker
+    {
+        List<T> commandInvokers;
+        if (!commandsByName.TryGetValue(invoker.commandName, out commandInvokers))
         {
-            commandInvokers = new List<ICommandInvoker>(1);
-            _commandsMap.Add(invoker.commandName, commandInvokers);
+            commandInvokers = new List<T>(1);
+            commandsByName.Add(invoker.commandName, commandInvokers);
         }
         commandInvokers.Add(invoker);
-        // TODO: This line is weird
-        names.Add(invoker.commandName);
+        if (findable)
+        {
+            // TODO: This line is weird
+            names.Add(invoker.commandName);
+        }
     }
 
     private static string GetNamespace(string storableName)
@@ -155,7 +200,7 @@ public class RemoteCommandsManager
     public void Remove(JSONStorable storable)
     {
         var commandToRemove = new List<string>();
-        foreach (var commandInvokers in _commandsMap)
+        foreach (var commandInvokers in _actionCommandsByName)
         {
             // TODO: Single might be overkill
             commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
@@ -165,7 +210,7 @@ public class RemoteCommandsManager
 
         foreach (var commandName in commandToRemove)
         {
-            _commandsMap.Remove(commandName);
+            _actionCommandsByName.Remove(commandName);
             // TODO: When we map multiple targets to an action name, check if it's the last
             names.Remove(commandName);
         }
@@ -173,6 +218,7 @@ public class RemoteCommandsManager
 
     private bool ValidateReceiver(JSONStorable storable)
     {
+        // TODO: Maybe we should avoid calling that in FixedUpdate for every mapped command
         if (storable == null)
         {
             Remove(storable);

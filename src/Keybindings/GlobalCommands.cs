@@ -9,6 +9,15 @@ public class GlobalCommands
     private readonly Atom _containingAtom;
     private readonly ISelectionHistoryManager _selectionHistoryManager;
     private readonly RemoteCommandsManager _remoteCommandsManager;
+    private JSONStorableFloat _moveX;
+    private JSONStorableFloat _moveY;
+    private JSONStorableFloat _moveZ;
+    private JSONStorableFloat _moveCameraX;
+    private JSONStorableFloat _moveCameraY;
+    private JSONStorableFloat _moveCameraZ;
+    private JSONStorableFloat _rotateX;
+    private JSONStorableFloat _rotateY;
+    private JSONStorableFloat _rotateZ;
 
     public GlobalCommands(JSONStorable owner, Atom containingAtom, ISelectionHistoryManager selectionHistoryManager, RemoteCommandsManager remoteCommandsManager)
     {
@@ -194,6 +203,15 @@ public class GlobalCommands
         // TODO: These won't do. They don't move the expected value.
         CreateAction("Move", "Move_X_+0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, 1f));
         CreateAction("Move", "Move_X_-0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -1f));
+        _moveX = CreateAnalog("Move", "Move_Absolute_X");
+        _moveY = CreateAnalog("Move", "Move_Absolute_Y");
+        _moveZ = CreateAnalog("Move", "Move_Absolute_Z");
+        _moveCameraX = CreateAnalog("Move", "Move_Camera_X");
+        _moveCameraY = CreateAnalog("Move", "Move_Camera_Y");
+        _moveCameraZ = CreateAnalog("Move", "Move_Camera_Z");
+        _rotateX = CreateAnalog("Rotate", "Rotate_Absolute_X");
+        _rotateY = CreateAnalog("Rotate", "Rotate_Absolute_Y");
+        _rotateZ = CreateAnalog("Rotate", "Rotate_Absolute_Z");
         // TODO: Add camera relative and rotation
 
         // Logging
@@ -211,6 +229,22 @@ public class GlobalCommands
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
     }
 
+    private const float _moveMultiplier = 16f; // TODO: Based on camera distance from model?
+    private const float _rotateMultiplier = 32f;
+
+    public void FixedUpdate()
+    {
+        if(_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -_moveX.val * _moveMultiplier);
+        if(_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, -_moveY.val * _moveMultiplier);
+        if(_moveZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Z, -_moveZ.val * _moveMultiplier);
+        if(_moveCameraX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraRight, _moveCameraX.val * _moveMultiplier);
+        if(_moveCameraY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraUp, -_moveCameraY.val * _moveMultiplier);
+        if(_moveCameraZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraForward, _moveCameraZ.val * _moveMultiplier);
+        if(_rotateX.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.X, _rotateX.val * _rotateMultiplier);
+        if(_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * _rotateMultiplier);
+        if(_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * _rotateMultiplier);
+    }
+
     private static void TogglePerformanceMonitor()
     {
         var toggle = UserPreferences.singleton.transform
@@ -223,6 +257,13 @@ public class GlobalCommands
     private void CreateAction(string ns, string jsaName, Action fn)
     {
         _remoteCommandsManager.Add(new ActionCommandInvoker(_owner, ns, jsaName, fn));
+    }
+
+    private JSONStorableFloat CreateAnalog(string ns, string jsfName)
+    {
+        var jsf = new JSONStorableFloat(jsfName, 0f, -1f, 1f);
+        _remoteCommandsManager.Add(new JSONStorableFloatCommandInvoker(_owner, ns, jsfName, jsf));
+        return jsf;
     }
 
     private void ReloadAllScenePlugins()

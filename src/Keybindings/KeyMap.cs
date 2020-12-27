@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using SimpleJSON;
 
-public class KeyMap
+public class KeyMap : IMap
 {
     public KeyChord[] chords { get; set; }
     public string commandName { get; set; }
@@ -34,6 +34,11 @@ public class KeyMap
     {
         chords = mapJSON["chords"].AsArray.Childs.Select(KeyChord.FromJSON).ToArray();
         commandName = mapJSON["action"].Value;
+    }
+
+    public string GetPrettyString()
+    {
+        return chords.GetKeyChordsAsString();
     }
 
     public override string ToString()

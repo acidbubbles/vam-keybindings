@@ -8,6 +8,7 @@ src/Keybindings/CommandInvokers/CommandInvokerBase.cs
 src/Keybindings/CommandInvokers/DisabledCommandInvoker.cs
 src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
+src/Keybindings/CommandInvokers/JSONStorableFloatCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
 src/Keybindings/Overlays/KeybindingsOverlay.cs
 src/Keybindings/AnalogHandler.cs
@@ -16,6 +17,7 @@ src/Keybindings/AnalogMapManager.cs
 src/Keybindings/FindModeHandler.cs
 src/Keybindings/FuzzyFinder.cs
 src/Keybindings/GlobalCommands.cs
+src/Keybindings/IMap.cs
 src/Keybindings/IModeHandler.cs
 src/Keybindings/Keybindings.cs
 src/Keybindings/KeybindingsStorage.cs

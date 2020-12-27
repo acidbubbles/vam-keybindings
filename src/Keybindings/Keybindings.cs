@@ -21,6 +21,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     private KeyMapManager _keyMapManager;
     private AnalogMapManager _analogMapManager;
     private RemoteCommandsManager _remoteCommandsManager;
+    private GlobalCommands _globalCommands;
     private SelectionHistoryManager _selectionHistoryManager;
     private KeybindingsStorage _storage;
     private KeybindingsScreen _ui;
@@ -48,18 +49,18 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         _analogMapManager = new AnalogMapManager();
         _selectionHistoryManager = new SelectionHistoryManager();
         _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
-        var globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
+        _globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
         _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager);
         _overlayReference = new KeybindingsOverlayReference();
 
-        _analogHandler = new AnalogHandler(_analogMapManager);
+        _analogHandler = new AnalogHandler(_remoteCommandsManager, _analogMapManager);
         _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _overlayReference, _remoteCommandsManager);
         _findModeHandler = new FindModeHandler(this, _remoteCommandsManager, _overlayReference);
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
 
         AcquireBuiltInCommands();
-        globalCommands.Init();
+        _globalCommands.Init();
         AcquireAllAvailableBroadcastingPlugins();
 
         _storage.ImportDefaults();
@@ -129,7 +130,9 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
 
     public void FixedUpdate()
     {
+        if (!_valid) return;
         _analogHandler.FixedUpdate();
+        _globalCommands.FixedUpdate();
     }
 
     private void EnterFindMode()

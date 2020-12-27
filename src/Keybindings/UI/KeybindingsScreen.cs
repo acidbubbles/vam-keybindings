@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -163,20 +162,27 @@ public class KeybindingsScreen : MonoBehaviour
 
     private void CreateRows()
     {
-        var unloadedCommands = keyMapManager.maps.Select(m => m.commandName).ToList();
-        foreach (var group in remoteCommandsManager.commands.GroupBy(c => c.ns))
+        var unloadedCommands = keyMapManager.maps.Select(m => m.commandName).Concat(analogMapManager.maps.Select(m => m.commandName)).ToList();
+
+        // ReSharper disable once RedundantEnumerableCastCall
+        var commands = remoteCommandsManager.actionCommands.Cast<ICommandInvoker>().Concat(remoteCommandsManager.analogCommands.Cast<ICommandInvoker>());
+        foreach (var group in commands.GroupBy(c => c.ns))
         {
             AddGroupRow(@group.Key);
 
-            foreach (var command in @group)
+            foreach (var command in @group.OrderBy(g => g.localName))
             {
                 AddEditRow(command, true);
                 unloadedCommands.Remove(command.commandName);
             }
         }
 
-        if (unloadedCommands.Count == 0) return;
-        foreach (var group in unloadedCommands.Select(c => new DisabledCommandInvoker(c)).GroupBy(c => c.ns))
+        if (unloadedCommands.Count <= 0) return;
+
+        var disabledCommandInvokers = unloadedCommands
+            .Select(c => new DisabledCommandInvoker(c, keyMapManager.GetMapByName(c)?.GetPrettyString() ?? analogMapManager.GetMapByName(c)?.GetPrettyString() ?? "Error"));
+
+        foreach (var group in disabledCommandInvokers.GroupBy(c => c.ns))
         {
             AddGroupRow($"[unloaded] {@group.Key}");
 
@@ -251,6 +257,9 @@ public class KeybindingsScreen : MonoBehaviour
         var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
         displayNameLayout.flexibleWidth = 1000f;
 
+        var actionCommandInvoker = commandInvoker as IActionCommandInvoker;
+        var analogCommandInvoker = commandInvoker as IAnalogCommandInvoker;
+
         var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker));
         bindingBtn.button.onClick.AddListener(() =>
         {
@@ -258,7 +267,10 @@ public class KeybindingsScreen : MonoBehaviour
             _setBindingBtn = bindingBtn;
             _setBindingCommandInvoker = commandInvoker;
             _setBindingRestoreColor = bindingBtn.buttonColor;
-            _setKeybindingCoroutine = StartCoroutine(SetKeybinding());
+            if (actionCommandInvoker != null)
+                _setKeybindingCoroutine = StartCoroutine(SetKeybinding());
+            else if (analogCommandInvoker != null)
+                _setKeybindingCoroutine = StartCoroutine(SetAnalog());
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
             bindingBtn.label = "Recording...";
         });
@@ -267,9 +279,11 @@ public class KeybindingsScreen : MonoBehaviour
         bindingLayout.minWidth = 400f;
         bindingLayout.preferredWidth = 400f;
 
-        var editBtn = prefabManager.CreateButton(go.transform, "Try");
-        editBtn.button.onClick.AddListener(commandInvoker.Invoke);
-        editBtn.button.interactable = invokable;
+        var editBtn = prefabManager.CreateButton(go.transform, commandInvoker.buttonLabel);
+        editBtn.button.interactable = invokable && commandInvoker.buttonLabel != null;
+        if (invokable && actionCommandInvoker != null)
+            editBtn.button.onClick.AddListener(actionCommandInvoker.Invoke);
+
         var editLayout = editBtn.GetComponent<LayoutElement>();
         editLayout.minWidth = 80f;
         editLayout.preferredWidth = 80f;
@@ -297,6 +311,58 @@ public class KeybindingsScreen : MonoBehaviour
         _setBindingBtn.buttonColor = _setBindingRestoreColor;
         _setBindingBtn.label = GetMappedBinding(_setBindingCommandInvoker);
         if (_setKeybindingCoroutine != null) StopCoroutine(_setKeybindingCoroutine);
+        _setKeybindingCoroutine = null;
+    }
+
+    private static readonly string[] _knownAxisNames = new[] {"Mouse X", "Mouse Y", "Mouse ScrollWheel", "LeftStickX", "LeftStickY", "RightStickX", "RightStickY", "Triggers", "DPadX", "DPadY", "Axis6", "Axis7", "Axis8"};
+
+    private IEnumerator SetAnalog()
+    {
+        isRecording = true;
+        while (true)
+        {
+            yield return 0;
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                break;
+            if (Input.GetKeyDown(KeyCode.Escape))
+                break;
+
+            var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+            var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+            foreach (var axisName in _knownAxisNames)
+            {
+                if (Mathf.Abs(Input.GetAxis(axisName)) < 0.75f) continue;
+                var key = KeyCodes.bindableKeyCodes.GetCurrent();
+                // We don't want to take over the mouse!
+                if (axisName.StartsWith("Mouse") && key == KeyCode.None && !ctrlDown && !shiftDown && !altDown) continue;
+                var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
+
+                var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == _setBindingCommandInvoker.commandName);
+                if (previousMap != null)
+                {
+                    remoteCommandsManager.UpdateValue(previousMap.commandName, 0);
+                    analogMapManager.maps.Remove(previousMap);
+                }
+                var conflictMap = analogMapManager.maps.FirstOrDefault(m => m.chord.Equals(binding) && m.axisName == axisName);
+                if (conflictMap != null)
+                {
+                    remoteCommandsManager.UpdateValue(conflictMap.commandName, 0);
+                    analogMapManager.maps.Remove(conflictMap);
+                    var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
+                    if (conflictRow != null)
+                        conflictRow.bindingBtn.label = _notBoundButtonLabel;
+                    SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
+                }
+                analogMapManager.maps.Add(new AnalogMap(binding, axisName, _setBindingCommandInvoker.commandName));
+                StopRecording();
+                yield break;
+            }
+        }
+
+        StopRecording();
     }
 
     private IEnumerator SetKeybinding()
@@ -319,7 +385,7 @@ public class KeybindingsScreen : MonoBehaviour
                 yield break;
             }
 
-            var key = KeyCodes.bindableKeyCodes.GetCurrent();
+            var key = KeyCodes.bindableKeyCodes.GetCurrentDown();
             if (key == KeyCode.None) continue;
 
             var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
@@ -350,7 +416,6 @@ public class KeybindingsScreen : MonoBehaviour
                     conflictRow.bindingBtn.label = _notBoundButtonLabel;
                 SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
             }
-            // TODO: Detect when a key binding already exists and will be overwritten
             keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.commandName));
             keyMapManager.RebuildTree();
         }
@@ -359,9 +424,24 @@ public class KeybindingsScreen : MonoBehaviour
 
     private string GetMappedBinding(ICommandInvoker commandInvoker)
     {
-        var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
-        return mapped != null
-            ? mapped.chords.GetKeyChordsAsString()
-            : _notBoundButtonLabel;
+        if (commandInvoker is IActionCommandInvoker)
+        {
+            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
+            return mapped?.GetPrettyString() ?? _notBoundButtonLabel;
+        }
+
+        if (commandInvoker is IAnalogCommandInvoker)
+        {
+            var mapped = analogMapManager.GetMapByName(commandInvoker.commandName);
+            return mapped?.GetPrettyString() ?? _notBoundButtonLabel;
+        }
+
+        var disabledCommandInvoker = commandInvoker as DisabledCommandInvoker;
+        if (disabledCommandInvoker != null)
+        {
+            return disabledCommandInvoker.prettyString;
+        }
+
+        return _notBoundButtonLabel;
     }
 }
