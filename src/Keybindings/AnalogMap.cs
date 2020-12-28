@@ -6,6 +6,7 @@ public class AnalogMap :  IMap
     public KeyChord chord { get; set; }
     public string axisName { get; set; }
     public string commandName { get; set; }
+    public bool isActive { get; set; }
 
     public AnalogMap()
     {

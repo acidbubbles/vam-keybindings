@@ -33,9 +33,6 @@ public class RemoteCommandsManager
 
         var commandInvoker = SelectCommandInvoker(commandInvokers);
 
-        if (!ValidateReceiver(commandInvoker.storable))
-            return false;
-
         try
         {
             commandInvoker.Invoke();
@@ -58,9 +55,6 @@ public class RemoteCommandsManager
 
         var commandInvoker = SelectCommandInvoker(commandInvokers);
 
-        if (!ValidateReceiver(commandInvoker.storable))
-            return false;
-
         try
         {
             commandInvoker.UpdateValue(value);
@@ -82,6 +76,16 @@ public class RemoteCommandsManager
                 var commandInvoker = commandInvokers[invokerIndex];
                 if (commandInvoker.storable.containingAtom == _selectionHistoryManager.history[i])
                 {
+                    if (commandInvoker.storable == null)
+                    {
+                        commandInvokers.RemoveAt(invokerIndex);
+                        invokerIndex--;
+                        continue;
+                    }
+
+                    if (!commandInvoker.storable.isActiveAndEnabled)
+                        continue;
+
                     return commandInvoker;
                 }
             }
@@ -214,24 +218,5 @@ public class RemoteCommandsManager
             // TODO: When we map multiple targets to an action name, check if it's the last
             names.Remove(commandName);
         }
-    }
-
-    private bool ValidateReceiver(JSONStorable storable)
-    {
-        // TODO: Maybe we should avoid calling that in FixedUpdate for every mapped command
-        if (storable == null)
-        {
-            Remove(storable);
-            SuperController.LogError($"Keybindings: The receiver does not exist anymore.");
-            return false;
-        }
-
-        if (!storable.isActiveAndEnabled)
-        {
-            SuperController.LogError($"Keybindings: The receiver {(storable.containingAtom != null ? storable.containingAtom.name : "(destroyed)")}/{storable.name} is disabled.");
-            return false;
-        }
-
-        return true;
     }
 }
