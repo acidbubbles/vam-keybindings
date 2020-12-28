@@ -154,6 +154,10 @@ public class GlobalCommands
         // Dev
         CreateAction("Plugins", "ReloadAllScenePlugins", ReloadAllScenePlugins);
 
+        // Edit atom
+        CreateAction("Atom", "EnableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
+        CreateAction("Atom", "DisableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
+
         // Add atom
         CreateAction("Add", "AnimationPattern", () => SuperController.singleton.AddAtomByType("AnimationPattern", true, true, true));
         CreateAction("Add", "FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
@@ -193,6 +197,14 @@ public class GlobalCommands
 
         // Remove atom
         CreateAction("Remove", "SelectedAtom", () => SuperController.singleton.RemoveAtom(SuperController.singleton.GetSelectedAtom()));
+
+        // Edit controller
+        CreateAction("Controller", "PositionState_On", () => OnSelectedController(c => c.currentPositionState = FreeControllerV3.PositionState.On));
+        CreateAction("Controller", "PositionState_Off", () => OnSelectedController(c => c.currentPositionState = FreeControllerV3.PositionState.Off));
+        CreateAction("Controller", "RotationState_On", () => OnSelectedController(c => c.currentRotationState = FreeControllerV3.RotationState.On));
+        CreateAction("Controller", "RotationState_Off", () => OnSelectedController(c => c.currentRotationState = FreeControllerV3.RotationState.Off));
+        CreateAction("Controller", "PositionAndRotationState_On", () => OnSelectedController(c => { c.currentPositionState = FreeControllerV3.PositionState.On; c.currentRotationState = FreeControllerV3.RotationState.On; }));
+        CreateAction("Controller", "PositionAndRotationState_Off", () => OnSelectedController(c => { c.currentPositionState = FreeControllerV3.PositionState.Off; c.currentRotationState = FreeControllerV3.RotationState.Off; }));
 
         // Animation
         CreateAction("Animations", "StartPlayback", () => SuperController.singleton.motionAnimationMaster.StartPlayback());
@@ -239,6 +251,20 @@ public class GlobalCommands
         // Settings
         CreateAction("Settings", "TogglePerformanceMonitor", TogglePerformanceMonitor);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
+    }
+
+    private static void OnSelectedAtom(Action<Atom> fn)
+    {
+        var atom = SuperController.singleton.GetSelectedAtom();
+        if (atom == null) return;
+        fn(atom);
+    }
+
+    private static void OnSelectedController(Action<FreeControllerV3> fn)
+    {
+        var fc = SuperController.singleton.GetSelectedController();
+        if (fc == null) return;
+        fn(fc);
     }
 
     private const float _moveMultiplier = 1f; // TODO: Based on camera distance from model?
