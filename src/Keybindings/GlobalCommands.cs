@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using DefaultNamespace;
 using UnityEngine.UI;
@@ -187,6 +188,7 @@ public class GlobalCommands
         CreateAction("Add", "Triggers_UISlider", () => SuperController.singleton.AddAtomByType("UISlider", true, true, true));
         CreateAction("Add", "Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
         CreateAction("Add", "Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
+        CreateAction("Add", "Clone_CurrentAtom", () => _owner.StartCoroutine(CloneCurrentAtom()));
 
         // Remove atom
         CreateAction("Remove", "SelectedAtom", () => SuperController.singleton.RemoveAtom(SuperController.singleton.GetSelectedAtom()));
@@ -429,5 +431,21 @@ public class GlobalCommands
                 return;
             }
         }
+    }
+
+    private static IEnumerator CloneCurrentAtom()
+    {
+        var atom = SuperController.singleton.GetSelectedAtom();
+        if (atom == null) yield break;
+        if (atom.type == null) yield break;
+        var uid = SuperController.singleton.CreateUID(atom.uid);
+        var enumerator = SuperController.singleton.AddAtomByType(atom.type, uid, true, true, false);
+        while (enumerator.MoveNext())
+        {
+            yield return enumerator.Current;
+        }
+        var clone = SuperController.singleton.GetAtomByUid(uid);
+        if (clone == null) throw new NullReferenceException("Atom was not created");
+        clone.collisionEnabled = false;
     }
 }

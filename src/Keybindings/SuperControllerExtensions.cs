@@ -1,8 +1,40 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public static class SuperControllerExtensions
 {
     // NOTE: Most of this comes from Virt-A-Mate's implementation.
+
+    public static string CreateUID(this SuperController sc, string source)
+    {
+        var uids = new HashSet<string>(sc.GetAtomUIDs());
+        var hashIndex = source.LastIndexOf('#');
+        var startAt = 0;
+        if (hashIndex == -1)
+        {
+            if (!uids.Contains(source)) return source;
+            hashIndex = source.Length;
+            source += "#";
+            startAt = 1;
+        }
+        else
+        {
+            if (int.TryParse(source.Substring(hashIndex + 1), out startAt))
+                startAt++;
+            else
+                startAt = 1;
+            source = source.Substring(0, hashIndex + 1);
+        }
+
+        for (var i = startAt; i < 1000; i++)
+        {
+            var uid = source + i;
+            if (!uids.Contains(uid)) return uid;
+        }
+
+        return source + Guid.NewGuid();
+    }
 
     public static void CameraPan(this SuperController sc, float val, Vector3 direction)
     {
