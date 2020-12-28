@@ -23,6 +23,7 @@ public class KeybindingsScreen : MonoBehaviour
     public IKeybindingsSettings settings { get; set; }
 
     public bool isRecording;
+    public bool _initialized;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
 
@@ -41,8 +42,11 @@ public class KeybindingsScreen : MonoBehaviour
         bg.color = new Color(0.721f, 0.682f, 0.741f);
     }
 
-    public void Awake()
+    public void Initialize()
     {
+        if (_initialized) return;
+        _initialized = true;
+
         var optionsTitle = prefabManager.CreateText(transform, "<b>Options</b>");
         optionsTitle.fontSize = 32;
         optionsTitle.alignment = TextAnchor.MiddleCenter;
@@ -85,13 +89,12 @@ public class KeybindingsScreen : MonoBehaviour
         keybindingsTitle.fontSize = 32;
         keybindingsTitle.alignment = TextAnchor.MiddleCenter;
 
-        var keybindingsSubtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
+        var keybindingsSubtitle = prefabManager.CreateText(transform, @"
+You can configure custom trigger shortcuts in the CustomCommands plugin.
+Commands with an <color=blue>asterisk</color> can be bound to joysticks and mouse axis.
+Mouse movements require a modifier key. Move in the other direction to reverse.".Trim());
         keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
-        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 30;
-
-        var noteSubtitle = prefabManager.CreateText(transform, "<i>Commands with an <color=blue>asterisk</color> can be bound to joysticks and mouse axis</i>");
-        noteSubtitle.alignment = TextAnchor.UpperCenter;
-        noteSubtitle.GetComponent<LayoutElement>().preferredHeight = 50;
+        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 100;
 
         {
             var searchGo = new GameObject();
@@ -154,6 +157,7 @@ public class KeybindingsScreen : MonoBehaviour
 
     public void OnEnable()
     {
+        Initialize();
         CreateRows();
 
         keyMapManager.onChanged.AddListener(OnKeybindingsChanged);
