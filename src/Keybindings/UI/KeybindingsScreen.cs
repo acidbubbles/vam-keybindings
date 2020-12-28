@@ -87,8 +87,11 @@ public class KeybindingsScreen : MonoBehaviour
 
         var keybindingsSubtitle = prefabManager.CreateText(transform, "<i>You can configure custom trigger shortcuts in the CustomCommands plugin</i>");
         keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
-        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
+        keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 30;
 
+        var noteSubtitle = prefabManager.CreateText(transform, "<i>Commands with an <color=blue>asterisk</color> can be bound to joysticks and mouse axis</i>");
+        noteSubtitle.alignment = TextAnchor.UpperCenter;
+        noteSubtitle.GetComponent<LayoutElement>().preferredHeight = 50;
 
         {
             var searchGo = new GameObject();
