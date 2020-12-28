@@ -272,9 +272,9 @@ public class GlobalCommands
 
     public void Update()
     {
-        if(_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -_moveX.val * _moveMultiplier);
-        if(_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, -_moveY.val * _moveMultiplier);
-        if(_moveZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Z, -_moveZ.val * _moveMultiplier);
+        if(_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, _moveX.val * _moveMultiplier);
+        if(_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, _moveY.val * _moveMultiplier);
+        if(_moveZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Z, _moveZ.val * _moveMultiplier);
         if(_moveCameraX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraRight, _moveCameraX.val * _moveMultiplier);
         if(_moveCameraY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraUp, -_moveCameraY.val * _moveMultiplier);
         if(_moveCameraZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraForward, _moveCameraZ.val * _moveMultiplier);

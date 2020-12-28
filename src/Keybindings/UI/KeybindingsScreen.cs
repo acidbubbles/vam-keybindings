@@ -326,7 +326,8 @@ public class KeybindingsScreen : MonoBehaviour
 
             foreach (var axisName in _knownAxisNames)
             {
-                if (Mathf.Abs(Input.GetAxis(axisName)) < 0.75f) continue;
+                var axisValue = Input.GetAxis(axisName);
+                if (Mathf.Abs(axisValue) < 0.75f) continue;
                 var key = KeyCodes.bindableKeyCodes.GetCurrent();
                 // We don't want to take over the mouse!
                 if (axisName.StartsWith("Mouse") && key == KeyCode.None && !ctrlDown && !shiftDown && !altDown) continue;
@@ -348,7 +349,7 @@ public class KeybindingsScreen : MonoBehaviour
                         conflictRow.bindingBtn.label = _notBoundButtonLabel;
                     SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
                 }
-                analogMapManager.maps.Add(new AnalogMap(binding, axisName, commandInvoker.commandName, slot));
+                analogMapManager.maps.Add(new AnalogMap(binding, axisName, axisValue < 0, commandInvoker.commandName, slot));
                 StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }

@@ -20,6 +20,7 @@ public class AnalogHandler
             if (axisValue != 0)
             {
                 map.isActive = true;
+                if (map.reversed) axisValue = -axisValue;
                 _remoteCommandsManager.UpdateValue(map.commandName, axisValue);
             }
             else if (axisValue == 0)
