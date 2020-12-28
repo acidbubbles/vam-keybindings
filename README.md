@@ -2,11 +2,14 @@
 
 > Under development
 
+- Navigate Virt-A-Mate's UI easily
 - Create custom keybindings for Virt-A-Mate
 - Invoke custom triggers in your scenes
 - Fuzzy find commands using autocomplete
 - Use vim-like key sequences or vscode-like shortcuts
 - Access additional built-in features like selection history
+- Use your keyboard or gamepad
+- Integrates with Timeline
 
 ## How to use Keybindings
 
@@ -16,6 +19,8 @@
 2. Open the `Keybindings` custom UI. By default, nothing will be bound. You can import some, or create your own. You should at least bind the `FindCommand` command. For example, let's bind it to <kbd>F12</kbd>. Note that the box will be red for one second. You can type multiple keys if you want to use a multi-key binding, and you can use <kbd>Ctrl</kbd>, <kbd>Shift</kbd> and <kbd>Alt</kbd> if you want.
 3. Now press <kbd>F12</kbd> (or the shortcut you have chosen). On the bottom left you should see a text field. Try typing `add`, and you'll see a command appear. Continue typing to filter out commands, <kbd>Tab</kbd> to cycle through the commands, or <kbd>Shift</kbd> + <kbd>Tab</kbd> to cycle back. Press <kbd>Enter</kbd> to execute the command, or <kbd>Esc</kbd> to cancel. This uses fuzzy searching, so you can type "oppclo" to find "Open_PersonAtom_ClothingTab" quickly.
 4. You can quickly open the keybindings at any time by finding the command `KeybindingsSettings`.
+
+Bindings with an asterisk (`*`) can be bound to joysticks and mouse. You can use modifier keys too, for example you can use <kbd>Alt</kbd> + Mouse X by holding the <kbd>Alt</kbd> key and moving the mouse to the left or to the right.
 
 ## How to use custom triggers
 
@@ -34,9 +39,6 @@
 This plugin is still being actively developed! Here are some gotchas:
 
 - A lot of keybindings are controlled by Virt-A-Mate. The next version will allow Keybindings to take control over those shortcuts too, thanks to [Meshed being very responsive](https://hub.virtamate.com/threads/1-20-1-6-ability-to-disable-or-override-built-in-shortcuts-quick-win.3841/#post-9675)!
-- If you bound a shortcut to a scene command, when that command is not available the binding will be "hidden" and cannot be edited.
-- Only actions can be invoked. Eventually floats and toggles could be implemented.
-- There is no search (yet) in the keybindings screen, so there might be some scrolling involved.
 - Not all useful commands have been implemented, let me know if some of your favorites might be missing! Naming is also subject to change.
 
 ## Integrating your plugins
@@ -82,12 +84,10 @@ You can also optionally provide additional settings to Keybindings by returning 
     }
 ```
 
-## Not implemented yet (todo)
+Supported storables:
 
-- VR controllers and gamepad support
-- Move and rotate controllers
-- Bind more than one key to the same command
-- Fuzzy find by plugin name and atom name
+- `JSONStorableAction` will be invoked on key down
+- `JSONStorableFloat` will receive values between -1 and 1 for joysticks, or the mouse position delta. You should check for their current value in `Update()`.
 
 ## Credits
 
