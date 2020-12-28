@@ -158,21 +158,23 @@ public class KeybindingsScreen : MonoBehaviour
         CreateRows();
 
         keyMapManager.onChanged.AddListener(OnKeybindingsChanged);
+        analogMapManager.onChanged.AddListener(OnKeybindingsChanged);
     }
 
     private void CreateRows()
     {
         var unloadedCommands = keyMapManager.maps.Select(m => m.commandName).Concat(analogMapManager.maps.Select(m => m.commandName)).ToList();
 
-        // ReSharper disable once RedundantEnumerableCastCall
+        // ReSharper disable RedundantEnumerableCastCall
         var commands = remoteCommandsManager.actionCommands.Cast<ICommandInvoker>().Concat(remoteCommandsManager.analogCommands.Cast<ICommandInvoker>());
+        // ReSharper restore RedundantEnumerableCastCall
         foreach (var group in commands.GroupBy(c => c.ns))
         {
             AddGroupRow(@group.Key);
 
             foreach (var command in @group.OrderBy(g => g.localName))
             {
-                AddEditRow(command, true);
+                AddEditRow(command);
                 unloadedCommands.Remove(command.commandName);
             }
         }
@@ -188,7 +190,7 @@ public class KeybindingsScreen : MonoBehaviour
 
             foreach (var command in @group)
             {
-                AddEditRow(command, false);
+                AddEditRow(command);
                 unloadedCommands.Remove(command.commandName);
             }
         }
@@ -197,6 +199,7 @@ public class KeybindingsScreen : MonoBehaviour
     public void OnDisable()
     {
         keyMapManager.onChanged.RemoveListener(OnKeybindingsChanged);
+        analogMapManager.onChanged.RemoveListener(OnKeybindingsChanged);
 
         StopRecording();
         ClearRows();
@@ -240,7 +243,7 @@ public class KeybindingsScreen : MonoBehaviour
         text.alignment = TextAnchor.MiddleLeft;
     }
 
-    private void AddEditRow(ICommandInvoker commandInvoker, bool invokable)
+    private void AddEditRow(ICommandInvoker commandInvoker)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
@@ -253,13 +256,19 @@ public class KeybindingsScreen : MonoBehaviour
         var group = go.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 10f;
 
-        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.localName);
-        var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
-        displayNameLayout.flexibleWidth = 1000f;
-
         var actionCommandInvoker = commandInvoker as IActionCommandInvoker;
         var analogCommandInvoker = commandInvoker as IAnalogCommandInvoker;
 
+        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.localName + (analogCommandInvoker != null ? " *" : ""));
+        if (analogCommandInvoker != null) displayNameText.color = new Color(0, 0.2f, 0.4f);
+        var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
+        displayNameLayout.flexibleWidth = 1000f;
+
+        CreateBindingButton(commandInvoker, go, actionCommandInvoker, analogCommandInvoker, row);
+    }
+
+    private void CreateBindingButton(ICommandInvoker commandInvoker, GameObject go, IActionCommandInvoker actionCommandInvoker, IAnalogCommandInvoker analogCommandInvoker, CommandBindingRow row)
+    {
         var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker));
         bindingBtn.button.onClick.AddListener(() =>
         {
@@ -276,31 +285,8 @@ public class KeybindingsScreen : MonoBehaviour
         });
         row.bindingBtn = bindingBtn;
         var bindingLayout = bindingBtn.GetComponent<LayoutElement>();
-        bindingLayout.minWidth = 400f;
-        bindingLayout.preferredWidth = 400f;
-
-        var editBtn = prefabManager.CreateButton(go.transform, commandInvoker.buttonLabel);
-        editBtn.button.interactable = invokable && commandInvoker.buttonLabel != null;
-        if (invokable && actionCommandInvoker != null)
-            editBtn.button.onClick.AddListener(actionCommandInvoker.Invoke);
-
-        var editLayout = editBtn.GetComponent<LayoutElement>();
-        editLayout.minWidth = 80f;
-        editLayout.preferredWidth = 80f;
-
-        var clearBtn = prefabManager.CreateButton(go.transform, "X");
-        clearBtn.buttonColor = Color.red;
-        clearBtn.textColor = Color.white;
-        clearBtn.button.onClick.AddListener(() =>
-        {
-            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
-            if (mapped != null)
-                keyMapManager.maps.Remove(mapped);
-            bindingBtn.label = _notBoundButtonLabel;
-        });
-        var clearLayout = clearBtn.GetComponent<LayoutElement>();
-        clearLayout.minWidth = 40f;
-        clearLayout.preferredWidth = 40f;
+        bindingLayout.minWidth = 500f;
+        bindingLayout.preferredWidth = 500f;
     }
 
     private void StopRecording()
@@ -324,7 +310,13 @@ public class KeybindingsScreen : MonoBehaviour
             yield return 0;
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                var mapped = keyMapManager.GetMapByName(_setBindingCommandInvoker.commandName);
+                if (mapped != null)
+                    keyMapManager.maps.Remove(mapped);
                 break;
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
                 break;
 
@@ -418,6 +410,12 @@ public class KeybindingsScreen : MonoBehaviour
             }
             keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.commandName));
             keyMapManager.RebuildTree();
+        }
+        else
+        {
+            var mapped = keyMapManager.GetMapByName(_setBindingCommandInvoker.commandName);
+            if (mapped != null)
+                keyMapManager.maps.Remove(mapped);
         }
         StopRecording();
     }

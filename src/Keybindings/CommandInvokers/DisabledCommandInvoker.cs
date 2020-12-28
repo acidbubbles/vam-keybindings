@@ -1,6 +1,5 @@
 ﻿public class DisabledCommandInvoker : ICommandInvoker
 {
-    public string buttonLabel => null;
     public JSONStorable storable => null;
     public string prettyString { get; }
     public string commandName { get; }

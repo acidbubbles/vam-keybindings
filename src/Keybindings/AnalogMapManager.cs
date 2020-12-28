@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
+using UnityEngine.Events;
 
-public interface IAnalogMapManager
+public interface IAnalogMapManager : IDisposable
 {
+    UnityEvent onChanged { get; }
     List<AnalogMap> maps { get; }
     JSONArray GetJSON();
     void RestoreFromJSON(JSONNode mapsJSON);
@@ -13,6 +16,7 @@ public interface IAnalogMapManager
 
 public class AnalogMapManager : IAnalogMapManager
 {
+    public UnityEvent onChanged { get; } = new UnityEvent();
     public List<AnalogMap> maps { get; } = new List<AnalogMap>();
 
     public JSONArray GetJSON()
@@ -34,15 +38,22 @@ public class AnalogMapManager : IAnalogMapManager
             map.RestoreFromJSON(mapJSON);
             maps.Add(map);
         }
+        onChanged.Invoke();
     }
 
     public void Clear()
     {
         maps.Clear();
+        onChanged.Invoke();
     }
 
     public AnalogMap GetMapByName(string commandName)
     {
         return maps.FirstOrDefault(m => m.commandName == commandName);
+    }
+
+    public void Dispose()
+    {
+        onChanged.RemoveAllListeners();
     }
 }

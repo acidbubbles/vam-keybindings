@@ -1,6 +1,5 @@
 ﻿public interface ICommandInvoker
 {
-    string buttonLabel { get; }
     JSONStorable storable { get; }
     string commandName { get; }
     string ns { get; }
