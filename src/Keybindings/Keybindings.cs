@@ -112,6 +112,8 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         if (!_valid) return;
 
         _selectionHistoryManager.Update();
+        _analogHandler.Update();
+        _globalCommands.Update();
 
         try
         {
@@ -126,13 +128,6 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         {
             SuperController.LogError($"{nameof(Keybindings)}.{nameof(Update)}: {e}");
         }
-    }
-
-    public void FixedUpdate()
-    {
-        if (!_valid) return;
-        _analogHandler.FixedUpdate();
-        _globalCommands.FixedUpdate();
     }
 
     private void EnterFindMode()

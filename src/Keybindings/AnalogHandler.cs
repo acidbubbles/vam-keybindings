@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AnalogHandler
 {
@@ -13,23 +11,14 @@ public class AnalogHandler
         _analogMapManager = analogMapManager;
     }
 
-    public void FixedUpdate()
+    public void Update()
     {
         for (var i = 0; i < _analogMapManager.maps.Count; i++)
         {
             var map = _analogMapManager.maps[i];
             // TODO: Right now we're setting zero over and over again. Avoid it or make sure it's FAST
-            float normalized;
-            if (map.chord.IsActive())
-            {
-                var axisValue = Input.GetAxis(map.axisName);
-                normalized = axisValue * Time.fixedUnscaledDeltaTime;
-            }
-            else
-            {
-                normalized = 0;
-            }
-            _remoteCommandsManager.UpdateValue(map.commandName, normalized);
+            var axisValue = map.chord.IsActive() ? Input.GetAxis(map.axisName) : 0;
+            _remoteCommandsManager.UpdateValue(map.commandName, axisValue);
         }
     }
 }

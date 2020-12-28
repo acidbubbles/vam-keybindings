@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DefaultNamespace;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GlobalCommands
@@ -229,10 +230,10 @@ public class GlobalCommands
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
     }
 
-    private const float _moveMultiplier = 16f; // TODO: Based on camera distance from model?
-    private const float _rotateMultiplier = 32f;
+    private const float _moveMultiplier = 1f; // TODO: Based on camera distance from model?
+    private const float _rotateMultiplier = 1f;
 
-    public void FixedUpdate()
+    public void Update()
     {
         if(_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -_moveX.val * _moveMultiplier);
         if(_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, -_moveY.val * _moveMultiplier);
