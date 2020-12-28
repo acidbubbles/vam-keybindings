@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using DefaultNamespace;
-using UnityEngine;
 using UnityEngine.UI;
 
 public class GlobalCommands
@@ -19,6 +18,11 @@ public class GlobalCommands
     private JSONStorableFloat _rotateX;
     private JSONStorableFloat _rotateY;
     private JSONStorableFloat _rotateZ;
+    private JSONStorableFloat _cameraOrbitX;
+    private JSONStorableFloat _cameraOrbitY;
+    private JSONStorableFloat _cameraDollyZoom;
+    private JSONStorableFloat _cameraPanX;
+    private JSONStorableFloat _cameraPanY;
 
     public GlobalCommands(JSONStorable owner, Atom containingAtom, ISelectionHistoryManager selectionHistoryManager, RemoteCommandsManager remoteCommandsManager)
     {
@@ -201,19 +205,23 @@ public class GlobalCommands
         CreateAction("Time", "Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
 
         // Movement
-        // TODO: These won't do. They don't move the expected value.
-        CreateAction("Move", "Move_X_+0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, 1f));
-        CreateAction("Move", "Move_X_-0.1", () => SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, -1f));
         _moveX = CreateAnalog("Move", "Move_Absolute_X");
         _moveY = CreateAnalog("Move", "Move_Absolute_Y");
         _moveZ = CreateAnalog("Move", "Move_Absolute_Z");
-        _moveCameraX = CreateAnalog("Move", "Move_Camera_X");
-        _moveCameraY = CreateAnalog("Move", "Move_Camera_Y");
-        _moveCameraZ = CreateAnalog("Move", "Move_Camera_Z");
+        _moveCameraX = CreateAnalog("Move", "Move_RelativeToCamera_X");
+        _moveCameraY = CreateAnalog("Move", "Move_RelativeToCamera_Y");
+        _moveCameraZ = CreateAnalog("Move", "Move_RelativeToCamera_Z");
         _rotateX = CreateAnalog("Rotate", "Rotate_Absolute_X");
         _rotateY = CreateAnalog("Rotate", "Rotate_Absolute_Y");
         _rotateZ = CreateAnalog("Rotate", "Rotate_Absolute_Z");
-        // TODO: Add camera relative and rotation
+
+        // Camera
+        CreateAction("Camera", "FocusOnSelectedController", () => SuperController.singleton.FocusOnSelectedController());
+        _cameraPanX = CreateAnalog("Camera", "Pan_X");
+        _cameraPanY = CreateAnalog("Camera", "Pan_Y");
+        _cameraOrbitX = CreateAnalog("Camera", "Orbit_X");
+        _cameraOrbitY = CreateAnalog("Camera", "Orbit_Y");
+        _cameraDollyZoom = CreateAnalog("Camera", "DollyZoom");
 
         // Logging
         CreateAction("Logs", "ClearMessageLog", SuperController.singleton.ClearMessages);
@@ -244,6 +252,11 @@ public class GlobalCommands
         if(_rotateX.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.X, _rotateX.val * _rotateMultiplier);
         if(_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * _rotateMultiplier);
         if(_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * _rotateMultiplier);
+        if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right);
+        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
+        if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val);
+        if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val);
+        if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val);
     }
 
     private static void TogglePerformanceMonitor()

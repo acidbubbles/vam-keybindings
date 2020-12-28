@@ -84,6 +84,7 @@
     <Compile Include="src\Keybindings\KeybindingsStorage.cs" />
     <Compile Include="src\Keybindings\NormalModeHandler.cs" />
     <Compile Include="src\Keybindings\SelectionHistoryManager.cs" />
+    <Compile Include="src\Keybindings\SuperControllerExtensions.cs" />
     <Compile Include="src\Shared\CommandSettings.cs" />
     <Compile Include="src\Shared\ICommandsProvider.cs" />
     <Compile Include="src\Shared\ICommandsInvoker.cs" />

@@ -7,25 +7,8 @@
                "shift" : "true"
             }
          ], 
-         "action" : "Keybindings.FindCommand"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "RightArrow", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "Timeline.NextFrame"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "LeftArrow", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "Timeline.PreviousFrame"
+         "action" : "Keybindings.FindCommand", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -34,16 +17,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.OpenUI_AnimationsTab"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "Alpha2", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "Timeline.OpenUI_TargetsTab"
+         "action" : "Timeline.OpenUI_AnimationsTab", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -52,7 +27,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.OpenUI_EditTab"
+         "action" : "Timeline.OpenUI_EditTab", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -61,7 +37,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.OpenUI_SequenceTab"
+         "action" : "Timeline.OpenUI_SequenceTab", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -70,7 +47,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.OpenUI_MoreTab"
+         "action" : "Timeline.OpenUI_MoreTab", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -82,15 +60,8 @@
                "key" : "T"
             }
          ], 
-         "action" : "Timeline.OpenUI"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "Space"
-            }
-         ], 
-         "action" : "Timeline.PlayCurrentClip"
+         "action" : "Timeline.OpenUI", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -98,7 +69,8 @@
                "key" : "LeftArrow"
             }
          ], 
-         "action" : "Timeline.RewindTenthOfASecond"
+         "action" : "Timeline.RewindTenthOfASecond", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -106,7 +78,8 @@
                "key" : "RightArrow"
             }
          ], 
-         "action" : "Timeline.ForwardTenthOfASecond"
+         "action" : "Timeline.ForwardTenthOfASecond", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -115,7 +88,8 @@
                "shift" : "true"
             }
          ], 
-         "action" : "Timeline.RewindSecond"
+         "action" : "Timeline.RewindSecond", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -124,7 +98,8 @@
                "shift" : "true"
             }
          ], 
-         "action" : "Timeline.ForwardSecond"
+         "action" : "Timeline.ForwardSecond", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -132,41 +107,8 @@
                "key" : "Keypad0"
             }
          ], 
-         "action" : "Timeline.SnapToSecond"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "Space", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "Timeline.Stop"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "F8"
-            }
-         ], 
-         "action" : "Global.Toggle_ErrorLog"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "F7"
-            }
-         ], 
-         "action" : "Global.Toggle_MessageLog"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "G", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "Global.Open_Atom_Menu"
+         "action" : "Timeline.SnapToSecond", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -175,7 +117,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Global.SaveScene"
+         "action" : "Global.SaveScene", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -184,7 +127,8 @@
                "ctrl" : "true"
             }
          ], 
-         "action" : "Global.LoadScene"
+         "action" : "Global.LoadScene", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -194,7 +138,75 @@
                "shift" : "true"
             }
          ], 
-         "action" : "Global.MergeLoadScene"
+         "action" : "Global.MergeLoadScene", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "X", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Cut", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "C", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Copy", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Delete"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Delete", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "V", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Paste", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F8"
+            }
+         ], 
+         "action" : "Logs.ToggleErrorLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F7"
+            }
+         ], 
+         "action" : "Logs.ToggleMessageLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.Open", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
@@ -206,42 +218,186 @@
                "key" : "S"
             }
          ], 
-         "action" : "Global.Open_MainMenu_SelectTab"
+         "action" : "MainUI.SelectTab", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "X", 
+               "key" : "JoystickButton0"
+            }
+         ], 
+         "action" : "Timeline.PlayCurrentClip", 
+         "slot" : "1"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "JoystickButton3"
+            }
+         ], 
+         "action" : "Timeline.OpenUI_TargetsTab", 
+         "slot" : "1"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Space"
+            }
+         ], 
+         "action" : "Timeline.PlayAll", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Space", 
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.Keyframe_Cut"
+         "action" : "Timeline.Stop", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "C", 
+               "key" : "Space", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Timeline.StopAndReset", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "LeftArrow", 
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.Keyframe_Copy"
+         "action" : "Timeline.PreviousFrame", 
+         "slot" : "0"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "Delete"
-            }
-         ], 
-         "action" : "Timeline.Keyframe_Delete"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "V", 
+               "key" : "RightArrow", 
                "ctrl" : "true"
             }
          ], 
-         "action" : "Timeline.Keyframe_Paste"
+         "action" : "Timeline.NextFrame", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "PageDown"
+            }
+         ], 
+         "action" : "Timeline.NextAnimationInCurrentLayer", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "PageUp"
+            }
+         ], 
+         "action" : "Timeline.PreviousAnimationInCurrentLayer", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F12"
+            }
+         ], 
+         "action" : "Settings.TogglePerformanceMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F8", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Logs.ClearErrorLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F7", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Logs.ClearMessageLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "JoystickButton6"
+            }, 
+            { 
+               "key" : "JoystickButton6"
+            }
+         ], 
+         "action" : "Camera.FocusOnSelectedController", 
+         "slot" : "1"
+      }
+   ], 
+   "analogMaps" : [ 
+      { 
+         "chord" : { 
+            "key" : "None", 
+            "alt" : "true"
+         }, 
+         "axis" : "Mouse X", 
+         "action" : "Timeline.Scrubber", 
+         "slot" : "0"
+      }, 
+      { 
+         "chord" : { 
+            "key" : "None"
+         }, 
+         "axis" : "RightStickX", 
+         "action" : "Camera.Orbit_X", 
+         "slot" : "1"
+      }, 
+      { 
+         "chord" : { 
+            "key" : "None"
+         }, 
+         "axis" : "RightStickY", 
+         "action" : "Camera.Orbit_Y", 
+         "slot" : "1"
+      }, 
+      { 
+         "chord" : { 
+            "key" : "None"
+         }, 
+         "axis" : "LeftStickX", 
+         "action" : "Camera.Pan_X", 
+         "slot" : "1"
+      }, 
+      { 
+         "chord" : { 
+            "key" : "None"
+         }, 
+         "axis" : "LeftStickY", 
+         "action" : "Camera.Pan_Y", 
+         "slot" : "1"
+      }, 
+      { 
+         "chord" : { 
+            "key" : "None"
+         }, 
+         "axis" : "Axis7", 
+         "action" : "Camera.DollyZoom", 
+         "slot" : "1"
       }
    ]
 }

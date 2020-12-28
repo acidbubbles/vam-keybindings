@@ -31,3 +31,4 @@ src/Keybindings/NormalModeHandler.cs
 src/Keybindings/RemoteCommandsManager.cs
 src/Keybindings/SelectionHistoryManager.cs
 src/Keybindings/Settings.cs
+src/Keybindings/SuperControllerExtensions.cs
