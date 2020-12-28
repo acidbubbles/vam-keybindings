@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using DefaultNamespace;
+using SimpleJSON;
 using UnityEngine.UI;
 
 public class GlobalCommands
@@ -438,6 +439,8 @@ public class GlobalCommands
         var atom = SuperController.singleton.GetSelectedAtom();
         if (atom == null) yield break;
         if (atom.type == null) yield break;
+        var json = new JSONArray();
+        atom.Store(json);
         var uid = SuperController.singleton.CreateUID(atom.uid);
         var enumerator = SuperController.singleton.AddAtomByType(atom.type, uid, true, true, false);
         while (enumerator.MoveNext())
@@ -445,7 +448,18 @@ public class GlobalCommands
             yield return enumerator.Current;
         }
         var clone = SuperController.singleton.GetAtomByUid(uid);
-        if (clone == null) throw new NullReferenceException("Atom was not created");
+        if (clone == null) throw new NullReferenceException($"Could not create new atom for clone for type '{atom.type}'");
+        SuperController.LogMessage(json.ToString());
+        if (json.Count == 1)
+        {
+            var jc = json[0].AsObject;
+            clone.ClearParentAtom();
+            clone.RestoreTransform(jc);
+            clone.RestoreParentAtom(jc);
+            clone.Restore(jc, true, true, true, null, true);
+            clone.LateRestore(jc);
+            clone.PostRestore();
+        }
         clone.collisionEnabled = false;
     }
 }
