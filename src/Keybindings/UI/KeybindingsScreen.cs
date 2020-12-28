@@ -309,6 +309,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
     private IEnumerator RecordAnalog(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
     {
         isRecording = true;
+        var leftKeybinding = KeyChord.empty;
         while (true)
         {
             yield return 0;
@@ -328,6 +329,22 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
+            var keyUp = KeyCodes.bindableKeyCodes.GetCurrentUp();
+            if (keyUp != KeyCode.None)
+            {
+                var binding = new KeyChord(keyUp, ctrlDown, altDown, shiftDown);
+                if (leftKeybinding.key == KeyCode.None)
+                {
+                    btn.label = "1/2...";
+                    leftKeybinding = binding;
+                    continue;
+                }
+                var map = new AnalogMap(leftKeybinding, binding, commandInvoker.commandName, slot);
+                SaveAnalogMap(commandInvoker, binding, map);
+                StopRecording(btn, btnColor, commandInvoker, slot);
+                yield break;
+            }
+
             foreach (var axisName in _knownAxisNames)
             {
                 var axisValue = Input.GetAxis(axisName);
@@ -336,30 +353,38 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
                 // We don't want to take over the mouse!
                 if (axisName.StartsWith("Mouse") && key == KeyCode.None && !ctrlDown && !shiftDown && !altDown) continue;
                 var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
+                var map = new AnalogMap(binding, axisName, axisValue < 0, commandInvoker.commandName, slot);
 
-                var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == commandInvoker.commandName);
-                if (previousMap != null)
-                {
-                    remoteCommandsManager.UpdateValue(previousMap.commandName, 0);
-                    analogMapManager.maps.Remove(previousMap);
-                }
-                var conflictMap = analogMapManager.maps.FirstOrDefault(m => m.chord.Equals(binding) && m.axisName == axisName);
-                if (conflictMap != null)
-                {
-                    remoteCommandsManager.UpdateValue(conflictMap.commandName, 0);
-                    analogMapManager.maps.Remove(conflictMap);
-                    var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
-                    if (conflictRow != null)
-                        conflictRow.bindingBtn.label = _notBoundButtonLabel;
-                    SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
-                }
-                analogMapManager.maps.Add(new AnalogMap(binding, axisName, axisValue < 0, commandInvoker.commandName, slot));
+                SaveAnalogMap(commandInvoker, binding, map);
                 StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }
         }
 
         StopRecording(btn, btnColor, commandInvoker, slot);
+    }
+
+    private void SaveAnalogMap(ICommandInvoker commandInvoker, KeyChord binding, AnalogMap map)
+    {
+        var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == commandInvoker.commandName);
+        if (previousMap != null)
+        {
+            remoteCommandsManager.UpdateValue(previousMap.commandName, 0);
+            analogMapManager.maps.Remove(previousMap);
+        }
+
+        var conflictMap = analogMapManager.maps.FirstOrDefault(m => m.chord.Equals(binding) && m.axisName == map.axisName && m.leftChord.Equals(map.leftChord) && m.rightChord.Equals(map.rightChord));
+        if (conflictMap != null)
+        {
+            remoteCommandsManager.UpdateValue(conflictMap.commandName, 0);
+            analogMapManager.maps.Remove(conflictMap);
+            var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
+            if (conflictRow != null)
+                conflictRow.bindingBtn.label = _notBoundButtonLabel;
+            SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
+        }
+
+        analogMapManager.maps.Add(map);
     }
 
     private IEnumerator RecordKeys(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
@@ -373,7 +398,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 // Apply
-                ApplyRecordedKeybinding(setKeybindingList, commandInvoker, slot);
+                SaveKeyMap(setKeybindingList, commandInvoker, slot);
                 StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }
@@ -395,11 +420,11 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             btn.label = setKeybindingList.GetKeyChordsAsString();
             expire = Time.unscaledTime + Settings.TimeoutLen;
         }
-        ApplyRecordedKeybinding(setKeybindingList, commandInvoker, slot);
+        SaveKeyMap(setKeybindingList, commandInvoker, slot);
         StopRecording(btn, btnColor, commandInvoker, slot);
     }
 
-    private void ApplyRecordedKeybinding(List<KeyChord> setKeybindingList, ICommandInvoker commandInvoker, int slot)
+    private void SaveKeyMap(List<KeyChord> setKeybindingList, ICommandInvoker commandInvoker, int slot)
     {
         if (setKeybindingList.Count > 0)
         {

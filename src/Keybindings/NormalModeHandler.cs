@@ -76,7 +76,7 @@ public class NormalModeHandler : IModeHandler
         for (var i = 0; i < node.next.Count; i++)
         {
             var child = node.next[i];
-            if (child.keyChord.IsActive())
+            if (child.keyChord.IsDown())
                 return child;
         }
 

@@ -23,17 +23,25 @@ public struct KeyChord
         this.shift = shift;
     }
 
+    public bool IsDown()
+    {
+        if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
+
+        if (ctrl != (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) return false;
+        if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
+        if (shift != (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return false;
+
+        return true;
+    }
+
     public bool IsActive()
     {
-        // TODO: This is called very often. Should it be cached?
-        var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-        var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
-        var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        if (key != KeyCode.None && !Input.GetKey(key)) return false;
 
-        if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
-        if (ctrl != ctrlDown) return false;
-        if (alt != altDown) return false;
-        if (shift != shiftDown) return false;
+        if (ctrl != (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) return false;
+        if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
+        if (shift != (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return false;
+
         return true;
     }
 

@@ -132,6 +132,17 @@ public static class KeyCodes
         return KeyCode.None;
     }
 
+    public static KeyCode GetCurrentUp(this KeyCode[] keyCodes)
+    {
+        for (var i = 0; i < keyCodes.Length; i++)
+        {
+            var key = keyCodes[i];
+            if (Input.GetKeyUp(key)) return key;
+        }
+
+        return KeyCode.None;
+    }
+
     public static string ToPrettyString(this KeyCode keyCode)
     {
         string keyStr;
