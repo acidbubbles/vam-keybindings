@@ -5,15 +5,17 @@ public class KeyMap : IMap
 {
     public KeyChord[] chords { get; set; }
     public string commandName { get; set; }
+    public int slot { get; set; }
 
     public KeyMap()
     {
     }
 
-    public KeyMap(KeyChord[] chords, string commandName)
+    public KeyMap(KeyChord[] chords, string commandName, int slot)
     {
         this.chords = chords;
         this.commandName = commandName;
+        this.slot = slot;
     }
 
     public JSONClass GetJSON()
@@ -23,10 +25,12 @@ public class KeyMap : IMap
         {
             chordsJSON.Add(chord.GetJSON());
         }
+
         return new JSONClass
         {
             {"chords", chordsJSON},
             {"action", commandName},
+            {"slot", slot.ToString()}
         };
     }
 
@@ -34,6 +38,7 @@ public class KeyMap : IMap
     {
         chords = mapJSON["chords"].AsArray.Childs.Select(KeyChord.FromJSON).ToArray();
         commandName = mapJSON["action"].Value;
+        slot = mapJSON["slot"].AsInt;
     }
 
     public string GetPrettyString()

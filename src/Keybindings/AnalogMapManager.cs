@@ -11,7 +11,7 @@ public interface IAnalogMapManager : IDisposable
     JSONArray GetJSON();
     void RestoreFromJSON(JSONNode mapsJSON);
     void Clear();
-    AnalogMap GetMapByName(string commandName);
+    AnalogMap GetMapByName(string commandName, int slot);
 }
 
 public class AnalogMapManager : IAnalogMapManager
@@ -47,9 +47,9 @@ public class AnalogMapManager : IAnalogMapManager
         onChanged.Invoke();
     }
 
-    public AnalogMap GetMapByName(string commandName)
+    public AnalogMap GetMapByName(string commandName, int slot)
     {
-        return maps.FirstOrDefault(m => m.commandName == commandName);
+        return maps.FirstOrDefault(m => m.commandName == commandName && m.slot == slot);
     }
 
     public void Dispose()

@@ -25,10 +25,6 @@ public class KeybindingsScreen : MonoBehaviour
     public bool isRecording;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
-    private readonly List<KeyChord> _setKeybindingList = new List<KeyChord>();
-    private UIDynamicButton _setBindingBtn;
-    private ICommandInvoker _setBindingCommandInvoker;
-    private Color _setBindingRestoreColor;
 
     public void Configure()
     {
@@ -72,16 +68,16 @@ public class KeybindingsScreen : MonoBehaviour
         group.spacing = 20;
 
         var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (overwrite)");
-        importBtn.button.onClick.AddListener(() => storage.OpenImportDialog(true));
+        importBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.OpenImportDialog(true); } });
 
         var addBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (add)");
-        addBtn.button.onClick.AddListener(() => storage.OpenImportDialog(false));
+        addBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.OpenImportDialog(false); } });
 
         var exportBtn = prefabManager.CreateButton(toolbarGo.transform, "Export");
-        exportBtn.button.onClick.AddListener(storage.OpenExportDialog);
+        exportBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.OpenExportDialog(); } });
 
         var makeDefaultBtn = prefabManager.CreateButton(toolbarGo.transform, "Make default");
-        makeDefaultBtn.button.onClick.AddListener(() => storage.ExportDefault());
+        makeDefaultBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.ExportDefault(); } });
 
         prefabManager.CreateSpacer(transform, 10f);
 
@@ -181,8 +177,13 @@ public class KeybindingsScreen : MonoBehaviour
 
         if (unloadedCommands.Count <= 0) return;
 
-        var disabledCommandInvokers = unloadedCommands
-            .Select(c => new DisabledCommandInvoker(c, keyMapManager.GetMapByName(c)?.GetPrettyString() ?? analogMapManager.GetMapByName(c)?.GetPrettyString() ?? "Error"));
+        var disabledCommandInvokers = new List<ICommandInvoker>();
+        foreach (var unloadedCommand in unloadedCommands)
+        {
+            var map = ((IMap) keyMapManager.maps.FirstOrDefault(m => m.commandName == unloadedCommand)) ?? analogMapManager.maps.FirstOrDefault(m => m.commandName == unloadedCommand);
+            if (map == null) continue;
+            disabledCommandInvokers.Add(new DisabledCommandInvoker(unloadedCommand, map.GetPrettyString(), map.slot));
+        }
 
         foreach (var group in disabledCommandInvokers.GroupBy(c => c.ns))
         {
@@ -201,7 +202,9 @@ public class KeybindingsScreen : MonoBehaviour
         keyMapManager.onChanged.RemoveListener(OnKeybindingsChanged);
         analogMapManager.onChanged.RemoveListener(OnKeybindingsChanged);
 
-        StopRecording();
+        if (_setKeybindingCoroutine != null) StopCoroutine(_setKeybindingCoroutine);
+        _setKeybindingCoroutine = null;
+        isRecording = false;
         ClearRows();
     }
 
@@ -215,7 +218,6 @@ public class KeybindingsScreen : MonoBehaviour
     private void OnKeybindingsChanged()
     {
         // TODO: Instead we could try to just update existing bindings and create/remove rows but this is easier
-        StopRecording();
         ClearRows();
         CreateRows();
     }
@@ -256,53 +258,48 @@ public class KeybindingsScreen : MonoBehaviour
         var group = go.AddComponent<HorizontalLayoutGroup>();
         group.spacing = 10f;
 
-        var actionCommandInvoker = commandInvoker as IActionCommandInvoker;
-        var analogCommandInvoker = commandInvoker as IAnalogCommandInvoker;
+        var isAnalog = commandInvoker is IAnalogCommandInvoker;
 
-        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.localName + (analogCommandInvoker != null ? " *" : ""));
-        if (analogCommandInvoker != null) displayNameText.color = new Color(0, 0.2f, 0.4f);
+        var displayNameText = prefabManager.CreateText(go.transform, commandInvoker.localName + (isAnalog ? " *" : ""));
+        if (isAnalog) displayNameText.color = new Color(0, 0.3f, 0.4f);
         var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
         displayNameLayout.flexibleWidth = 1000f;
 
-        CreateBindingButton(commandInvoker, go, actionCommandInvoker, analogCommandInvoker, row);
+        CreateBindingButton(commandInvoker, go, row, 0);
+        CreateBindingButton(commandInvoker, go, row, 1);
     }
 
-    private void CreateBindingButton(ICommandInvoker commandInvoker, GameObject go, IActionCommandInvoker actionCommandInvoker, IAnalogCommandInvoker analogCommandInvoker, CommandBindingRow row)
+    private void CreateBindingButton(ICommandInvoker commandInvoker, GameObject go, CommandBindingRow row, int slot)
     {
-        var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker));
+        var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker, slot));
         bindingBtn.button.onClick.AddListener(() =>
         {
-            StopRecording();
-            _setBindingBtn = bindingBtn;
-            _setBindingCommandInvoker = commandInvoker;
-            _setBindingRestoreColor = bindingBtn.buttonColor;
-            if (actionCommandInvoker != null)
-                _setKeybindingCoroutine = StartCoroutine(SetKeybinding());
-            else if (analogCommandInvoker != null)
-                _setKeybindingCoroutine = StartCoroutine(SetAnalog());
+            if (isRecording) return;
+            if (commandInvoker is IActionCommandInvoker)
+                _setKeybindingCoroutine = StartCoroutine(RecordKeys(bindingBtn, commandInvoker, bindingBtn.buttonColor, slot));
+            else if (commandInvoker is IAnalogCommandInvoker)
+                _setKeybindingCoroutine = StartCoroutine(RecordAnalog(bindingBtn, commandInvoker, bindingBtn.buttonColor, slot));
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
             bindingBtn.label = "Recording...";
         });
         row.bindingBtn = bindingBtn;
         var bindingLayout = bindingBtn.GetComponent<LayoutElement>();
-        bindingLayout.minWidth = 500f;
-        bindingLayout.preferredWidth = 500f;
+        bindingLayout.minWidth = 300f;
+        bindingLayout.preferredWidth = 300f;
     }
 
-    private void StopRecording()
+    private void StopRecording(UIDynamicButton btn, Color btnColor, ICommandInvoker commandInvoker, int slot)
     {
-        if (!isRecording) return;
         isRecording = false;
-        _setKeybindingList.Clear();
-        _setBindingBtn.buttonColor = _setBindingRestoreColor;
-        _setBindingBtn.label = GetMappedBinding(_setBindingCommandInvoker);
+        btn.buttonColor = btnColor;
+        btn.label = GetMappedBinding(commandInvoker, slot);
         if (_setKeybindingCoroutine != null) StopCoroutine(_setKeybindingCoroutine);
         _setKeybindingCoroutine = null;
     }
 
     private static readonly string[] _knownAxisNames = new[] {"Mouse X", "Mouse Y", "Mouse ScrollWheel", "LeftStickX", "LeftStickY", "RightStickX", "RightStickY", "Triggers", "DPadX", "DPadY", "Axis6", "Axis7", "Axis8"};
 
-    private IEnumerator SetAnalog()
+    private IEnumerator RecordAnalog(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
     {
         isRecording = true;
         while (true)
@@ -311,9 +308,9 @@ public class KeybindingsScreen : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                var mapped = keyMapManager.GetMapByName(_setBindingCommandInvoker.commandName);
+                var mapped = analogMapManager.GetMapByName(commandInvoker.commandName, slot);
                 if (mapped != null)
-                    keyMapManager.maps.Remove(mapped);
+                    analogMapManager.maps.Remove(mapped);
                 break;
             }
 
@@ -332,7 +329,7 @@ public class KeybindingsScreen : MonoBehaviour
                 if (axisName.StartsWith("Mouse") && key == KeyCode.None && !ctrlDown && !shiftDown && !altDown) continue;
                 var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
 
-                var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == _setBindingCommandInvoker.commandName);
+                var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == commandInvoker.commandName);
                 if (previousMap != null)
                 {
                     remoteCommandsManager.UpdateValue(previousMap.commandName, 0);
@@ -346,34 +343,36 @@ public class KeybindingsScreen : MonoBehaviour
                     var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                     if (conflictRow != null)
                         conflictRow.bindingBtn.label = _notBoundButtonLabel;
-                    SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
+                    SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
                 }
-                analogMapManager.maps.Add(new AnalogMap(binding, axisName, _setBindingCommandInvoker.commandName));
-                StopRecording();
+                analogMapManager.maps.Add(new AnalogMap(binding, axisName, commandInvoker.commandName, slot));
+                StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }
         }
 
-        StopRecording();
+        StopRecording(btn, btnColor, commandInvoker, slot);
     }
 
-    private IEnumerator SetKeybinding()
+    private IEnumerator RecordKeys(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
     {
         isRecording = true;
         var expire = float.MaxValue;
+        var setKeybindingList = new List<KeyChord>();
         while (Time.unscaledTime < expire)
         {
             yield return 0;
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 // Apply
-                ApplyRecordedKeybinding();
+                ApplyRecordedKeybinding(setKeybindingList, commandInvoker, slot);
+                StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 // Cancel
-                StopRecording();
+                StopRecording(btn, btnColor, commandInvoker, slot);
                 yield break;
             }
 
@@ -384,19 +383,20 @@ public class KeybindingsScreen : MonoBehaviour
             var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
             var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
-            _setKeybindingList.Add(binding);
-            _setBindingBtn.label = _setKeybindingList.GetKeyChordsAsString();
+            setKeybindingList.Add(binding);
+            btn.label = setKeybindingList.GetKeyChordsAsString();
             expire = Time.unscaledTime + Settings.TimeoutLen;
         }
-        ApplyRecordedKeybinding();
+        ApplyRecordedKeybinding(setKeybindingList, commandInvoker, slot);
+        StopRecording(btn, btnColor, commandInvoker, slot);
     }
 
-    private void ApplyRecordedKeybinding()
+    private void ApplyRecordedKeybinding(List<KeyChord> setKeybindingList, ICommandInvoker commandInvoker, int slot)
     {
-        if (_setKeybindingList.Count > 0)
+        if (setKeybindingList.Count > 0)
         {
-            var bindings = _setKeybindingList.ToArray();
-            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.commandName == _setBindingCommandInvoker.commandName);
+            var bindings = setKeybindingList.ToArray();
+            var previousMap = keyMapManager.maps.FirstOrDefault(m => m.commandName == commandInvoker.commandName);
             if (previousMap != null)
                 keyMapManager.maps.Remove(previousMap);
             var conflictMap = keyMapManager.maps.FirstOrDefault(m => m.chords.SameBinding(bindings));
@@ -406,36 +406,35 @@ public class KeybindingsScreen : MonoBehaviour
                 var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
                     conflictRow.bindingBtn.label = _notBoundButtonLabel;
-                SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {_setBindingCommandInvoker.commandName}");
+                SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
             }
-            keyMapManager.maps.Add(new KeyMap(bindings, _setBindingCommandInvoker.commandName));
+            keyMapManager.maps.Add(new KeyMap(bindings, commandInvoker.commandName, slot));
             keyMapManager.RebuildTree();
         }
         else
         {
-            var mapped = keyMapManager.GetMapByName(_setBindingCommandInvoker.commandName);
+            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName, slot);
             if (mapped != null)
                 keyMapManager.maps.Remove(mapped);
         }
-        StopRecording();
     }
 
-    private string GetMappedBinding(ICommandInvoker commandInvoker)
+    private string GetMappedBinding(ICommandInvoker commandInvoker, int slot)
     {
         if (commandInvoker is IActionCommandInvoker)
         {
-            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName);
+            var mapped = keyMapManager.GetMapByName(commandInvoker.commandName, slot);
             return mapped?.GetPrettyString() ?? _notBoundButtonLabel;
         }
 
         if (commandInvoker is IAnalogCommandInvoker)
         {
-            var mapped = analogMapManager.GetMapByName(commandInvoker.commandName);
+            var mapped = analogMapManager.GetMapByName(commandInvoker.commandName, slot);
             return mapped?.GetPrettyString() ?? _notBoundButtonLabel;
         }
 
         var disabledCommandInvoker = commandInvoker as DisabledCommandInvoker;
-        if (disabledCommandInvoker != null)
+        if (disabledCommandInvoker != null && disabledCommandInvoker.slot == slot)
         {
             return disabledCommandInvoker.prettyString;
         }

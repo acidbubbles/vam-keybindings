@@ -54,7 +54,7 @@ public class KeybindingsStorage
         if (Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings")) return;
 
         // TODO: Replace this by an actual default
-        _keyMapManager.maps.Add(new KeyMap(new KeyChord[] {new KeyChord(KeyCode.Semicolon, false, false, true)}, "Keybindings.FindCommand"));
+        _keyMapManager.maps.Add(new KeyMap(new KeyChord[] {new KeyChord(KeyCode.Semicolon, false, false, true)}, "Keybindings.FindCommand", 0));
     }
 
     public void OpenExportDialog()

@@ -7,16 +7,18 @@ public class AnalogMap :  IMap
     public string axisName { get; set; }
     public string commandName { get; set; }
     public bool isActive { get; set; }
+    public int slot { get; set; }
 
     public AnalogMap()
     {
     }
 
-    public AnalogMap(KeyChord chord, string axisName, string commandName)
+    public AnalogMap(KeyChord chord, string axisName, string commandName, int slot)
     {
         this.chord = chord;
         this.axisName = axisName;
         this.commandName = commandName;
+        this.slot = slot;
     }
 
     public string GetPrettyString()
@@ -31,6 +33,7 @@ public class AnalogMap :  IMap
             {"chord", chord.GetJSON()},
             {"axis", axisName},
             {"action", commandName},
+            {"slot", slot.ToString()},
         };
     }
 
@@ -39,5 +42,6 @@ public class AnalogMap :  IMap
         chord = KeyChord.FromJSON(mapJSON["chord"]);
         axisName = mapJSON["axis"].Value;
         commandName = mapJSON["action"].Value;
+        slot = mapJSON["slot"].AsInt;
     }
 }

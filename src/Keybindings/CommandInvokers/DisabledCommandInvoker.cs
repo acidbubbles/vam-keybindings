@@ -5,11 +5,13 @@
     public string commandName { get; }
     public string ns { get; }
     public string localName { get; }
+    public int slot { get; set; }
 
-    public DisabledCommandInvoker(string commandName, string prettyString)
+    public DisabledCommandInvoker(string commandName, string prettyString, int slot)
     {
-        this.prettyString = prettyString;
         this.commandName = commandName;
+        this.prettyString = prettyString;
+        this.slot = slot;
         var i = commandName.IndexOf('.');
         if (i == -1 || i == commandName.Length - 1)
         {

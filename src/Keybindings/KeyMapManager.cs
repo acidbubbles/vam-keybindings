@@ -10,7 +10,7 @@ public interface IKeyMapManager : IDisposable
     List<KeyMap> maps { get; }
     KeyMapTreeNode root { get; }
     void RebuildTree();
-    KeyMap GetMapByName(string commandName);
+    KeyMap GetMapByName(string commandName, int slot);
 }
 
 public class KeyMapManager : IKeyMapManager
@@ -44,9 +44,9 @@ public class KeyMapManager : IKeyMapManager
         }
     }
 
-    public KeyMap GetMapByName(string commandName)
+    public KeyMap GetMapByName(string commandName, int slot)
     {
-        return maps.FirstOrDefault(m => m.commandName == commandName);
+        return maps.FirstOrDefault(m => m.commandName == commandName && m.slot == slot);
     }
 
     // ReSharper disable once UnusedMember.Global
