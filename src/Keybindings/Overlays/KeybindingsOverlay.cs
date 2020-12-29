@@ -15,17 +15,16 @@ public class KeybindingsOverlay : MonoBehaviour
         // Heavily inspired by hazmox's VAMOverlays https://hub.virtamate.com/resources/vamoverlays.2438/
         // Thanks a lot for allowing me to use the result of your hard work!
 
-        var mainCamera = SuperController.singleton.MonitorCenterCamera;
-        if (mainCamera == null) return null;
         var go = new GameObject(nameof(KeybindingsOverlay)) {layer = 5};
+        go.SetActive(false);
         try
         {
-            go.transform.SetParent(mainCamera.transform, false);
+            go.transform.SetParent(SuperController.singleton.MonitorCenterCamera.transform, false);
 
             var canvas = go.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.sortingOrder = 2;
-            canvas.worldCamera = mainCamera;
+            canvas.sortingOrder = LayerMask.NameToLayer("ScreenUI");
+            canvas.worldCamera = CameraTarget.centerTarget.targetCamera;
 
             // To make the area visible
             // var bg = go.AddComponent<Image>();
@@ -33,6 +32,7 @@ public class KeybindingsOverlay : MonoBehaviour
             // bg.color = new Color(1f, 1f, 1f, 0.01f);
 
             var overlay = go.AddComponent<KeybindingsOverlay>();
+            overlay._canvas = canvas;
 
             {
                 var textContainerGo = new GameObject("text") {layer = 5};
@@ -99,6 +99,7 @@ public class KeybindingsOverlay : MonoBehaviour
     public float autoClear { get; set; }
     private Coroutine _autoClearCoroutine;
     private float _clearTime;
+    private Canvas _canvas;
 
     public void Append(string value)
     {
@@ -110,6 +111,27 @@ public class KeybindingsOverlay : MonoBehaviour
 
     public void Set(string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            text.text = "";
+            gameObject.SetActive(false);
+            if (_autoClearCoroutine != null) StopCoroutine(_autoClearCoroutine);
+            _autoClearCoroutine = null;
+            return;
+        }
+
+        if (!gameObject.activeSelf)
+        {
+            var camera = CameraTarget.centerTarget.targetCamera;
+            var hook = CameraTarget.centerTarget.targetCamera.transform.Find("CameraHook");
+            if (hook != null)
+            {
+                var hookedCamera = hook.GetComponent<Camera>();
+                if (hookedCamera != null && hookedCamera.enabled)
+                    camera = hookedCamera;
+            }
+            _canvas.worldCamera = camera;
+        }
         gameObject.SetActive(true);
         text.text = value;
         _clearTime = Time.unscaledTime + autoClear;
