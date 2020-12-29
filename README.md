@@ -40,6 +40,8 @@ This plugin is still being actively developed! Here are some gotchas:
 
 - A lot of keybindings are controlled by Virt-A-Mate. The next version will allow Keybindings to take control over those shortcuts too, thanks to [Meshed being very responsive](https://hub.virtamate.com/threads/1-20-1-6-ability-to-disable-or-override-built-in-shortcuts-quick-win.3841/#post-9675)!
 - Not all useful commands have been implemented, let me know if some of your favorites might be missing! Naming is also subject to change.
+- Opened plugin UIs will not be closed, and will therefore stack.
+
 
 ## Integrating your plugins
 

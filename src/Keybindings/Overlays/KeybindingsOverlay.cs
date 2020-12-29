@@ -15,7 +15,7 @@ public class KeybindingsOverlay : MonoBehaviour
         // Heavily inspired by hazmox's VAMOverlays https://hub.virtamate.com/resources/vamoverlays.2438/
         // Thanks a lot for allowing me to use the result of your hard work!
 
-        var mainCamera = Camera.main;
+        var mainCamera = SuperController.singleton.MonitorCenterCamera;
         if (mainCamera == null) return null;
         var go = new GameObject(nameof(KeybindingsOverlay)) {layer = 5};
         try
