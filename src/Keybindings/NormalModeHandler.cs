@@ -39,11 +39,11 @@ public class NormalModeHandler : IModeHandler
 
     public void OnKeyDown()
     {
-        // <C-*> shortcuts can work even in a text field, otherwise text fields have preference
-        if (LookInputModule.singleton.inputFieldActive && !Input.GetKey(KeyCode.LeftControl)) return;
-
         if (_timeoutCoroutine != null)
             _owner.StopCoroutine(_timeoutCoroutine);
+
+        if (LookInputModule.singleton.inputFieldActive)
+            return;
 
         var current = _current;
         _current = null;

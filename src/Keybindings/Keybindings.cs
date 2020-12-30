@@ -111,17 +111,18 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     {
         if (!_valid) return;
 
-        _selectionHistoryManager.Update();
-        _analogHandler.Update();
-        _globalCommands.Update();
-
         try
         {
+            _selectionHistoryManager.Update();
+
+            _analogHandler.Update();
+            _globalCommands.Update();
+
             // Don't waste resources
             if (!Input.anyKeyDown) return;
             // Do not listen while a keybinding is being recorded
             if (_ui.isRecording) return;
-
+            // Process based on the mode
             _currentModeHandler.OnKeyDown();
         }
         catch (Exception e)
