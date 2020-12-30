@@ -356,10 +356,6 @@ public class GlobalCommands
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
         if (selector == null) return null;
 
-        /*
-        foreach (Transform t in selector.toggleContainer)
-            SuperController.LogMessage(t.name);
-        */
         selector.SetActiveTab(tabName);
         return selectedAtom;
     }
@@ -475,7 +471,6 @@ public class GlobalCommands
         }
         var clone = SuperController.singleton.GetAtomByUid(uid);
         if (clone == null) throw new NullReferenceException($"Could not create new atom for clone for type '{atom.type}'");
-        SuperController.LogMessage(json.ToString());
         if (json.Count == 1)
         {
             var jc = json[0].AsObject;
