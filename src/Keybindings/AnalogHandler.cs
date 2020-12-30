@@ -13,6 +13,9 @@ public class AnalogHandler
 
     public void Update()
     {
+        if (LookInputModule.singleton.inputFieldActive)
+            return;
+
         for (var i = 0; i < _analogMapManager.maps.Count; i++)
         {
             var map = _analogMapManager.maps[i];
