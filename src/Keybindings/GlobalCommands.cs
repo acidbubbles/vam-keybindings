@@ -350,6 +350,8 @@ public class GlobalCommands
         SuperController.singleton.SelectController(selectedAtom.mainController);
         SuperController.singleton.SetActiveUI("SelectedOptions");
 
+        SuperController.singleton.ShowMainHUDMonitor();
+
         var tabName = getTabName?.Invoke(selectedAtom.type);
         if (tabName == null) return null;
 
