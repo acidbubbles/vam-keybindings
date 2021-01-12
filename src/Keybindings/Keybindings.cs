@@ -101,6 +101,13 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         // overlay.Append("Keybindings ready!");
     }
 
+    public void OnDisable()
+    {
+        _normalModeHandler.Leave();
+        // TODO: Reset all analog commands to zero
+        // _analogHandler.Leave();
+    }
+
     public void OnDestroy()
     {
         if (_overlayReference?.value != null) Destroy(_overlayReference?.value.gameObject);
@@ -119,11 +126,10 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
             _globalCommands.Update();
 
             // Don't waste resources
-            if (!Input.anyKeyDown) return;
             // Do not listen while a keybinding is being recorded
             if (_ui.isRecording) return;
             // Process based on the mode
-            _currentModeHandler.OnKeyDown();
+                _currentModeHandler.OnKeyDown();
         }
         catch (Exception e)
         {

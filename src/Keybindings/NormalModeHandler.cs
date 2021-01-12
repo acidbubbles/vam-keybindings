@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NormalModeHandler : IModeHandler
@@ -11,6 +12,7 @@ public class NormalModeHandler : IModeHandler
     private readonly RemoteCommandsManager _remoteCommandsManager;
     private Coroutine _timeoutCoroutine;
     private KeyMapTreeNode _current;
+    private readonly List<KeyValuePair<KeyMap, ICommandReleaser>> _releasers = new List<KeyValuePair<KeyMap, ICommandReleaser>>();
 
     public NormalModeHandler(
         MonoBehaviour owner,
@@ -35,10 +37,27 @@ public class NormalModeHandler : IModeHandler
     {
         if (_timeoutCoroutine != null)
             _owner.StopCoroutine(_timeoutCoroutine);
+
+        foreach (var x in _releasers)
+        {
+            try
+            {
+                x.Value.Release();
+            }
+            catch (Exception exc)
+            {
+                SuperController.LogError($"Error releasing command '{x.Key.commandName}': {exc}");
+            }
+        }
+        _releasers.Clear();
     }
 
     public void OnKeyDown()
     {
+        CheckReleasers();
+
+        if (!Input.anyKeyDown) return;
+
         if (_timeoutCoroutine != null)
             _owner.StopCoroutine(_timeoutCoroutine);
 
@@ -61,13 +80,34 @@ public class NormalModeHandler : IModeHandler
 
         if (match.next.Count == 0)
         {
-            if (match.boundCommandName != null)
-                Invoke(match.boundCommandName);
+            if (match.map != null)
+                Invoke(match.map);
             return;
         }
 
         _current = match;
         _timeoutCoroutine = _owner.StartCoroutine(TimeoutCoroutine());
+    }
+
+    private void CheckReleasers()
+    {
+        for (var i = 0; i < _releasers.Count; i++)
+        {
+            var releaser = _releasers[i];
+            var chord = releaser.Key.chords[releaser.Key.chords.Length - 1];
+            if (chord.IsActive()) continue;
+
+            try
+            {
+                releaser.Value.Release();
+                _releasers.RemoveAt(i);
+                i--;
+            }
+            catch (Exception exc)
+            {
+                SuperController.LogError($"Error releasing command '{releaser.Key.commandName}': {exc}");
+            }
+        }
     }
 
     private static KeyMapTreeNode DoMatch(KeyMapTreeNode node)
@@ -89,9 +129,9 @@ public class NormalModeHandler : IModeHandler
         if (_current == null) yield break;
         try
         {
-            if (_current.boundCommandName != null)
+            if (_current.map != null)
             {
-                Invoke(_current.boundCommandName);
+                Invoke(_current.map);
                 _current = _keyMapManager.root;
             }
             _timeoutCoroutine = null;
@@ -102,9 +142,10 @@ public class NormalModeHandler : IModeHandler
         }
     }
 
-    private void Invoke(string action)
+    private void Invoke(KeyMap map)
     {
-        if(!_remoteCommandsManager.Invoke(action))
-            _overlay.value.Set($"Action '{action}' not found");
+        var releaser = _remoteCommandsManager.Invoke(map.commandName);
+        if (releaser != null)
+            _releasers.Add(new KeyValuePair<KeyMap, ICommandReleaser>(map, releaser));
     }
 }

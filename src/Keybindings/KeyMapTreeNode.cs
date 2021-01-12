@@ -4,7 +4,7 @@ using UnityEngine;
 public class KeyMapTreeNode
 {
     public KeyChord keyChord;
-    public string boundCommandName;
+    public KeyMap map;
     public readonly List<KeyMapTreeNode> next = new List<KeyMapTreeNode>();
 
     public bool TryGet(KeyChord source, out KeyMapTreeNode result)
@@ -18,10 +18,5 @@ public class KeyMapTreeNode
 
         result = null;
         return false;
-    }
-
-    public override string ToString()
-    {
-        return $"treemap {keyChord} {boundCommandName}";
     }
 };

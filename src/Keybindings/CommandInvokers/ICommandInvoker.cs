@@ -8,7 +8,12 @@
 
 public interface IActionCommandInvoker : ICommandInvoker
 {
-    void Invoke();
+    ICommandReleaser Invoke();
+}
+
+public interface ICommandReleaser
+{
+    void Release();
 }
 
 public interface IAnalogCommandInvoker : ICommandInvoker

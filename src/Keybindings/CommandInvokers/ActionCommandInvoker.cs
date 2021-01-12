@@ -10,8 +10,9 @@ public class ActionCommandInvoker : CommandInvokerBase, IActionCommandInvoker
         _fn = fn;
     }
 
-    public void Invoke()
+    public ICommandReleaser Invoke()
     {
         _fn();
+        return null;
     }
 }

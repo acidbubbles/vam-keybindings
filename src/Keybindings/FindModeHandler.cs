@@ -50,6 +50,7 @@ public class FindModeHandler : IModeHandler
 
     public void OnKeyDown()
     {
+        if (!Input.anyKeyDown) return;
 
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -92,7 +93,8 @@ public class FindModeHandler : IModeHandler
 
     private void Invoke(string action)
     {
-        if(!_remoteCommandsManager.Invoke(action))
-            _overlay.value.Set($"Action '{action}' not found");
+        var releaser = _remoteCommandsManager.Invoke(action);
+        // TODO: Instead, filter releasers from fuzzy find
+        releaser?.Release();
     }
 }

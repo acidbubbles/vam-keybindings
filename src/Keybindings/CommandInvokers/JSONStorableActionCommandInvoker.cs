@@ -8,8 +8,9 @@
         _action = action;
     }
 
-    public void Invoke()
+    public ICommandReleaser Invoke()
     {
         _action.actionCallback.Invoke();
+        return null;
     }
 }

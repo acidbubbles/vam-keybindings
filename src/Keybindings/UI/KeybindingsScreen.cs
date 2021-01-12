@@ -23,7 +23,8 @@ public class KeybindingsScreen : MonoBehaviour
     public IKeybindingsSettings settings { get; set; }
 
     public bool isRecording;
-    public bool _initialized;
+
+    private bool _initialized;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
 

@@ -40,7 +40,8 @@ public class KeyMapManager : IKeyMapManager
                 node.next.Add(next);
                 node = next;
             }
-            node.boundCommandName = map.commandName;
+
+            node.map = map;
         }
     }
 

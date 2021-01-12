@@ -23,25 +23,24 @@ public class RemoteCommandsManager
         _selectionHistoryManager = selectionHistoryManager;
     }
 
-    public bool Invoke(string name)
+    public ICommandReleaser Invoke(string name)
     {
         List<IActionCommandInvoker> commandInvokers;
         if (!_actionCommandsByName.TryGetValue(name, out commandInvokers))
         {
-            return false;
+            return null;
         }
 
         var commandInvoker = SelectCommandInvoker(commandInvokers);
 
         try
         {
-            commandInvoker.Invoke();
-            return true;
+            return commandInvoker.Invoke();
         }
         catch (Exception exc)
         {
             SuperController.LogError($"Keybindings: Failed invoking {commandInvoker.commandName}: {exc}");
-            return false;
+            return null;
         }
     }
 

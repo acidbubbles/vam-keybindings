@@ -251,6 +251,17 @@ public class GlobalCommands
         // Settings
         CreateAction("Settings", "TogglePerformanceMonitor", TogglePerformanceMonitor);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
+
+        // TODO: Find a few useful examples for this
+        // _remoteCommandsManager.Add(new JSONStorableBoolCommandInvoker(
+        //     _owner,
+        //     "Tests",
+        //     "BoolTest", new JSONStorableBool("test", false, (bool val) =>
+        //         {
+        //             SuperController.singleton.ClearMessages();
+        //             SuperController.LogMessage(val.ToString());
+        //         }
+        //     )));
     }
 
     private static void OnSelectedAtom(Action<Atom> fn)

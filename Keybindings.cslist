@@ -8,6 +8,7 @@ src/Keybindings/CommandInvokers/CommandInvokerBase.cs
 src/Keybindings/CommandInvokers/DisabledCommandInvoker.cs
 src/Keybindings/CommandInvokers/ICommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableActionCommandInvoker.cs
+src/Keybindings/CommandInvokers/JSONStorableBoolCommandInvoker.cs
 src/Keybindings/CommandInvokers/JSONStorableFloatCommandInvoker.cs
 src/Keybindings/UI/KeybindingsScreen.cs
 src/Keybindings/Overlays/KeybindingsOverlay.cs
