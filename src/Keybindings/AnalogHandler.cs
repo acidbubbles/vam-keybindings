@@ -45,4 +45,12 @@ public class AnalogHandler
             }
         }
     }
+
+    public void Leave()
+    {
+        foreach (var map in _analogMapManager.maps)
+        {
+            _remoteCommandsManager.UpdateValue(map.commandName, 0);
+        }
+    }
 }

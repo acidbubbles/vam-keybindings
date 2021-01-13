@@ -154,7 +154,7 @@ public class RemoteCommandsManager
             var storableBool = binding as JSONStorableBool;
             if (storableBool != null)
             {
-                var invoker = new JSONStorableBoolCommandInvoker(storable, commandNamespace, storableAction.name, storableBool);
+                var invoker = new JSONStorableBoolCommandInvoker(storable, commandNamespace, storableBool.name, storableBool);
                 Add(invoker);
                 continue;
             }

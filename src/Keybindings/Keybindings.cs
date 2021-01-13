@@ -104,8 +104,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     public void OnDisable()
     {
         _normalModeHandler.Leave();
-        // TODO: Reset all analog commands to zero
-        // _analogHandler.Leave();
+        _analogHandler.Leave();
     }
 
     public void OnDestroy()
