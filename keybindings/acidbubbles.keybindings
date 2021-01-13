@@ -224,33 +224,6 @@
       { 
          "chords" : [ 
             { 
-               "key" : "JoystickButton0"
-            }
-         ], 
-         "action" : "Timeline.PlayCurrentClip", 
-         "slot" : "1"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "JoystickButton3"
-            }
-         ], 
-         "action" : "Timeline.OpenUI_TargetsTab", 
-         "slot" : "1"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "Space"
-            }
-         ], 
-         "action" : "Timeline.PlayAll", 
-         "slot" : "0"
-      }, 
-      { 
-         "chords" : [ 
-            { 
                "key" : "Space", 
                "ctrl" : "true"
             }
@@ -339,65 +312,42 @@
       { 
          "chords" : [ 
             { 
-               "key" : "JoystickButton6"
-            }, 
-            { 
-               "key" : "JoystickButton6"
+               "key" : "F9"
             }
          ], 
-         "action" : "Camera.FocusOnSelectedController", 
-         "slot" : "1"
+         "action" : "Embody.OpenUI", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F10"
+            }
+         ], 
+         "action" : "Embody.ToggleActive", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadEnter"
+            }
+         ], 
+         "action" : "Timeline.PlayAll", 
+         "slot" : "0"
       }
    ], 
    "analogMaps" : [ 
       { 
+         "isAxis" : "true", 
+         "action" : "Timeline.Scrubber", 
+         "slot" : "0", 
          "chord" : { 
             "key" : "None", 
             "alt" : "true"
          }, 
          "axis" : "Mouse X", 
-         "action" : "Timeline.Scrubber", 
-         "slot" : "0"
-      }, 
-      { 
-         "chord" : { 
-            "key" : "None"
-         }, 
-         "axis" : "RightStickX", 
-         "action" : "Camera.Orbit_X", 
-         "slot" : "1"
-      }, 
-      { 
-         "chord" : { 
-            "key" : "None"
-         }, 
-         "axis" : "RightStickY", 
-         "action" : "Camera.Orbit_Y", 
-         "slot" : "1"
-      }, 
-      { 
-         "chord" : { 
-            "key" : "None"
-         }, 
-         "axis" : "LeftStickX", 
-         "action" : "Camera.Pan_X", 
-         "slot" : "1"
-      }, 
-      { 
-         "chord" : { 
-            "key" : "None"
-         }, 
-         "axis" : "LeftStickY", 
-         "action" : "Camera.Pan_Y", 
-         "slot" : "1"
-      }, 
-      { 
-         "chord" : { 
-            "key" : "None"
-         }, 
-         "axis" : "Axis7", 
-         "action" : "Camera.DollyZoom", 
-         "slot" : "1"
+         "reversed" : "false"
       }
    ]
 }
