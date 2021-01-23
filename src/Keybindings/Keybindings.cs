@@ -30,6 +30,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     private IModeHandler _currentModeHandler;
     private KeybindingsOverlayReference _overlayReference;
     private bool _valid;
+    private bool _overrideInternalKeybindings;
     private AnalogHandler _analogHandler;
 
     public override void Init()
@@ -101,8 +102,30 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         // overlay.Append("Keybindings ready!");
     }
 
+    public void OnEnable()
+    {
+#if VAM_GT_1_20_6_0
+        if(SuperController.singleton.disableInternalKeyBindings || SuperController.singleton.disableInternalNavigationKeyBindings)
+        {
+            SuperController.LogError("Keybindings: Another plugin already controls keyboard shortcuts.");
+            enabled = false;
+        }
+        SuperController.singleton.disableInternalKeyBindings = true;
+        SuperController.singleton.disableInternalNavigationKeyBindings = true;
+        _overrideInternalKeybindings = true;
+#endif
+    }
+
     public void OnDisable()
     {
+#if VAM_GT_1_20_6_0
+        if(_overrideInternalKeybindings)
+        {
+            SuperController.singleton.disableInternalKeyBindings = false;
+            SuperController.singleton.disableInternalNavigationKeyBindings = false;
+            _overrideInternalKeybindings = false;
+        }
+#endif
         _normalModeHandler.Leave();
         _analogHandler.Leave();
     }
