@@ -36,7 +36,7 @@ public class GlobalCommands
 
     public void Init()
     {
-        // Mode
+        // GameMode
         CreateAction("GameMode", "PlayMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Play);
         CreateAction("GameMode", "EditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
 
@@ -48,7 +48,13 @@ public class GlobalCommands
         CreateAction("Global", "ScreenshotMode", SuperController.singleton.SelectModeScreenshot);
         CreateAction("Global", "OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
         CreateAction("Global", "OpenMainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
-        CreateAction("Global", "ToggleShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
+        CreateAction("Global", "Toggle_ShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
+        CreateAction("Global", "Toggle_Targets", SuperController.singleton.ToggleTargetsOnWithButton);
+
+        // Monitor
+        CreateAction("Monitor", "Toggle_MainMonitor", SuperController.singleton.ToggleMainMonitor);
+        CreateAction("Monitor", "Toggle_MonitorUI", SuperController.singleton.ToggleMonitorUI);
+        CreateAction("Monitor", "Toggle_MonitorHudMonitor", SuperController.singleton.ToggleMainHUDMonitor);
 
         // Menu
         CreateAction("AtomUI", "CloseAllPanels", CloseAllPanels);
@@ -232,6 +238,9 @@ public class GlobalCommands
 
         // Camera
         CreateAction("Camera", "FocusOnSelectedController", () => SuperController.singleton.FocusOnSelectedController());
+        CreateAction("Camera", "FocusMoveOnSelectedController", () => SuperController.singleton.FocusOnSelectedController(false));
+        CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
+        CreateAction("Camera", "ResetFocusPoint", () => SuperController.singleton.ResetFocusPoint());
         _cameraPanX = CreateAnalog("Camera", "Pan_X");
         _cameraPanY = CreateAnalog("Camera", "Pan_Y");
         _cameraOrbitX = CreateAnalog("Camera", "Orbit_X");

@@ -53,8 +53,49 @@ public class KeybindingsStorage
         // TODO: Check if the defaults doesn't exist in the user's folder, if it fallbacks to the plugin's version
         if (Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings")) return;
 
-        // TODO: Replace this by an actual default
-        _keyMapManager.maps.Add(new KeyMap(new KeyChord[] {new KeyChord(KeyCode.Semicolon, false, false, true)}, "Keybindings.FindCommand", 0));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.Semicolon, false, false, true)},
+                "Keybindings.FindCommand"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.M, false, false, false)},
+                "Monitor.Toggle_MainMonitor"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.F1, false, false, false)},
+                "Monitor.Toggle_MonitorUI"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.Tab, false, false, false)},
+                "Camera.Toggle_FreeMoveMouse"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.F, false, false, false)},
+                "Camera.FocusOnSelectedController"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.F, false, false, true)},
+                "Camera.FocusMoveOnSelectedController"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.R, false, false, false)},
+                "Camera.ResetFocusPoint"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.E, false, false, false)},
+                "GameMode.EditMode"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.P, false, false, false)},
+                "GameMode.PlayMode"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.N, false, false, false)},
+                "Select.NextPersonAtom"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.U, false, false, false)},
+                "Monitor.Toggle_MonitorHudMonitor"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.T, false, false, false)},
+                "Global.Toggle_Targets"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
+                "Global.Toggle_ShowHiddenAtoms"));
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
+                "Global.Toggle_ShowHiddenAtoms"));
+        // C -> ProcessTargetSelectionCycleSelectMouse what should this do?
     }
 
     public void OpenExportDialog()

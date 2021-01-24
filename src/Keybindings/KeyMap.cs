@@ -11,7 +11,7 @@ public class KeyMap : IMap
     {
     }
 
-    public KeyMap(KeyChord[] chords, string commandName, int slot)
+    public KeyMap(KeyChord[] chords, string commandName, int slot = 0)
     {
         this.chords = chords;
         this.commandName = commandName;
