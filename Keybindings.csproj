@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CustomCommands.cslist" />
+    <Content Include="data\Keybindings\acidbubbles.keybindings" />
+    <Content Include="data\Keybindings\defaults.keybindings" />
     <Content Include="Keybindings.cslist" />
   </ItemGroup>
   <ItemGroup>
@@ -106,9 +108,6 @@
     <Compile Include="src\Keybindings\Keybindings.cs" />
     <Compile Include="src\Keybindings\UI\KeybindingsScreen.cs" />
     <Compile Include="src\Shared\TransformExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="keybindings" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

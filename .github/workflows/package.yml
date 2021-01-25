@@ -21,8 +21,8 @@ jobs:
         mkdir -p publish/Custom/Scripts/AcidBubbles/Keybindings
         cp -r src publish/Custom/Scripts/AcidBubbles/Keybindings/
         cp *.cslist publish/Custom/Scripts/AcidBubbles/Keybindings/
-        mkdir -p publish/Saves/keybindings
-        cp keybindings/*.keybindings publish/Saves/keybindings/
+        mkdir -p publish/Saves/PluginData/Keybindings
+        cp data/Keybindings/*.keybindings publish/Saves/PluginData/Keybindings/
         cp meta.json publish/
         sed -i 's/v0.0.0/${{ steps.get_version.outputs.VERSION }}/' publish/meta.json
         cd publish

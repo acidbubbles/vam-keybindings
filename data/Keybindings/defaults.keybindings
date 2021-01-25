@@ -1,0 +1,176 @@
+{ 
+   "keybindings" : [ 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Keybindings.FindCommand", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "M"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MainMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F1"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MonitorUI", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Tab"
+            }
+         ], 
+         "action" : "Camera.Toggle_FreeMoveMouse", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F"
+            }
+         ], 
+         "action" : "Camera.FocusOnSelectedController", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Camera.FocusMoveOnSelectedController", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "R"
+            }
+         ], 
+         "action" : "Camera.ResetFocusPoint", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "E"
+            }
+         ], 
+         "action" : "GameMode.EditMode", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "P"
+            }
+         ], 
+         "action" : "GameMode.PlayMode", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "N"
+            }
+         ], 
+         "action" : "Select.NextPersonAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "U"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MonitorHudMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "T"
+            }
+         ], 
+         "action" : "Global.Toggle_Targets", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "H"
+            }
+         ], 
+         "action" : "Global.Toggle_ShowHiddenAtoms", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "H"
+            }
+         ], 
+         "action" : "Global.Toggle_ShowHiddenAtoms", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "C"
+            }
+         ], 
+         "action" : "Global.CycleStack", 
+         "slot" : "0"
+      }
+   ], 
+   "analogMaps" : [ 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_X", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "A"
+         }, 
+         "rightChord" : { 
+            "key" : "D"
+         }
+      }, 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_Y", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "Z"
+         }, 
+         "rightChord" : { 
+            "key" : "X"
+         }
+      }, 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_Z", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "W"
+         }, 
+         "rightChord" : { 
+            "key" : "S"
+         }
+      }
+   ]
+}

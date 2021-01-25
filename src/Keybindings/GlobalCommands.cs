@@ -52,6 +52,7 @@ public class GlobalCommands
         CreateAction("Global", "OpenMainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
         CreateAction("Global", "Toggle_ShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
         CreateAction("Global", "Toggle_Targets", SuperController.singleton.ToggleTargetsOnWithButton);
+        CreateAction("Global", "CycleStack", SuperController.singleton.ProcessTargetSelectionCycleSelectMouse);
 
         // Monitor
         CreateAction("Monitor", "Toggle_MainMonitor", SuperController.singleton.ToggleMainMonitor);

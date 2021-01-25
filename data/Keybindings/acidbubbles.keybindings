@@ -1,0 +1,581 @@
+{ 
+   "keybindings" : [ 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Semicolon", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Keybindings.FindCommand", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "M"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MainMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F1"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MonitorUI", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Tab"
+            }
+         ], 
+         "action" : "Camera.Toggle_FreeMoveMouse", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F"
+            }
+         ], 
+         "action" : "Camera.FocusOnSelectedController", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Camera.FocusMoveOnSelectedController", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "R"
+            }
+         ], 
+         "action" : "Camera.ResetFocusPoint", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "E"
+            }
+         ], 
+         "action" : "GameMode.EditMode", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "P"
+            }
+         ], 
+         "action" : "GameMode.PlayMode", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "N"
+            }
+         ], 
+         "action" : "Select.NextPersonAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "U"
+            }
+         ], 
+         "action" : "Monitor.Toggle_MonitorHudMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "T"
+            }
+         ], 
+         "action" : "Global.Toggle_Targets", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "H"
+            }
+         ], 
+         "action" : "Global.Toggle_ShowHiddenAtoms", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "H"
+            }
+         ], 
+         "action" : "Global.Toggle_ShowHiddenAtoms", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "C"
+            }
+         ], 
+         "action" : "Global.CycleStack", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F12"
+            }
+         ], 
+         "action" : "Keybindings.Settings", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Global.LoadScene", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "O", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Global.MergeLoadScene", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "S", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Global.SaveScene", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Global.ScreenshotMode", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.Open", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "C", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.ClothingTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "A", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.AppearancePresetsTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "M", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.FemaleMorphsTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "H", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.HairTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha0", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#0", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha1", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#1", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha2", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#2", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha3", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#3", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha4", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#4", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha5", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#5", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha6", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#6", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha7", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#7", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha8", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#8", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "Alpha9", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.PluginsTab_Plugin#9", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus"
+            }
+         ], 
+         "action" : "MainUI.AddAtomTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "T", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "MainUI.SelectTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "PageDown"
+            }
+         ], 
+         "action" : "Select.NextAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "PageUp"
+            }
+         ], 
+         "action" : "Select.PreviousAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Delete", 
+               "ctrl" : "true", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Remove.SelectedAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F8"
+            }
+         ], 
+         "action" : "Logs.ToggleErrorLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F8", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Logs.ClearErrorLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F7"
+            }
+         ], 
+         "action" : "Logs.ToggleMessageLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F7", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Logs.ClearMessageLog", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "F11"
+            }
+         ], 
+         "action" : "Settings.TogglePerformanceMonitor", 
+         "slot" : "0"
+      }
+   ], 
+   "analogMaps" : [ 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_X", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "A"
+         }, 
+         "rightChord" : { 
+            "key" : "D"
+         }
+      }, 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_Y", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "Z"
+         }, 
+         "rightChord" : { 
+            "key" : "X"
+         }
+      }, 
+      { 
+         "isAxis" : "false", 
+         "action" : "Camera.Pan_Z", 
+         "slot" : "0", 
+         "leftChord" : { 
+            "key" : "W"
+         }, 
+         "rightChord" : { 
+            "key" : "S"
+         }
+      }
+   ]
+}

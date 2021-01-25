@@ -6,7 +6,7 @@ using UnityEngine;
 public class KeybindingsStorage
 {
     private const string _saveExt = "keybindings";
-    private const string _saveFolder = "Saves\\keybindings";
+    private const string _saveFolder = "Saves\\PluginData\\Keybindings";
 
     private readonly MVRScript _plugin;
     private readonly KeyMapManager _keyMapManager;
@@ -55,7 +55,7 @@ public class KeybindingsStorage
     public void ImportDefaults()
     {
         // TODO: Check if the defaults doesn't exist in the user's folder, if it fallbacks to the plugin's version
-        if (Import(false, SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings")) return;
+        if (Import(false, SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings")) return;
 
         _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.Semicolon, false, false, true)},
@@ -99,7 +99,9 @@ public class KeybindingsStorage
         _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
                 "Global.Toggle_ShowHiddenAtoms"));
-        // C -> ProcessTargetSelectionCycleSelectMouse what should this do?
+        _keyMapManager.maps.Add(
+            new KeyMap(new[] {new KeyChord(KeyCode.C, false, false, false)},
+                "Global.CycleStack"));
 
         _analogMapManager.maps.Add(
             new AnalogMap(new KeyChord(KeyCode.A, false, false, false), new KeyChord(KeyCode.D, false, false, false),
