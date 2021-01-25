@@ -39,7 +39,11 @@ public class KeybindingsStorage
     private bool Import(bool clear, string path)
     {
         if (string.IsNullOrEmpty(path)) return false;
-        if (clear) _keyMapManager.Clear();
+        if (clear)
+        {
+            _keyMapManager.Clear();
+            _analogMapManager.Clear();
+        }
         if (!FileManagerSecure.FileExists(path)) return false;
         var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
         if (jc == null) return false;
@@ -96,6 +100,16 @@ public class KeybindingsStorage
             new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
                 "Global.Toggle_ShowHiddenAtoms"));
         // C -> ProcessTargetSelectionCycleSelectMouse what should this do?
+
+        _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.A, false, false, false), new KeyChord(KeyCode.D, false, false, false),
+                "Camera.Pan_X", 0));
+        _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.Z, false, false, false), new KeyChord(KeyCode.X, false, false, false),
+                "Camera.Pan_Y", 0));
+        _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.W, false, false, false), new KeyChord(KeyCode.S, false, false, false),
+                "Camera.Pan_Z", 0));
     }
 
     public void OpenExportDialog()

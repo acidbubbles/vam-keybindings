@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using DefaultNamespace;
 using SimpleJSON;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GlobalCommands
@@ -25,6 +26,7 @@ public class GlobalCommands
     private JSONStorableFloat _cameraDollyZoom;
     private JSONStorableFloat _cameraPanX;
     private JSONStorableFloat _cameraPanY;
+    private JSONStorableFloat _cameraPanZ;
 
     public GlobalCommands(JSONStorable owner, Atom containingAtom, ISelectionHistoryManager selectionHistoryManager, RemoteCommandsManager remoteCommandsManager)
     {
@@ -243,6 +245,7 @@ public class GlobalCommands
         CreateAction("Camera", "ResetFocusPoint", () => SuperController.singleton.ResetFocusPoint());
         _cameraPanX = CreateAnalog("Camera", "Pan_X");
         _cameraPanY = CreateAnalog("Camera", "Pan_Y");
+        _cameraPanZ = CreateAnalog("Camera", "Pan_Z");
         _cameraOrbitX = CreateAnalog("Camera", "Orbit_X");
         _cameraOrbitY = CreateAnalog("Camera", "Orbit_Y");
         _cameraDollyZoom = CreateAnalog("Camera", "DollyZoom");
@@ -287,25 +290,28 @@ public class GlobalCommands
         fn(fc);
     }
 
-    private const float _moveMultiplier = 1f; // TODO: Based on camera distance from model?
-    private const float _rotateMultiplier = 1f;
-
     public void Update()
     {
-        if(_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, _moveX.val * _moveMultiplier);
-        if(_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, _moveY.val * _moveMultiplier);
-        if(_moveZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Z, _moveZ.val * _moveMultiplier);
-        if(_moveCameraX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraRight, _moveCameraX.val * _moveMultiplier);
-        if(_moveCameraY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraUp, -_moveCameraY.val * _moveMultiplier);
-        if(_moveCameraZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraForward, _moveCameraZ.val * _moveMultiplier);
-        if(_rotateX.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.X, _rotateX.val * _rotateMultiplier);
-        if(_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * _rotateMultiplier);
-        if(_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * _rotateMultiplier);
-        if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right);
-        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
-        if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val);
-        if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val);
-        if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val);
+        if (_moveX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.X, _moveX.val * NormalizedMoveMultiplier());
+        if (_moveY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Y, _moveY.val * NormalizedMoveMultiplier());
+        if (_moveZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.Z, _moveZ.val * NormalizedMoveMultiplier());
+        if (_moveCameraX.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraRight, _moveCameraX.val * NormalizedMoveMultiplier());
+        if (_moveCameraY.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraUp, -_moveCameraY.val * NormalizedMoveMultiplier());
+        if (_moveCameraZ.val != 0) SuperController.singleton.GetSelectedController()?.MoveAxis(FreeControllerV3.MoveAxisnames.CameraForward, _moveCameraZ.val * NormalizedMoveMultiplier());
+        if (_rotateX.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.X, _rotateX.val * NormalizedMoveMultiplier());
+        if (_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * NormalizedMoveMultiplier());
+        if (_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * NormalizedMoveMultiplier());
+        if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
+        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
+        if (_cameraPanZ.val != 0) SuperController.singleton.CameraPan(_cameraPanZ.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
+        if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val * NormalizedMoveMultiplier());
+        if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val * NormalizedMoveMultiplier());
+        if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val * NormalizedMoveMultiplier());
+    }
+
+    private static float NormalizedMoveMultiplier(float multiplier = 1f)
+    {
+        return multiplier * Time.unscaledDeltaTime * 45f;
     }
 
     private static void TogglePerformanceMonitor()

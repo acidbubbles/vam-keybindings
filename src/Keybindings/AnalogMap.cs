@@ -17,7 +17,7 @@ public class AnalogMap :  IMap
     {
     }
 
-    public AnalogMap(KeyChord chord, string axisName, bool reversed, string commandName, int slot)
+    public AnalogMap(KeyChord chord, string axisName, bool reversed, string commandName, int slot = 0)
     {
         isAxis = true;
         leftChord = KeyChord.empty;
@@ -29,7 +29,7 @@ public class AnalogMap :  IMap
         this.slot = slot;
     }
 
-    public AnalogMap(KeyChord leftChord, KeyChord rightChord, string commandName, int slot)
+    public AnalogMap(KeyChord leftChord, KeyChord rightChord, string commandName, int slot = 0)
     {
         isAxis = false;
         chord = KeyChord.empty;
