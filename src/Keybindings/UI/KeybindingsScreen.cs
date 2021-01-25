@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,9 +11,11 @@ public class KeybindingsScreen : MonoBehaviour
 
     private class CommandBindingRow
     {
-        public string commandName;
         public GameObject container;
-        public UIDynamicButton bindingBtn;
+        public UIDynamicButton bindingBtn1;
+        public UIDynamicButton bindingBtn2;
+        public ICommandInvoker invoker;
+        public string commandName => invoker?.commandName ?? null;
     }
 
     public IPrefabManager prefabManager { get; set; }
@@ -25,6 +28,8 @@ public class KeybindingsScreen : MonoBehaviour
     public bool isRecording;
 
     private bool _initialized;
+    private InputField _searchInput;
+    private UIDynamicToggle _showBoundOnly;
     private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
     private Coroutine _setKeybindingCoroutine;
 
@@ -139,20 +144,24 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             placeholderText.alignment = TextAnchor.MiddleLeft;
             placeholderText.text = "Search commands...";
 
-            var input = searchFieldGo.AddComponent<InputField>();
-            input.textComponent = text;
-            input.placeholder = placeholderText;
-            input.onValueChanged.AddListener(OnSearchValueChanged);
+            _searchInput = searchFieldGo.AddComponent<InputField>();
+            _searchInput.textComponent = text;
+            _searchInput.placeholder = placeholderText;
+            _searchInput.onValueChanged.AddListener(_ => OnFilterChanged());
         }
+
+        _showBoundOnly = prefabManager.CreateToggle(transform, "Only show bound commands");
+        _showBoundOnly.backgroundColor = Color.clear;
+        _showBoundOnly.toggle.onValueChanged.AddListener(_ => OnFilterChanged());
     }
 
-    private void OnSearchValueChanged(string query)
+    private void OnFilterChanged()
     {
         for (var i = 0; i < _rows.Count; i++)
         {
             var row = _rows[i];
             if (row.commandName == null) continue;
-            row.container.SetActive(FuzzyFinder.Match(row.commandName, query));
+            row.container.SetActive(FuzzyFinder.Match(row.commandName, _searchInput.text) && (!_showBoundOnly.toggle.isOn || !string.IsNullOrEmpty(row.bindingBtn1.label) || !string.IsNullOrEmpty(row.bindingBtn2.label)));
         }
     }
 
@@ -258,7 +267,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
-        var row = new CommandBindingRow {container = go, commandName = commandInvoker.commandName};
+        var row = new CommandBindingRow {container = go, invoker = commandInvoker};
         _rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 1);
@@ -273,11 +282,11 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         var displayNameLayout = displayNameText.GetComponent<LayoutElement>();
         displayNameLayout.flexibleWidth = 1000f;
 
-        CreateBindingButton(commandInvoker, go, row, 0);
-        CreateBindingButton(commandInvoker, go, row, 1);
+        row.bindingBtn1 = CreateBindingButton(commandInvoker, go, 0);
+        row.bindingBtn2 = CreateBindingButton(commandInvoker, go, 1);
     }
 
-    private void CreateBindingButton(ICommandInvoker commandInvoker, GameObject go, CommandBindingRow row, int slot)
+    private UIDynamicButton CreateBindingButton(ICommandInvoker commandInvoker, GameObject go, int slot)
     {
         var bindingBtn = prefabManager.CreateButton(go.transform, GetMappedBinding(commandInvoker, slot));
         bindingBtn.button.onClick.AddListener(() =>
@@ -290,10 +299,10 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
             bindingBtn.label = "Recording...";
         });
-        row.bindingBtn = bindingBtn;
         var bindingLayout = bindingBtn.GetComponent<LayoutElement>();
         bindingLayout.minWidth = 300f;
         bindingLayout.preferredWidth = 300f;
+        return bindingBtn;
     }
 
     private void StopRecording(UIDynamicButton btn, Color btnColor, ICommandInvoker commandInvoker, int slot)
@@ -381,7 +390,15 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             analogMapManager.maps.Remove(conflictMap);
             var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
             if (conflictRow != null)
-                conflictRow.bindingBtn.label = _notBoundButtonLabel;
+            {
+                if (conflictMap.slot == 0)
+                    conflictRow.bindingBtn1.label = _notBoundButtonLabel;
+                else if (conflictMap.slot == 0)
+                    conflictRow.bindingBtn2.label = _notBoundButtonLabel;
+                else
+                    throw new InvalidOperationException("Unknown slot " + conflictMap.slot);
+            }
+
             SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
         }
 
@@ -439,7 +456,14 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
                 keyMapManager.maps.Remove(conflictMap);
                 var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
-                    conflictRow.bindingBtn.label = _notBoundButtonLabel;
+                {
+                    if (conflictMap.slot == 0)
+                        conflictRow.bindingBtn1.label = _notBoundButtonLabel;
+                    else if (conflictMap.slot == 0)
+                        conflictRow.bindingBtn2.label = _notBoundButtonLabel;
+                    else
+                        throw new InvalidOperationException("Unknown slot " + conflictMap.slot);
+                }
                 SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
             }
             keyMapManager.maps.Add(new KeyMap(bindings, commandInvoker.commandName, slot));
