@@ -312,7 +312,7 @@ public class GlobalCommands
 
     private static float NormalizedMoveMultiplier(float multiplier = 1f)
     {
-        return multiplier * Time.unscaledDeltaTime * 45f;
+        return multiplier * Time.unscaledDeltaTime * 90f;
     }
 
     private static void TogglePerformanceMonitor()
