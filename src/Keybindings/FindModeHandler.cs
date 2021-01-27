@@ -88,7 +88,8 @@ public class FindModeHandler : IModeHandler
                 _fuzzyFinder.tabIndex = (_fuzzyFinder.tabIndex + 1) % _fuzzyFinder.matches;
         }
 
-        _overlay.value.Set(!_fuzzyFinder.FuzzyFind(query) ? "" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
+        var matched = _fuzzyFinder.FuzzyFind(query);
+        _overlay.value.Set(!matched ? ":" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
     }
 
     private void Invoke(string action)
