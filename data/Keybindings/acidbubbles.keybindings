@@ -204,39 +204,25 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "C", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "AtomUI.ClothingTab", 
-         "slot" : "0"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
-               "key" : "A", 
-               "ctrl" : "true"
-            }
-         ], 
-         "action" : "AtomUI.AppearancePresetsTab", 
-         "slot" : "0"
-      }, 
-      { 
-         "chords" : [ 
-            { 
-               "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "M", 
                "ctrl" : "true"
             }
          ], 
          "action" : "AtomUI.FemaleMorphsTab", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "C", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "AtomUI.ClothingTab", 
          "slot" : "0"
       }, 
       { 
@@ -274,10 +260,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha0", 
                "ctrl" : "true"
             }
@@ -289,10 +271,6 @@
          "chords" : [ 
             { 
                "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
-               "key" : "P", 
                "ctrl" : "true"
             }, 
             { 
@@ -310,10 +288,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha2", 
                "ctrl" : "true"
             }
@@ -325,10 +299,6 @@
          "chords" : [ 
             { 
                "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
-               "key" : "P", 
                "ctrl" : "true"
             }, 
             { 
@@ -346,10 +316,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha4", 
                "ctrl" : "true"
             }
@@ -361,10 +327,6 @@
          "chords" : [ 
             { 
                "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
-               "key" : "P", 
                "ctrl" : "true"
             }, 
             { 
@@ -382,10 +344,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha6", 
                "ctrl" : "true"
             }
@@ -397,10 +355,6 @@
          "chords" : [ 
             { 
                "key" : "G", 
-               "ctrl" : "true"
-            }, 
-            { 
-               "key" : "P", 
                "ctrl" : "true"
             }, 
             { 
@@ -418,10 +372,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha8", 
                "ctrl" : "true"
             }
@@ -436,10 +386,6 @@
                "ctrl" : "true"
             }, 
             { 
-               "key" : "P", 
-               "ctrl" : "true"
-            }, 
-            { 
                "key" : "Alpha9", 
                "ctrl" : "true"
             }
@@ -450,20 +396,25 @@
       { 
          "chords" : [ 
             { 
-               "key" : "KeypadPlus"
+               "key" : "G", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "A", 
+               "ctrl" : "true"
             }
          ], 
-         "action" : "MainUI.AddAtomTab", 
+         "action" : "AtomUI.AppearancePresetsTab", 
          "slot" : "0"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "T", 
+               "key" : "KeypadPlus", 
                "ctrl" : "true"
             }
          ], 
-         "action" : "MainUI.SelectTab", 
+         "action" : "MainUI.AddAtomTab", 
          "slot" : "0"
       }, 
       { 
@@ -482,6 +433,142 @@
             }
          ], 
          "action" : "Select.PreviousAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "N", 
+               "shift" : "true"
+            }
+         ], 
+         "action" : "Select.PreviousPersonAtom", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "P", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.People_Person", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "G", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Reflective_Glass", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "C", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Shapes_Cube", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "S", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Shapes_Sphere", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "A", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Sound_AudioSource", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "B", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Triggers_UIButton", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "E", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Misc_Empty", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "U", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Misc_CustomUnityAsset", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPlus", 
+               "ctrl" : "true"
+            }, 
+            { 
+               "key" : "L", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Add.Light_InvisibleLight", 
          "slot" : "0"
       }, 
       { 
@@ -507,20 +594,20 @@
       { 
          "chords" : [ 
             { 
-               "key" : "F8", 
-               "ctrl" : "true"
+               "key" : "F7"
             }
          ], 
-         "action" : "Logs.ClearErrorLog", 
+         "action" : "Logs.ToggleMessageLog", 
          "slot" : "0"
       }, 
       { 
          "chords" : [ 
             { 
-               "key" : "F7"
+               "key" : "F8", 
+               "ctrl" : "true"
             }
          ], 
-         "action" : "Logs.ToggleMessageLog", 
+         "action" : "Logs.ClearErrorLog", 
          "slot" : "0"
       }, 
       { 
@@ -536,10 +623,153 @@
       { 
          "chords" : [ 
             { 
-               "key" : "F11"
+               "key" : "F2"
             }
          ], 
          "action" : "Settings.TogglePerformanceMonitor", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "RightArrow"
+            }
+         ], 
+         "action" : "Timeline.ForwardSecond", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "LeftArrow", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.PreviousFrame", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "RightArrow", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.NextFrame", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "C", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Copy", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "X", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Cut", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "V", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Keyframe_Paste", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "RightArrow", 
+               "alt" : "true"
+            }
+         ], 
+         "action" : "Timeline.ForwardTenthOfASecond", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "LeftArrow"
+            }
+         ], 
+         "action" : "Timeline.RewindSecond", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "LeftArrow", 
+               "alt" : "true"
+            }
+         ], 
+         "action" : "Timeline.RewindTenthOfASecond", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Keypad0"
+            }
+         ], 
+         "action" : "Timeline.PlayAll", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Keypad0", 
+               "ctrl" : "true"
+            }
+         ], 
+         "action" : "Timeline.Stop", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Insert"
+            }
+         ], 
+         "action" : "Timeline.PlayCurrentClip", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Keypad3"
+            }
+         ], 
+         "action" : "Timeline.NextAnimationInCurrentLayer", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "Keypad1"
+            }
+         ], 
+         "action" : "Timeline.PreviousAnimationInCurrentLayer", 
+         "slot" : "0"
+      }, 
+      { 
+         "chords" : [ 
+            { 
+               "key" : "KeypadPeriod"
+            }
+         ], 
+         "action" : "Timeline.OpenUI", 
          "slot" : "0"
       }
    ], 
