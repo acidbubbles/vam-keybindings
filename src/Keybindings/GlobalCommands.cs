@@ -393,11 +393,20 @@ public class GlobalCommands
     {
         var atom = OpenTab(_ => "Plugins");
         if (atom == null) return;
-        var uid = atom.GetStorableIDs().FirstOrDefault(s => s.StartsWith($"plugin#{i}_"));
-        if (uid == null) return;
-        var plugin = atom.GetStorableByID(uid) as MVRScript;
-        if (plugin == null) return;
-        plugin.UITransform.gameObject.SetActive(true);
+        var lastPrefix = "";
+        foreach(var uid in atom.GetStorableIDs())
+        {
+            if (uid == null) continue;
+            if (!uid.StartsWith($"plugin#")) continue;
+            var prefixEndIndex = uid.IndexOf("_");
+            if (prefixEndIndex == -1) continue;
+            var prefix = uid.Substring(0, prefixEndIndex);
+            if (prefix == lastPrefix) continue;
+            lastPrefix = prefix;
+            var plugin = atom.GetStorableByID(uid) as MVRScript;
+            if (plugin == null) continue;
+            plugin.UITransform.gameObject.SetActive(uid.StartsWith($"plugin#{i}_"));
+        }
     }
 
     private void SelectHistoryBack()

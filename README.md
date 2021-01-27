@@ -1,15 +1,14 @@
 # Virt-A-Mate Keybindings
 
-> Under development
+> **Requires Virt-A-Mate 1.20.77.2 or more recent!**
 
-- Navigate Virt-A-Mate's UI easily
-- Create custom keybindings for Virt-A-Mate
+- Create custom keybindings for more than 200 Virt-A-Mate commands
 - Invoke custom triggers in your scenes
 - Fuzzy find commands using autocomplete
 - Use vim-like key sequences or vscode-like shortcuts
-- Access additional built-in features like selection history
-- Use your keyboard or gamepad
-- Integrates with Timeline
+- Access additional built-in features like selection history and quick atoms creation
+- Use your keyboard or gamepad with joystick support
+- Integrates with Timeline and other plugins
 
 ## How to use Keybindings
 
@@ -39,9 +38,6 @@ Bindings with an asterisk (`*`) can be bound to joysticks and mouse. You can use
 This plugin is still being actively developed! Here are some gotchas:
 
 - `Draw UI On Top` _must_ be enabled for the fuzzy find UI to work.
-- A lot of keybindings are controlled by Virt-A-Mate. The next version will allow Keybindings to take control over those shortcuts too, thanks to [Meshed being very responsive](https://hub.virtamate.com/threads/1-20-1-6-ability-to-disable-or-override-built-in-shortcuts-quick-win.3841/#post-9675)!
-- Not all useful commands have been implemented, let me know if some of your favorites might be missing! Naming is also subject to change.
-- Opened plugin UIs will not be closed, and will therefore stack.
 
 ## Integrating your plugins
 
@@ -89,6 +85,7 @@ You can also optionally provide additional settings to Keybindings by returning 
 Supported storables:
 
 - `JSONStorableAction` will be invoked on key down
+- `JSONStorableBool` will be set to true on key down, and false on key up
 - `JSONStorableFloat` will receive values between -1 and 1 for joysticks, or the mouse position delta. You should check for their current value in `Update()`.
 
 ## Credits
