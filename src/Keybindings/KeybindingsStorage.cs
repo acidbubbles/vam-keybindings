@@ -54,12 +54,17 @@ public class KeybindingsStorage
 
     public void ImportDefaults()
     {
-        // TODO: Check if the defaults doesn't exist in the user's folder, if it fallbacks to the plugin's version
         if (Import(false, SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings")) return;
+        CreateDefaults();
+    }
 
+    public void CreateDefaults()
+    {
         _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.Semicolon, false, false, true)},
                 "Keybindings.FindCommand"));
+
+#if VAM_GT_1_20_77_0
         _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.M, false, false, false)},
                 "Monitor.Toggle_MainMonitor"));
@@ -112,6 +117,7 @@ public class KeybindingsStorage
         _analogMapManager.maps.Add(
             new AnalogMap(new KeyChord(KeyCode.W, false, false, false), new KeyChord(KeyCode.S, false, false, false),
                 "Camera.Pan_Z", 0));
+#endif
     }
 
     public void OpenExportDialog()

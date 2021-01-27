@@ -104,7 +104,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
 
     public void OnEnable()
     {
-#if VAM_GT_1_20_6_0
+#if VAM_GT_1_20_77_0
         if(SuperController.singleton.disableInternalKeyBindings || SuperController.singleton.disableInternalNavigationKeyBindings)
         {
             SuperController.LogError("Keybindings: Another plugin already controls keyboard shortcuts.");
@@ -118,7 +118,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
 
     public void OnDisable()
     {
-#if VAM_GT_1_20_6_0
+#if VAM_GT_1_20_77_0
         if(_overrideInternalKeybindings)
         {
             SuperController.singleton.disableInternalKeyBindings = false;
