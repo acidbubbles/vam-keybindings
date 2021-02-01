@@ -165,6 +165,6 @@ public class KeybindingsStorage
     public void ExportDefault()
     {
         FileManagerSecure.CreateDirectory(_saveFolder);
-        Export(SuperController.singleton.savesDir + @"\keybindings\defaults.keybindings");
+        Export(SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings");
     }
 }
