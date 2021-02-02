@@ -43,16 +43,16 @@ public class GlobalCommands
         CreateAction("GameMode", "EditMode", () => SuperController.singleton.gameMode = SuperController.GameMode.Edit);
 
         // Main menu
+        CreateAction("Global", "OpenMainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
         CreateAction("Global", "SaveScene", SuperController.singleton.SaveSceneDialog);
         CreateAction("Global", "LoadScene", SuperController.singleton.LoadSceneDialog);
         CreateAction("Global", "MergeLoadScene", SuperController.singleton.LoadMergeSceneDialog);
-        CreateAction("Global", "Exit", SuperController.singleton.Quit);
         CreateAction("Global", "ScreenshotMode", SuperController.singleton.SelectModeScreenshot);
         CreateAction("Global", "OnlineBrowser", () => SuperController.singleton.activeUI = SuperController.ActiveUI.OnlineBrowser);
-        CreateAction("Global", "OpenMainMenu", () => SuperController.singleton.activeUI = SuperController.ActiveUI.MainMenu);
         CreateAction("Global", "Toggle_ShowHiddenAtoms", SuperController.singleton.ToggleShowHiddenAtoms);
         CreateAction("Global", "Toggle_Targets", SuperController.singleton.ToggleTargetsOnWithButton);
         CreateAction("Global", "CycleStack", SuperController.singleton.ProcessTargetSelectionCycleSelectMouse);
+        CreateAction("Global", "Exit", SuperController.singleton.Quit);
 
         // Monitor
         CreateAction("Monitor", "Toggle_MainMonitor", SuperController.singleton.ToggleMainMonitor);
@@ -60,8 +60,8 @@ public class GlobalCommands
         CreateAction("Monitor", "Toggle_MonitorHudMonitor", SuperController.singleton.ToggleMainHUDMonitor);
 
         // Menu
-        CreateAction("AtomUI", "CloseAllPanels", CloseAllPanels);
         CreateAction("AtomUI", "Open", () => OpenTab(null));
+        CreateAction("AtomUI", "CloseAllPanels", CloseAllPanels);
         CreateAction("AtomUI", "ControlTab", () => OpenTab(type => type == "Person" ? "ControlAndPhysics1" : "Control"));
         CreateAction("AtomUI", "PresetTab", () => OpenTab(_ => "Preset"));
         CreateAction("AtomUI", "MoveTab", () => OpenTab(_ => "Move"));
@@ -81,13 +81,6 @@ public class GlobalCommands
         CreateAction("AtomUI", "PluginsTab_Plugin#7", () => OpenPlugin(7));
         CreateAction("AtomUI", "PluginsTab_Plugin#8", () => OpenPlugin(8));
         CreateAction("AtomUI", "PluginsTab_Plugin#9", () => OpenPlugin(9));
-        // Animation Pattern
-        CreateAction("AtomUI", "AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
-        CreateAction("AtomUI", "AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
-        // Custom Unity Asset
-        CreateAction("AtomUI", "AssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
-        // Audio Source
-        CreateAction("AtomUI", "AudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
         // Person
         CreateAction("AtomUI", "ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
         CreateAction("AtomUI", "ClothingTab", () => OpenTab(_ => "Clothing", "Person"));
@@ -102,6 +95,13 @@ public class GlobalCommands
         CreateAction("AtomUI", "ClothingPresetsTab", () => OpenTab(_ => "Clothing Presets", "Person"));
         CreateAction("AtomUI", "MaleMorphsTab", () => OpenTab(_ => "Male Morphs", "Person"));
         CreateAction("AtomUI", "FemaleMorphsTab", () => OpenTab(_ => "Female Morphs", "Person"));
+        // Animation Pattern
+        CreateAction("AtomUI", "AnimationPatternTab", () => OpenTab(_ => "Animation Pattern", "AnimationPattern"));
+        CreateAction("AtomUI", "AnimationTriggersTab", () => OpenTab(_ => "Animation Triggers", "AnimationPattern"));
+        // Custom Unity Asset
+        CreateAction("AtomUI", "AssetTab", () => OpenTab(_ => "Asset", "CustomUnityAsset"));
+        // Audio Source
+        CreateAction("AtomUI", "AudioSourceTab", () => OpenTab(_ => "Audio Source", "AudioSource"));
 
         // Main Tabs
         CreateAction("MainUI", "Open", () => OpenMainTab(null));
@@ -129,36 +129,36 @@ public class GlobalCommands
         CreateAction("Select", "PreviousPersonAtom", () => SelectPreviousAtom("Person"));
         CreateAction("Select", "NextPersonAtom", () => SelectNextAtom("Person"));
         CreateAction("Select", "RootControl", () => SelectControllerByName("control"));
-        CreateAction("Select", "HipControl", () => SelectControllerByName("hipControl"));
-        CreateAction("Select", "PelvisControl", () => SelectControllerByName("pelvisControl"));
-        CreateAction("Select", "ChestControl", () => SelectControllerByName("chestControl"));
         CreateAction("Select", "HeadControl", () => SelectControllerByName("headControl"));
-        CreateAction("Select", "RHandControl", () => SelectControllerByName("rHandControl"));
-        CreateAction("Select", "LHandControl", () => SelectControllerByName("lHandControl"));
-        CreateAction("Select", "RFootControl", () => SelectControllerByName("rFootControl"));
-        CreateAction("Select", "LFootControl", () => SelectControllerByName("lFootControl"));
         CreateAction("Select", "NeckControl", () => SelectControllerByName("neckControl"));
-        CreateAction("Select", "EyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
-        CreateAction("Select", "RNippleControl", () => SelectControllerByName("rNippleControl"));
+        CreateAction("Select", "LShoulderControl", () => SelectControllerByName("lShoulderControl"));
+        CreateAction("Select", "RShoulderControl", () => SelectControllerByName("rShoulderControl"));
+        CreateAction("Select", "LArmControl", () => SelectControllerByName("lArmControl"));
+        CreateAction("Select", "RArmControl", () => SelectControllerByName("rArmControl"));
+        CreateAction("Select", "LElbowControl", () => SelectControllerByName("lElbowControl"));
+        CreateAction("Select", "RElbowControl", () => SelectControllerByName("rElbowControl"));
+        CreateAction("Select", "LHandControl", () => SelectControllerByName("lHandControl"));
+        CreateAction("Select", "RHandControl", () => SelectControllerByName("rHandControl"));
+        CreateAction("Select", "ChestControl", () => SelectControllerByName("chestControl"));
         CreateAction("Select", "LNippleControl", () => SelectControllerByName("lNippleControl"));
+        CreateAction("Select", "RNippleControl", () => SelectControllerByName("rNippleControl"));
+        CreateAction("Select", "Abdomen2Control", () => SelectControllerByName("abdomen2Control"));
+        CreateAction("Select", "AbdomenControl", () => SelectControllerByName("abdomenControl"));
+        CreateAction("Select", "HipControl", () => SelectControllerByName("hipControl"));
         CreateAction("Select", "TestesControl", () => SelectControllerByName("testesControl"));
         CreateAction("Select", "PenisBaseControl", () => SelectControllerByName("penisBaseControl"));
         CreateAction("Select", "PenisMidControl", () => SelectControllerByName("penisMidControl"));
         CreateAction("Select", "PenisTipControl", () => SelectControllerByName("penisTipControl"));
-        CreateAction("Select", "RElbowControl", () => SelectControllerByName("rElbowControl"));
-        CreateAction("Select", "LElbowControl", () => SelectControllerByName("lElbowControl"));
-        CreateAction("Select", "RKneeControl", () => SelectControllerByName("rKneeControl"));
-        CreateAction("Select", "LKneeControl", () => SelectControllerByName("lKneeControl"));
-        CreateAction("Select", "RToeControl", () => SelectControllerByName("rToeControl"));
-        CreateAction("Select", "LToeControl", () => SelectControllerByName("lToeControl"));
-        CreateAction("Select", "AbdomenControl", () => SelectControllerByName("abdomenControl"));
-        CreateAction("Select", "Abdomen2Control", () => SelectControllerByName("abdomen2Control"));
-        CreateAction("Select", "RThighControl", () => SelectControllerByName("rThighControl"));
+        CreateAction("Select", "PelvisControl", () => SelectControllerByName("pelvisControl"));
         CreateAction("Select", "LThighControl", () => SelectControllerByName("lThighControl"));
-        CreateAction("Select", "LArmControl", () => SelectControllerByName("lArmControl"));
-        CreateAction("Select", "RArmControl", () => SelectControllerByName("rArmControl"));
-        CreateAction("Select", "RShoulderControl", () => SelectControllerByName("rShoulderControl"));
-        CreateAction("Select", "LShoulderControl", () => SelectControllerByName("lShoulderControl"));
+        CreateAction("Select", "RThighControl", () => SelectControllerByName("rThighControl"));
+        CreateAction("Select", "LKneeControl", () => SelectControllerByName("lKneeControl"));
+        CreateAction("Select", "RKneeControl", () => SelectControllerByName("rKneeControl"));
+        CreateAction("Select", "LFootControl", () => SelectControllerByName("lFootControl"));
+        CreateAction("Select", "RFootControl", () => SelectControllerByName("rFootControl"));
+        CreateAction("Select", "LToeControl", () => SelectControllerByName("lToeControl"));
+        CreateAction("Select", "RToeControl", () => SelectControllerByName("rToeControl"));
+        CreateAction("Select", "EyeTargetControl", () => SelectControllerByName("eyeTargetControl"));
 
         // Dev
         CreateAction("Plugins", "ReloadAllScenePlugins", ReloadAllScenePlugins);
@@ -168,6 +168,7 @@ public class GlobalCommands
         CreateAction("Atom", "DisableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
 
         // Add atom
+        CreateAction("Add", "Clone_CurrentAtom", () => _owner.StartCoroutine(CloneCurrentAtom()));
         CreateAction("Add", "AnimationPattern", () => SuperController.singleton.AddAtomByType("AnimationPattern", true, true, true));
         CreateAction("Add", "FloorsAndWalls_AtomSlate", () => SuperController.singleton.AddAtomByType("Slate", true, true, true));
         CreateAction("Add", "FloorsAndWalls_AtomWall", () => SuperController.singleton.AddAtomByType("Wall", true, true, true));
@@ -202,7 +203,6 @@ public class GlobalCommands
         CreateAction("Add", "Triggers_UISlider", () => SuperController.singleton.AddAtomByType("UISlider", true, true, true));
         CreateAction("Add", "Triggers_UIToggle", () => SuperController.singleton.AddAtomByType("UIToggle", true, true, true));
         CreateAction("Add", "Triggers_VariableTrigger", () => SuperController.singleton.AddAtomByType("VariableTrigger", true, true, true));
-        CreateAction("Add", "Clone_CurrentAtom", () => _owner.StartCoroutine(CloneCurrentAtom()));
 
         // Remove atom
         CreateAction("Remove", "SelectedAtom", () => SuperController.singleton.RemoveAtom(SuperController.singleton.GetSelectedAtom()));
@@ -222,27 +222,27 @@ public class GlobalCommands
         // TODO: Add more options
 
         // Time
+        CreateAction("Time", "Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
         CreateAction("Time", "TimeScale_Set_Normal", () => TimeControl.singleton.currentScale = 1f);
         CreateAction("Time", "TimeScale_Set_Half", () => TimeControl.singleton.currentScale = 0.5f);
         CreateAction("Time", "TimeScale_Set_Quarter", () => TimeControl.singleton.currentScale = 0.25f);
         CreateAction("Time", "TimeScale_Set_Minimum", () => TimeControl.singleton.currentScale = 0.1f);
-        CreateAction("Time", "Toggle_FreezeMotionAndSound", () => SuperController.singleton.freezeAnimationToggle.isOn = !SuperController.singleton.freezeAnimationToggle.isOn);
 
         // Movement
         _moveX = CreateAnalog("Move", "Move_Absolute_X");
         _moveY = CreateAnalog("Move", "Move_Absolute_Y");
         _moveZ = CreateAnalog("Move", "Move_Absolute_Z");
-        _moveCameraX = CreateAnalog("Move", "Move_RelativeToCamera_X");
-        _moveCameraY = CreateAnalog("Move", "Move_RelativeToCamera_Y");
-        _moveCameraZ = CreateAnalog("Move", "Move_RelativeToCamera_Z");
         _rotateX = CreateAnalog("Rotate", "Rotate_Absolute_X");
         _rotateY = CreateAnalog("Rotate", "Rotate_Absolute_Y");
         _rotateZ = CreateAnalog("Rotate", "Rotate_Absolute_Z");
+        _moveCameraX = CreateAnalog("Move", "Move_RelativeToCamera_X");
+        _moveCameraY = CreateAnalog("Move", "Move_RelativeToCamera_Y");
+        _moveCameraZ = CreateAnalog("Move", "Move_RelativeToCamera_Z");
 
         // Camera
+        CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
         CreateAction("Camera", "FocusOnSelectedController", () => SuperController.singleton.FocusOnSelectedController());
         CreateAction("Camera", "FocusMoveOnSelectedController", () => SuperController.singleton.FocusOnSelectedController(false));
-        CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
         CreateAction("Camera", "ResetFocusPoint", () => SuperController.singleton.ResetFocusPoint());
         _cameraPanX = CreateAnalog("Camera", "Pan_X");
         _cameraPanY = CreateAnalog("Camera", "Pan_Y");
@@ -253,13 +253,13 @@ public class GlobalCommands
 
         // Logging
         CreateAction("Logs", "ClearMessageLog", SuperController.singleton.ClearMessages);
+        CreateAction("Logs", "OpenMessageLog", SuperController.singleton.OpenMessageLogPanel);
+        CreateAction("Logs", "CloseMessageLog", SuperController.singleton.CloseMessageLogPanel);
+        CreateAction("Logs", "ToggleMessageLog", () => SuperController.singleton.msgLogPanel.gameObject.SetActive(!SuperController.singleton.msgLogPanel.gameObject.activeSelf));
         CreateAction("Logs", "ClearErrorLog", SuperController.singleton.ClearErrors);
         CreateAction("Logs", "OpenErrorLog", SuperController.singleton.OpenErrorLogPanel);
-        CreateAction("Logs", "OpenMessageLog", SuperController.singleton.OpenMessageLogPanel);
         CreateAction("Logs", "CloseErrorLog", SuperController.singleton.CloseErrorLogPanel);
-        CreateAction("Logs", "CloseMessageLog", SuperController.singleton.CloseMessageLogPanel);
         CreateAction("Logs", "ToggleErrorLog", () => SuperController.singleton.errorLogPanel.gameObject.SetActive(!SuperController.singleton.errorLogPanel.gameObject.activeSelf));
-        CreateAction("Logs", "ToggleMessageLog", () => SuperController.singleton.msgLogPanel.gameObject.SetActive(!SuperController.singleton.msgLogPanel.gameObject.activeSelf));
 
         // Settings
         CreateAction("Settings", "TogglePerformanceMonitor", TogglePerformanceMonitor);
@@ -267,6 +267,15 @@ public class GlobalCommands
         CreateAction("Settings", "PhysicsRate_45", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._45);
         CreateAction("Settings", "PhysicsRate_90", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._90);
         CreateAction("Settings", "PhysicsRate_120", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._120);
+        CreateAction("Settings", "Toggle_MirrorReflections", () => UserPreferences.singleton.mirrorReflections = !UserPreferences.singleton.mirrorReflections);
+        CreateAction("Settings", "Toggle_SoftPhysics", () => UserPreferences.singleton.softPhysics = !UserPreferences.singleton.softPhysics);
+        CreateAction("Settings", "Toggle_MirrorToDisplay", () => UserPreferences.singleton.mirrorToDisplay = !UserPreferences.singleton.mirrorToDisplay);
+        CreateAction("Settings", "PhysicsUpdateCap_1", () => UserPreferences.singleton.physicsUpdateCap = 1);
+        CreateAction("Settings", "PhysicsUpdateCap_2", () => UserPreferences.singleton.physicsUpdateCap = 2);
+        CreateAction("Settings", "PhysicsUpdateCap_3", () => UserPreferences.singleton.physicsUpdateCap = 3);
+        CreateAction("Settings", "HandModel_SphereKinematic", () => SelectHandModel("SphereKinematic", false));
+        CreateAction("Settings", "HandModel_Male1", () => SelectHandModel("Male1", true));
+        CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // TODO: Find a few useful examples for this
@@ -326,6 +335,14 @@ public class GlobalCommands
             .FirstOrDefault(c => c.name == "PerfMon Toggle");
         if (toggle == null) return;
         toggle.isOn = !toggle.isOn;
+    }
+
+    private static void SelectHandModel(string handChoice, bool useCollision)
+    {
+        UserPreferences.singleton.motionHandModelControl.useCollision = useCollision;
+        UserPreferences.singleton.motionHandModelControl.rightHandChoice = handChoice;
+        UserPreferences.singleton.motionHandModelControl.leftHandChoice = handChoice;
+        UserPreferences.singleton.motionHandModelControl.linkHands = true;
     }
 
     private void CreateAction(string ns, string jsaName, Action fn)

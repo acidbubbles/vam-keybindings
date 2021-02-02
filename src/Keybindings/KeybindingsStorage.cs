@@ -102,9 +102,6 @@ public class KeybindingsStorage
             new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
                 "Global.Toggle_ShowHiddenAtoms"));
         _keyMapManager.maps.Add(
-            new KeyMap(new[] {new KeyChord(KeyCode.H, false, false, false)},
-                "Global.Toggle_ShowHiddenAtoms"));
-        _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.C, false, false, false)},
                 "Global.CycleStack"));
 
