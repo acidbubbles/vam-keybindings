@@ -181,11 +181,11 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         // ReSharper disable RedundantEnumerableCastCall
         var commands = remoteCommandsManager.actionCommands.Cast<ICommandInvoker>().Concat(remoteCommandsManager.analogCommands.Cast<ICommandInvoker>());
         // ReSharper restore RedundantEnumerableCastCall
-        foreach (var group in commands.GroupBy(c => c.ns))
+        foreach (var ns in commands.GroupBy(c => c.ns))
         {
-            AddGroupRow(@group.Key);
+            AddGroupRow(ns.Key);
 
-            foreach (var command in @group.OrderBy(g => g.localName))
+            foreach (var command in ns)
             {
                 AddEditRow(command);
                 unloadedCommands.Remove(command.commandName);
