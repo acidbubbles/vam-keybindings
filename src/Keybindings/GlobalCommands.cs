@@ -263,6 +263,10 @@ public class GlobalCommands
 
         // Settings
         CreateAction("Settings", "TogglePerformanceMonitor", TogglePerformanceMonitor);
+        CreateAction("Settings", "PhysicsRate_Auto", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate.Auto);
+        CreateAction("Settings", "PhysicsRate_45", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._45);
+        CreateAction("Settings", "PhysicsRate_90", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._90);
+        CreateAction("Settings", "PhysicsRate_120", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._120);
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // TODO: Find a few useful examples for this
