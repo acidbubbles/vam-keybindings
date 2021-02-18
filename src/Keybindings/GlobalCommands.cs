@@ -164,6 +164,9 @@ public class GlobalCommands
         CreateAction("Plugins", "ReloadAllScenePlugins", ReloadAllScenePlugins);
 
         // Edit atom
+        CreateAction("Atom", "Toggle_OnOff", () => OnSelectedAtom(atom => atom.ToggleOn()));
+        CreateAction("Atom", "On", () => OnSelectedAtom(atom => atom.SetOn(true)));
+        CreateAction("Atom", "Off", () => OnSelectedAtom(atom => atom.SetOn(false)));
         CreateAction("Atom", "EnableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
         CreateAction("Atom", "DisableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
 
