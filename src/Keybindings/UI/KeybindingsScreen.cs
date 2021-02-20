@@ -343,6 +343,10 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             var keyUp = KeyCodes.bindableKeyCodes.GetCurrentUp();
+
+            if(keyUp == leftKeybinding.key)
+                continue;
+
             if (keyUp != KeyCode.None)
             {
                 var binding = new KeyChord(keyUp, ctrlDown, altDown, shiftDown);
