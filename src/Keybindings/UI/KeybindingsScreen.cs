@@ -324,7 +324,10 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         {
             yield return 0;
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if(Input.GetKeyDown(KeyCode.Mouse0))
+                continue;
+
+            if (Input.GetKeyUp(KeyCode.Mouse0))
             {
                 var mapped = analogMapManager.GetMapByName(commandInvoker.commandName, slot);
                 if (mapped != null)
@@ -414,6 +417,8 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         {
             yield return 0;
             if (Input.GetKeyDown(KeyCode.Mouse0))
+                continue;
+            if (Input.GetKeyUp(KeyCode.Mouse0))
             {
                 // Apply
                 SaveKeyMap(setKeybindingList, commandInvoker, slot);
