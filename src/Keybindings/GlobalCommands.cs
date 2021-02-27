@@ -276,6 +276,7 @@ public class GlobalCommands
         CreateAction("Settings", "PhysicsUpdateCap_1", () => UserPreferences.singleton.physicsUpdateCap = 1);
         CreateAction("Settings", "PhysicsUpdateCap_2", () => UserPreferences.singleton.physicsUpdateCap = 2);
         CreateAction("Settings", "PhysicsUpdateCap_3", () => UserPreferences.singleton.physicsUpdateCap = 3);
+        CreateAction("Settings", "HandModel_SphereNone", () => SelectHandModel("None", false));
         CreateAction("Settings", "HandModel_SphereKinematic", () => SelectHandModel("SphereKinematic", false));
         CreateAction("Settings", "HandModel_Male1", () => SelectHandModel("Male1", true));
         CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
