@@ -26,9 +26,9 @@ public struct KeyChord
     public static bool IsValid(KeyCode key)
     {
         if (!SuperController.singleton.isOVR) return true;
-        if (OVRInput.GetActiveController() != OVRInput.Controller.Gamepad) return true;
-        if (key >= KeyCode.JoystickButton0 && key <= KeyCode.JoystickButton19) return false;
-        return true;
+        if (key < KeyCode.JoystickButton0 || key > KeyCode.Joystick8Button19) return true;
+        if (OVRInput.GetActiveController() == OVRInput.Controller.Gamepad) return true;
+        return false;
     }
 
     public bool IsDown()

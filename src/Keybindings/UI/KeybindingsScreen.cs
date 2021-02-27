@@ -444,6 +444,8 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             var key = KeyCodes.bindableKeyCodes.GetCurrentDown();
             if (key == KeyCode.None) continue;
 
+            if (!KeyChord.IsValid(key)) continue;
+
             var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
