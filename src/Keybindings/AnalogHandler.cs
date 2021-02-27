@@ -20,8 +20,8 @@ public class AnalogHandler
         {
             var map = _analogMapManager.maps[i];
             float axisValue;
-            if(map.isAxis)
-                axisValue = map.chord.IsActive() ? Input.GetAxis(map.axisName) : 0;
+            if (map.isAxis)
+                axisValue = map.chord.IsActive() ? map.GetAxis() : 0;
             else if (map.leftChord.IsActive())
                 axisValue = -0.5f;
             else if (map.rightChord.IsActive())

@@ -23,6 +23,14 @@ public struct KeyChord
         this.shift = shift;
     }
 
+    public static bool IsValid(KeyCode key)
+    {
+        if (!SuperController.singleton.isOVR) return true;
+        if (OVRInput.GetActiveController() != OVRInput.Controller.Gamepad) return true;
+        if (key >= KeyCode.JoystickButton0 && key <= KeyCode.JoystickButton19) return false;
+        return true;
+    }
+
     public bool IsDown()
     {
         if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
@@ -30,6 +38,8 @@ public struct KeyChord
         if (ctrl != (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) return false;
         if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
         if (shift != (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return false;
+
+        if (!IsValid(key)) return false;
 
         return true;
     }

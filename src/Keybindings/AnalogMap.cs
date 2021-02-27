@@ -97,4 +97,15 @@ public class AnalogMap :  IMap
             SuperController.LogError($"Keybindings: invalid keybinding for '{commandName}' slot {slot}: {e}");
         }
     }
+
+    public float GetAxis()
+    {
+        return GetAxis(axisName);
+    }
+
+    public static float GetAxis(string axisName)
+    {
+        if (SuperController.singleton.isOVR && OVRInput.GetActiveController() != OVRInput.Controller.Gamepad) return 0f;
+        return Input.GetAxis(axisName);
+    }
 }

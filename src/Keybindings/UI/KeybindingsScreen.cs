@@ -344,11 +344,11 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
 
             var keyUp = KeyCodes.bindableKeyCodes.GetCurrentUp();
 
-            if(keyUp == leftKeybinding.key)
-                continue;
-
             if (keyUp != KeyCode.None)
             {
+                if (!KeyChord.IsValid(keyUp))
+                    continue;
+
                 var binding = new KeyChord(keyUp, ctrlDown, altDown, shiftDown);
                 if (leftKeybinding.key == KeyCode.None)
                 {
@@ -356,6 +356,11 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
                     leftKeybinding = binding;
                     continue;
                 }
+                else if (keyUp == leftKeybinding.key)
+                {
+                    continue;
+                }
+
                 var map = new AnalogMap(leftKeybinding, binding, commandInvoker.commandName, slot);
                 SaveAnalogMap(commandInvoker, binding, map);
                 StopRecording(btn, btnColor, commandInvoker, slot);
@@ -364,7 +369,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
 
             foreach (var axisName in _knownAxisNames)
             {
-                var axisValue = Input.GetAxis(axisName);
+                var axisValue = AnalogMap.GetAxis(axisName);
                 if (Mathf.Abs(axisValue) < 0.75f) continue;
                 var key = KeyCodes.bindableKeyCodes.GetCurrent();
                 // We don't want to take over the mouse!
