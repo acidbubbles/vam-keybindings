@@ -70,14 +70,21 @@ public class RemoteCommandsManager
     {
         for (var i = _selectionHistoryManager.history.Count - 1; i >= 0; i--)
         {
+            var atom = _selectionHistoryManager.history[i];
+            var latestScript = _selectionHistoryManager.GetLatestScriptPerAtom(atom);
+            var hasLatestScript = !ReferenceEquals(latestScript, null);
+
             for (var invokerIndex = 0; invokerIndex < commandInvokers.Count; invokerIndex++)
             {
                 var commandInvoker = commandInvokers[invokerIndex];
-                if (commandInvoker.storable.containingAtom == _selectionHistoryManager.history[i])
+                // TODO: Re-order invokers to get most recent at the top?
+                // TODO: Scan list twice to map exact storable?
+                if (hasLatestScript ? latestScript == commandInvoker.storable : commandInvoker.storable.containingAtom == atom)
                 {
                     if (commandInvoker.storable == null)
                     {
                         commandInvokers.RemoveAt(invokerIndex);
+                        if (hasLatestScript) _selectionHistoryManager.Clear(atom);
                         invokerIndex--;
                         continue;
                     }
@@ -174,6 +181,19 @@ public class RemoteCommandsManager
         names.Clear();
         names.AddRange(_actionCommandsByName.Select(kvp => kvp.Key));
         names.Sort();
+
+        var script = storable as MVRScript;
+        if (script != null)
+        {
+            var spy = script.UITransform.gameObject.AddComponent<PluginUISpy>();
+            if (spy != null)
+            {
+                spy.onSelected.AddListener(() =>
+                {
+                    _selectionHistoryManager.SetLatestScriptPerAtom(script);
+                });
+            }
+        }
     }
 
     public void Add(IActionCommandInvoker invoker)
@@ -210,20 +230,61 @@ public class RemoteCommandsManager
 
     public void Remove(JSONStorable storable)
     {
-        var commandToRemove = new List<string>();
-        foreach (var commandInvokers in _actionCommandsByName)
         {
-            // TODO: Single might be overkill
-            commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
-            if (commandInvokers.Value.Count == 0)
-                commandToRemove.Add(commandInvokers.Key);
+            var commandToRemove = new List<string>();
+            foreach (var commandInvokers in _actionCommandsByName)
+            {
+                commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
+                if (commandInvokers.Value.Count == 0)
+                    commandToRemove.Add(commandInvokers.Key);
+            }
+
+            foreach (var commandName in commandToRemove)
+            {
+                _actionCommandsByName.Remove(commandName);
+                names.Remove(commandName);
+            }
         }
 
-        foreach (var commandName in commandToRemove)
         {
-            _actionCommandsByName.Remove(commandName);
-            // TODO: When we map multiple targets to an action name, check if it's the last
-            names.Remove(commandName);
+            var commandToRemove = new List<string>();
+            foreach (var commandInvokers in _analogCommandsByName)
+            {
+                commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
+                if (commandInvokers.Value.Count == 0)
+                    commandToRemove.Add(commandInvokers.Key);
+            }
+
+            foreach (var commandName in commandToRemove)
+            {
+                _analogCommandsByName.Remove(commandName);
+                names.Remove(commandName);
+            }
+        }
+
+        _selectionHistoryManager.Clear(storable);
+    }
+
+    public void Dispose()
+    {
+        foreach (var command in _actionCommandsByName)
+        {
+            foreach (var invoker in command.Value)
+            {
+                var script = invoker.storable as MVRScript;
+                if (script == null || script.UITransform == null) continue;
+                UnityEngine.Object.Destroy(script.UITransform.GetComponent<PluginUISpy>());
+            }
+        }
+
+        foreach (var command in _analogCommandsByName)
+        {
+            foreach (var invoker in command.Value)
+            {
+                var script = invoker.storable as MVRScript;
+                if (script == null || script.UITransform == null) continue;
+                UnityEngine.Object.Destroy(script.UITransform.GetComponent<PluginUISpy>());
+            }
         }
     }
 }

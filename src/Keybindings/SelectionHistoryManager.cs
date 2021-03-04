@@ -12,6 +12,8 @@ public class SelectionHistoryManager : ISelectionHistoryManager
 {
     private int _lastValidCheck = Time.frameCount;
     private readonly List<Atom> _history = new List<Atom>();
+    public readonly Dictionary<Atom, MVRScript> _latestScriptPerAtom = new Dictionary<Atom, MVRScript>();
+
     public IList<Atom> history
     {
         get
@@ -63,5 +65,28 @@ public class SelectionHistoryManager : ISelectionHistoryManager
             return SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == "Person") ?? SuperController.singleton.GetAtoms().FirstOrDefault();
 
         return SuperController.singleton.GetAtoms().FirstOrDefault(a => a.type == type);
+    }
+
+    public void SetLatestScriptPerAtom(MVRScript script)
+    {
+        _latestScriptPerAtom[script.containingAtom] = script;
+    }
+
+    public MVRScript GetLatestScriptPerAtom(Atom atom)
+    {
+        MVRScript script;
+        return _latestScriptPerAtom.TryGetValue(atom, out script) ? script : null;
+    }
+
+    public void Clear(JSONStorable storable)
+    {
+        var atom = _latestScriptPerAtom.FirstOrDefault(kvp => kvp.Value == storable).Key;
+        if(!ReferenceEquals(atom, null))
+            Clear(atom);
+    }
+
+    public void Clear(Atom atom)
+    {
+        _latestScriptPerAtom.Remove(atom);
     }
 }

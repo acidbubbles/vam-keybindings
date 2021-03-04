@@ -29,6 +29,7 @@ src/Keybindings/KeyMap.cs
 src/Keybindings/KeyMapManager.cs
 src/Keybindings/KeyMapTreeNode.cs
 src/Keybindings/NormalModeHandler.cs
+src/Keybindings/PluginUISpy.cs
 src/Keybindings/RemoteCommandsManager.cs
 src/Keybindings/SelectionHistoryManager.cs
 src/Keybindings/Settings.cs

@@ -9,8 +9,9 @@
    "promotionalLink" : "https://github.com/AcidBubbles/vam-keybindings",
    "programVersion" : "1.20.0.10", 
    "contentList" : [ 
-      "Custom\\Scripts\\AcidBubbles\\VimVam\\VimVam.cs"
-   ], 
+      "Custom\\Scripts\\AcidBubbles\\Keybindings\\Keybindings.cslist",
+      "Custom\\Scripts\\AcidBubbles\\Keybindings\\CustomCommands.cslist"
+   ],
    "dependencies" : { 
    }
 }

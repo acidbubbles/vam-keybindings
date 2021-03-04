@@ -134,6 +134,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
     {
         if (_overlayReference?.value != null) Destroy(_overlayReference?.value.gameObject);
         _keyMapManager?.Dispose();
+        _remoteCommandsManager?.Dispose();
     }
 
     public void Update()
