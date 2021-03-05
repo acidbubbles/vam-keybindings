@@ -270,6 +270,10 @@ public class GlobalCommands
         CreateAction("Settings", "PhysicsRate_45", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._45);
         CreateAction("Settings", "PhysicsRate_90", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._90);
         CreateAction("Settings", "PhysicsRate_120", () => UserPreferences.singleton.physicsRate = UserPreferences.PhysicsRate._120);
+        CreateAction("Settings", "PixelLights_0", () => UserPreferences.singleton.pixelLightCount = 0);
+        CreateAction("Settings", "PixelLights_1", () => UserPreferences.singleton.pixelLightCount = 0);
+        CreateAction("Settings", "PixelLights_2", () => UserPreferences.singleton.pixelLightCount = 0);
+        CreateAction("Settings", "PixelLights_3", () => UserPreferences.singleton.pixelLightCount = 0);
         CreateAction("Settings", "SmoothPass_0", () => UserPreferences.singleton.smoothPasses = 0);
         CreateAction("Settings", "SmoothPass_1", () => UserPreferences.singleton.smoothPasses = 1);
         CreateAction("Settings", "SmoothPass_2", () => UserPreferences.singleton.smoothPasses = 2);
