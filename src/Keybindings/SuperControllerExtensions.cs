@@ -14,16 +14,15 @@ public static class SuperControllerExtensions
         if (hashIndex == -1)
         {
             if (!uids.Contains(source)) return source;
-            hashIndex = source.Length;
             source += "#";
-            startAt = 1;
+            startAt = 2;
         }
         else
         {
             if (int.TryParse(source.Substring(hashIndex + 1), out startAt))
                 startAt++;
             else
-                startAt = 1;
+                startAt = 2;
             source = source.Substring(0, hashIndex + 1);
         }
 
