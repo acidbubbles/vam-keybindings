@@ -394,6 +394,7 @@ public class GlobalCommands
 
     private static void OpenMainTab(string tabName)
     {
+        SuperController.singleton.ShowMainHUD();
         SuperController.singleton.SetActiveUI("MainMenu");
         if (tabName != null)
             SuperController.singleton.SetMainMenuTab(tabName);
@@ -407,7 +408,7 @@ public class GlobalCommands
         SuperController.singleton.SelectController(selectedAtom.mainController);
         SuperController.singleton.SetActiveUI("SelectedOptions");
 
-        SuperController.singleton.ShowMainHUDMonitor();
+        SuperController.singleton.ShowMainHUD();
 
         var tabName = getTabName?.Invoke(selectedAtom.type);
         if (tabName == null) return null;
