@@ -30,7 +30,7 @@ public class KeybindingsScreen : MonoBehaviour
     private bool _initialized;
     private InputField _searchInput;
     private UIDynamicToggle _showBoundOnly;
-    private readonly List<CommandBindingRow> _rows = new List<CommandBindingRow>();
+    private readonly List<List<CommandBindingRow>> _rowGroups = new List<List<CommandBindingRow>>();
     private Coroutine _setKeybindingCoroutine;
 
     public void Configure()
@@ -157,11 +157,19 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
 
     private void OnFilterChanged()
     {
-        for (var i = 0; i < _rows.Count; i++)
+        for (var i = 0; i < _rowGroups.Count; i++)
         {
-            var row = _rows[i];
-            if (row.commandName == null) continue;
-            row.container.SetActive(FuzzyFinder.Match(row.commandName, _searchInput.text) && (!_showBoundOnly.toggle.isOn || !string.IsNullOrEmpty(row.bindingBtn1.label) || !string.IsNullOrEmpty(row.bindingBtn2.label)));
+            var rows = _rowGroups[i];
+            var groupCounter = 0;
+            for (var j = 1; j < rows.Count; j++)
+            {
+                var row = rows[j];
+                if (row.commandName == null) continue;
+                var active = FuzzyFinder.Match(row.commandName, _searchInput.text) && (!_showBoundOnly.toggle.isOn || !string.IsNullOrEmpty(row.bindingBtn1.label) || !string.IsNullOrEmpty(row.bindingBtn2.label));
+                row.container.SetActive(active);
+                if (active) groupCounter++;
+            }
+            rows[0].container.SetActive(groupCounter > 0);
         }
     }
 
@@ -183,11 +191,13 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         // ReSharper restore RedundantEnumerableCastCall
         foreach (var ns in commands.GroupBy(c => c.ns))
         {
-            AddGroupRow(ns.Key);
+            var rowGroup = new List<CommandBindingRow>();
+            _rowGroups.Add(rowGroup);
+            AddGroupRow(rowGroup, ns.Key);
 
             foreach (var command in ns)
             {
-                AddEditRow(command);
+                AddEditRow(rowGroup, command);
                 unloadedCommands.Remove(command.commandName);
             }
         }
@@ -204,11 +214,13 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
 
         foreach (var group in disabledCommandInvokers.GroupBy(c => c.ns))
         {
-            AddGroupRow($"[unloaded] {@group.Key}");
+            var rowGroup = new List<CommandBindingRow>();
+            _rowGroups.Add(rowGroup);
+            AddGroupRow(rowGroup, $"[unloaded] {@group.Key}");
 
             foreach (var command in @group)
             {
-                AddEditRow(command);
+                AddEditRow(rowGroup, command);
                 unloadedCommands.Remove(command.commandName);
             }
         }
@@ -227,9 +239,10 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
 
     private void ClearRows()
     {
-        foreach (var row in _rows)
-            Destroy(row.container);
-        _rows.Clear();
+        foreach (var group in _rowGroups)
+            foreach (var row in group)
+                Destroy(row.container);
+        _rowGroups.Clear();
     }
 
     private void OnKeybindingsChanged()
@@ -239,13 +252,13 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         CreateRows();
     }
 
-    private void AddGroupRow(string groupName)
+    private void AddGroupRow(List<CommandBindingRow> rows, string groupName)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
         var row = new CommandBindingRow {container = go};
-        _rows.Add(row);
+        rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 1);
 
@@ -262,13 +275,13 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         text.alignment = TextAnchor.MiddleLeft;
     }
 
-    private void AddEditRow(ICommandInvoker commandInvoker)
+    private void AddEditRow(List<CommandBindingRow> rows, ICommandInvoker commandInvoker)
     {
         var go = new GameObject();
         go.transform.SetParent(transform, false);
 
         var row = new CommandBindingRow {container = go, invoker = commandInvoker};
-        _rows.Add(row);
+        rows.Add(row);
 
         go.transform.SetSiblingIndex(transform.childCount - 1);
 
@@ -400,7 +413,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         {
             remoteCommandsManager.UpdateValue(conflictMap.commandName, 0);
             analogMapManager.maps.Remove(conflictMap);
-            var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
+            var conflictRow = _rowGroups.SelectMany(g => g).FirstOrDefault(r => r.commandName == conflictMap.commandName);
             if (conflictRow != null)
             {
                 if (conflictMap.slot == 0)
@@ -470,7 +483,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
             if (conflictMap != null)
             {
                 keyMapManager.maps.Remove(conflictMap);
-                var conflictRow = _rows.FirstOrDefault(r => r.commandName == conflictMap.commandName);
+                var conflictRow = _rowGroups.SelectMany(g => g).FirstOrDefault(r => r.commandName == conflictMap.commandName);
                 if (conflictRow != null)
                 {
                     if (conflictMap.slot == 0)
