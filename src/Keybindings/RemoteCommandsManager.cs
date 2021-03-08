@@ -25,15 +25,23 @@ public class RemoteCommandsManager
         _selectionHistoryManager = selectionHistoryManager;
     }
 
-    public ICommandReleaser Invoke(string name)
+    public bool TryGetInvoker(string name, out IActionCommandInvoker commandInvoker)
     {
         List<IActionCommandInvoker> commandInvokers;
         if (!_actionCommandsByName.TryGetValue(name, out commandInvokers))
         {
-            return null;
+            commandInvoker = null;
+            return false;
         }
 
-        var commandInvoker = SelectCommandInvoker(commandInvokers);
+        commandInvoker = SelectCommandInvoker(commandInvokers);
+        return true;
+    }
+
+    public ICommandReleaser Invoke(string name)
+    {
+        IActionCommandInvoker commandInvoker;
+        if (!TryGetInvoker(name, out commandInvoker)) return null;
 
         try
         {
@@ -45,6 +53,7 @@ public class RemoteCommandsManager
             return null;
         }
     }
+
 
     public bool UpdateValue(string name, float value)
     {

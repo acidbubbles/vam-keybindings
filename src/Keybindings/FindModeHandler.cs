@@ -89,7 +89,25 @@ public class FindModeHandler : IModeHandler
         }
 
         var matched = _fuzzyFinder.FuzzyFind(query);
-        _overlay.value.Set(!matched ? ":" : $"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
+        if (!matched)
+        {
+            _overlay.value.Set(":");
+            return;
+        }
+
+        var contextStr = "";
+        IActionCommandInvoker invoker;
+        if (_remoteCommandsManager.TryGetInvoker(_fuzzyFinder.current, out invoker))
+        {
+            var script = invoker.storable as MVRScript;
+            if (script != null && script.containingAtom != null)
+            {
+                var atomName = script.containingAtom.name;
+                if (atomName != "CoreControl")
+                    contextStr = $" <color=grey>[{script.containingAtom.name}]</color>";
+            }
+        }
+        _overlay.value.Set($"{_fuzzyFinder.ColorizeMatch(_fuzzyFinder.current, query)}{contextStr} ({_fuzzyFinder.tabIndex + 1}/{_fuzzyFinder.matches})");
     }
 
     private void Invoke(string action)
