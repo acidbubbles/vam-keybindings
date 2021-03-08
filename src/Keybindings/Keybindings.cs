@@ -49,7 +49,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         _keyMapManager = new KeyMapManager();
         _analogMapManager = new AnalogMapManager();
         _selectionHistoryManager = new SelectionHistoryManager();
-        _remoteCommandsManager = new RemoteCommandsManager(_selectionHistoryManager);
+        _remoteCommandsManager = new RemoteCommandsManager(this, _selectionHistoryManager);
         _globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
         _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager);
         _overlayReference = new KeybindingsOverlayReference();

@@ -10,6 +10,7 @@ public class RemoteCommandsManager
 {
     private static readonly Regex _pluginNameRegex = new Regex("^plugin#[0-9]+_(.+)$", RegexOptions.Compiled);
 
+    private readonly MonoBehaviour _owner;
     private readonly SelectionHistoryManager _selectionHistoryManager;
 
     private readonly Dictionary<string, List<IActionCommandInvoker>> _actionCommandsByName = new Dictionary<string, List<IActionCommandInvoker>>();
@@ -18,8 +19,9 @@ public class RemoteCommandsManager
     public IEnumerable<IActionCommandInvoker> actionCommands => _actionCommandsByName.Select(kvp => kvp.Value[0]);
     public IEnumerable<IAnalogCommandInvoker> analogCommands => _analogCommandsByName.Select(kvp => kvp.Value[0]);
 
-    public RemoteCommandsManager(SelectionHistoryManager selectionHistoryManager)
+    public RemoteCommandsManager(MonoBehaviour owner, SelectionHistoryManager selectionHistoryManager)
     {
+        _owner = owner;
         _selectionHistoryManager = selectionHistoryManager;
     }
 
@@ -183,17 +185,23 @@ public class RemoteCommandsManager
         names.Sort();
 
         var script = storable as MVRScript;
-        if (script != null)
-        {
-            var spy = script.UITransform.gameObject.AddComponent<PluginUISpy>();
-            if (spy != null)
-            {
-                spy.onSelected.AddListener(() =>
-                {
-                    _selectionHistoryManager.SetLatestScriptPerAtom(script);
-                });
-            }
-        }
+        if (script != null && !InjectUISpyNow(script))
+            _owner.StartCoroutine(InjectUISpy(script));
+    }
+
+    private IEnumerator InjectUISpy(MVRScript script)
+    {
+        yield return new WaitForEndOfFrame();
+        InjectUISpyNow(script);
+    }
+
+    private bool InjectUISpyNow(MVRScript script)
+    {
+        if(script.UITransform == null) return false;
+        if (script.UITransform.gameObject.GetComponent<PluginUISpy>() != null) return true;
+        var spy = script.UITransform.gameObject.AddComponent<PluginUISpy>();
+        if (spy != null) spy.onSelected.AddListener(() => { _selectionHistoryManager.SetLatestScriptPerAtom(script); });
+        return true;
     }
 
     public void Add(IActionCommandInvoker invoker)
