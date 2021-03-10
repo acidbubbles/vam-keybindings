@@ -21,19 +21,19 @@ public class KeybindingsStorage
 
     public void OpenImportDialog(bool clear)
     {
-            var shortcuts = FileManagerSecure.GetShortCutsForDirectory(_saveFolder);
-            SuperController.singleton.GetMediaPathDialog(path =>
-                {
-                    Import(clear, path);
-                },
-                _saveExt,
-                _saveFolder,
-                true,
-                true,
-                false,
-                null,
-                false,
-                shortcuts);
+        var shortcuts = FileManagerSecure.GetShortCutsForDirectory(_saveFolder);
+        SuperController.singleton.GetMediaPathDialog(path =>
+            {
+                Import(clear, path);
+            },
+            _saveExt,
+            _saveFolder,
+            true,
+            true,
+            false,
+            null,
+            false,
+            shortcuts);
     }
 
     private bool Import(bool clear, string path)

@@ -63,9 +63,11 @@
     <Content Include="CustomCommands.cslist" />
     <Content Include="data\Keybindings\acidbubbles.keybindings" />
     <Content Include="data\Keybindings\defaults.keybindings" />
+    <Content Include="KeybindingExtensions_AddPlugin.cslist" />
     <Content Include="Keybindings.cslist" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\AddPlugin\KeybindingsExtensions_AddPlugin.cs" />
     <Compile Include="src\CustomCommands\ParameterizedTriggers.cs" />
     <Compile Include="src\CustomCommands\CustomCommandsRepository.cs" />
     <Compile Include="src\CustomCommands\Commands\DebugCommand.cs" />
