@@ -1,1 +1,2 @@
-﻿src/AddPlugin/KeybindingsExtensions_AddPlugin.cs
+﻿src/Shared/ICommandsInvoker.cs
+src/AddPlugin/KeybindingsExtensions_AddPlugin.cs
