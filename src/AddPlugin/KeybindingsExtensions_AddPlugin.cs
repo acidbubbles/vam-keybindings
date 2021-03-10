@@ -25,6 +25,21 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         SuperController.singleton.StartCoroutine(DeferredInit());
 
         CreateButton("+ Add Plugin").button.onClick.AddListener(() => AddPlugin());
+        CreateButton("Clear", true).button.onClick.AddListener(() =>
+        {
+            try
+            {
+                _loading = true;
+                foreach (var plugin in _plugins)
+                    plugin.onRemove.Invoke();
+            }
+            finally
+            {
+                _plugins.Clear();
+                _loading = false;
+                OnPluginsListChanged();
+            }
+        });
     }
 
     private IEnumerator DeferredInit()
@@ -38,6 +53,11 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
     {
         var plugin = new PluginReference(this);
         plugin.onChange.AddListener(OnPluginsListChanged);
+        plugin.onRemove.AddListener(() =>
+        {
+            plugin.Unregister();
+            _plugins.Remove(plugin);
+        });
         _plugins.Add(plugin);
         return plugin;
     }
@@ -100,7 +120,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
     private void OnPluginsListChanged()
     {
         if (_loading) return;
-        SuperController.LogMessage("1");
         transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
 
@@ -111,7 +130,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
-        SuperController.LogMessage("2");
         bindings.Add(new Dictionary<string, string>
         {
             {"Namespace", "AddPlugin"}
