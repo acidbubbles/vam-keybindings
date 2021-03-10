@@ -1,38 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using MVR.FileManagementSecure;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
 // ReSharper disable once InconsistentNaming
 public class KeybindingsExtensions_AddPlugin : MVRScript
 {
-    private JSONStorableUrl _pluginJSON;
+    private readonly List<PluginReference> _plugins = new List<PluginReference>();
+    private bool _loading;
     private bool _loaded;
 
     public override void Init()
     {
         base.Init();
 
-        RegisterUrl(_pluginJSON = new JSONStorableUrl("Plugin", null, "cs|cslist|dll", "Custom/Scripts")
-        {
-            beginBrowseWithObjectCallback = jsu =>
-            {
-                jsu.shortCuts = FileManagerSecure.GetShortCutsForDirectory("Custom/Scripts", true, true, true, true);
-            },
-            setCallbackFunction = val =>
-            {
-                // Potential values:
-                // - Custom/Scripts/Dev/vam-timeline/VamTimeline.AtomAnimation.cslist
-                // - AcidBubbles.Cornwall.2:/Custom/Scripts/AcidBubbles/Cornwall/Cornwall.cs
-                SuperController.LogMessage(val);
-                OnPluginsListChanged();
-            },
-            fileBrowseButton = CreateButton("Select").button
-        });
-
         SuperController.singleton.StartCoroutine(DeferredInit());
+
+        CreateButton("+ Add Plugin").button.onClick.AddListener(() => AddPlugin());
     }
 
     private IEnumerator DeferredInit()
@@ -40,15 +26,67 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         yield return new WaitForEndOfFrame();
         if (this == null) yield break;
         if (!_loaded) containingAtom.RestoreFromLast(this);
+        AddPlugin();
+    }
+
+    private PluginReference AddPlugin()
+    {
+        var plugin = new PluginReference(this);
+        plugin.onChange.AddListener(OnPluginsListChanged);
+        _plugins.Add(plugin);
+        return plugin;
     }
 
     #region Save/Load
 
+    public override JSONClass GetJSON(bool includePhysical = true, bool includeAppearance = true, bool forceStore = false)
+    {
+        var json = base.GetJSON(includePhysical, includeAppearance, forceStore);
+
+        try
+        {
+            if (_plugins.Any(p => p.hasValue))
+            {
+                var pluginsJSON = new JSONArray();
+                foreach (var plugin in _plugins)
+                    pluginsJSON.Add(plugin.GetJSON());
+                json["Plugins"] = pluginsJSON;
+                needsStore = true;
+            }
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"{nameof(KeybindingsExtensions_AddPlugin)}.{nameof(GetJSON)}: {exc}");
+        }
+
+        return json;
+    }
+
     public override void RestoreFromJSON(JSONClass jc, bool restorePhysical = true, bool restoreAppearance = true, JSONArray presetAtoms = null, bool setMissingToDefault = true)
     {
         base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
-        _loaded = true;
-        OnPluginsListChanged();
+        try
+        {
+            _loading = true;
+            var pluginsJSON = jc["Plugins"].AsArray;
+            if (pluginsJSON.Count == 0) return;
+            foreach (JSONNode pluginJSON in pluginsJSON)
+            {
+                var plugin = AddPlugin();
+                plugin.RestoreFromJSON(pluginJSON.AsObject);
+            }
+            OnPluginsListChanged();
+        }
+        catch (Exception exc)
+        {
+            SuperController.LogError($"{nameof(KeybindingsExtensions_AddPlugin)}.{nameof(RestoreFromJSON)}: {exc}");
+            _loading = false;
+            throw;
+        }
+        finally
+        {
+            _loaded = true;
+        }
     }
 
 
@@ -58,6 +96,7 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
     private void OnPluginsListChanged()
     {
+        if (_loading) return;
         transform.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
 
@@ -68,15 +107,15 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
-        if (_pluginJSON.val == null) return;
         bindings.Add(new Dictionary<string, string>
-             {
-                 { "Namespace", "AddPlugin" }
-             });
-        bindings.Add(new JSONStorableAction("Timeline", () =>
         {
-            SuperController.LogMessage("Adding " + _pluginJSON.val);
-        }));
+            {"Namespace", "AddPlugin"}
+        });
+        foreach (var plugin in _plugins)
+        {
+            if (!plugin.hasValue) continue;
+            bindings.Add(plugin.CreateBinding());
+        }
     }
 
     #endregion
