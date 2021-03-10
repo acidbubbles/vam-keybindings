@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using DefaultNamespace;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.UI;
@@ -408,19 +407,7 @@ public class GlobalCommands
     {
         var selectedAtom = _selectionHistoryManager.GetLastSelectedAtomOfType(type);
         if (ReferenceEquals(selectedAtom, null)) return null;
-
-        SuperController.singleton.SelectController(selectedAtom.mainController);
-        SuperController.singleton.SetActiveUI("SelectedOptions");
-
-        SuperController.singleton.ShowMainHUD();
-
-        var tabName = getTabName?.Invoke(selectedAtom.type);
-        if (tabName == null) return null;
-
-        var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
-        if (selector == null) return null;
-
-        selector.SetActiveTab(tabName);
+        SuperController.singleton.OpenTab(selectedAtom, getTabName?.Invoke(selectedAtom.type));
         return selectedAtom;
     }
 

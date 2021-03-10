@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class SuperControllerExtensions
+public static partial class SuperControllerExtensions
 {
     // NOTE: Most of this comes from Virt-A-Mate's implementation.
 

@@ -14,7 +14,13 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
     public override void Init()
     {
-        base.Init();
+        if (containingAtom.type != "SessionPluginManager")
+        {
+            SuperController.LogError($"{nameof(KeybindingsExtensions_AddPlugin)} plugin can only be installed as a session plugin.");
+            CreateTextField(new JSONStorableString("Error", $"{nameof(KeybindingsExtensions_AddPlugin)} plugin can only be installed as a session plugin."));
+            enabledJSON.val = false;
+            return;
+        }
 
         SuperController.singleton.StartCoroutine(DeferredInit());
 
@@ -26,7 +32,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         yield return new WaitForEndOfFrame();
         if (this == null) yield break;
         if (!_loaded) containingAtom.RestoreFromLast(this);
-        AddPlugin();
     }
 
     private PluginReference AddPlugin()
@@ -80,15 +85,13 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         catch (Exception exc)
         {
             SuperController.LogError($"{nameof(KeybindingsExtensions_AddPlugin)}.{nameof(RestoreFromJSON)}: {exc}");
-            _loading = false;
-            throw;
         }
         finally
         {
+            _loading = false;
             _loaded = true;
         }
     }
-
 
     #endregion
 
@@ -97,16 +100,18 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
     private void OnPluginsListChanged()
     {
         if (_loading) return;
-        transform.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
+        SuperController.LogMessage("1");
+        transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void OnDestroy()
     {
-        transform.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
+        transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void OnBindingsListRequested(ICollection<object> bindings)
     {
+        SuperController.LogMessage("2");
         bindings.Add(new Dictionary<string, string>
         {
             {"Namespace", "AddPlugin"}

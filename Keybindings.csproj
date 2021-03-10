@@ -112,6 +112,7 @@
     <Compile Include="src\Keybindings\Settings.cs" />
     <Compile Include="src\Keybindings\Keybindings.cs" />
     <Compile Include="src\Keybindings\UI\KeybindingsScreen.cs" />
+    <Compile Include="src\Shared\SuperControllerExtensions.cs" />
     <Compile Include="src\Shared\TransformExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

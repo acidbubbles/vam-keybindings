@@ -46,12 +46,19 @@ public class PluginReference
 
     public JSONStorableAction CreateBinding()
     {
+        SuperController.LogMessage("Creating " + _labelJSON.val);
         return new JSONStorableAction(_labelJSON.val, Invoke);
     }
 
     private void Invoke()
     {
-        SuperController.LogMessage("Adding " + _pluginJSON.val);
+        var atom = SuperController.singleton.GetSelectedAtom();
+        if (atom == null) return;
+
+        var pluginManager = atom.GetStorableByID("PluginManager") as MVRPluginManager;
+        if (pluginManager == null) return;
+        var plugin = pluginManager.CreatePlugin();
+        plugin.pluginURLJSON.val = _pluginJSON.val;
     }
 
     public JSONNode GetJSON()

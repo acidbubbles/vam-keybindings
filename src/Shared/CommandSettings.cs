@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace DefaultNamespace
+public static class CommandSettings
 {
-    public static class CommandSettings
-    {
-        public const string NamespaceKey = "Namespace";
+    public const string NamespaceKey = "Namespace";
 
-        public static IEnumerable<KeyValuePair<string, string>> Create(string ns)
+    public static IEnumerable<KeyValuePair<string, string>> Create(string ns)
+    {
+        return new[]
         {
-            return new[]
-            {
-                new KeyValuePair<string, string>(NamespaceKey, ns)
-            };
-        }
+            new KeyValuePair<string, string>(NamespaceKey, ns)
+        };
     }
 }

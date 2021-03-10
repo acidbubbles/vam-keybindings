@@ -1,3 +1,4 @@
 ﻿src/Shared/ICommandsInvoker.cs
+src/Shared/SuperControllerExtensions.cs
 src/AddPlugin/KeybindingsExtensions_AddPlugin.cs
 src/AddPlugin/PluginReference.cs
