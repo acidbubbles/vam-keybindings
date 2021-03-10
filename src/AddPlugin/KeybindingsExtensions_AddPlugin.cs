@@ -24,8 +24,13 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
         SuperController.singleton.StartCoroutine(DeferredInit());
 
-        CreateButton("+ Add Plugin").button.onClick.AddListener(() => AddPlugin());
-        CreateButton("Clear", true).button.onClick.AddListener(() =>
+        var addButton = CreateButton("+ Add Plugin");
+        addButton.buttonColor = Color.green;
+        addButton.button.onClick.AddListener(() => AddPlugin());
+        var clearButton = CreateButton("Clear", true);
+        clearButton.textColor = Color.white;
+        clearButton.buttonColor = Color.red;
+        clearButton.button.onClick.AddListener(() =>
         {
             try
             {
@@ -40,6 +45,19 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
                 OnPluginsListChanged();
             }
         });
+    }
+
+    public override void InitUI()
+    {
+        base.InitUI();
+
+        if (UITransform == null) return;
+
+        var leftRect = leftUIContent.GetComponent<RectTransform>();
+        var rightRect = rightUIContent.GetComponent<RectTransform>();
+
+        leftRect.anchorMax = new Vector2(0.85f, 1f);
+        rightRect.anchorMin = new Vector2(0.85f, 1f);
     }
 
     private IEnumerator DeferredInit()
