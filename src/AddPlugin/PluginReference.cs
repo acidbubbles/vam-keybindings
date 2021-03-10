@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class PluginReference
 {
     // AcidBubbles.Cornwall.2:/Custom/Scripts/AcidBubbles/Cornwall/Cornwall.cs
-    private static readonly Regex _varPattern = new Regex(@"^.+?\.(.+?)\.([0-9]+):", RegexOptions.Compiled);
+    private static readonly Regex _varPattern = new Regex(@"^(.+?)\.(.+?)\.([0-9]+):", RegexOptions.Compiled);
     // Custom/Scripts/Dev/vam-timeline/VamTimeline.AtomAnimation.cslist
     private static readonly Regex _pathPattern = new Regex(@"([^/]+).(cs|cslist|dll)$", RegexOptions.Compiled);
     private static readonly Regex _sanitizePattern = new Regex(@"[^a-zA-Z_-]+", RegexOptions.Compiled);
@@ -18,6 +18,7 @@ public class PluginReference
 
     private readonly JSONStorableUrl _pluginJSON = new JSONStorableUrl("PluginUrl", null, "cs|cslist|dll", "Custom/Scripts");
     private readonly JSONStorableString _labelJSON = new JSONStorableString("Label", null);
+    private readonly JSONStorableString _commandNameJSON = new JSONStorableString("CommandName", null);
     private readonly MVRScript _plugin;
     private readonly UIDynamicButton _selectButton;
     private readonly UIDynamicButton _removeButton;
@@ -53,13 +54,15 @@ public class PluginReference
         var varMatch = _varPattern.Match(val);
         if (varMatch.Success)
         {
-            _labelJSON.val = _sanitizePattern.Replace(varMatch.Groups[1].Value, "_") + "." + varMatch.Groups[2].Value;
+            _labelJSON.val = varMatch.Value.Substring(0, varMatch.Value.Length - 1);
+            _commandNameJSON.val = _sanitizePattern.Replace(varMatch.Groups[2].Value, "_");
             return;
         }
         var pathMatch = _pathPattern.Match(val);
         if (pathMatch.Success)
         {
-            _labelJSON.val = "Custom_" + _sanitizePattern.Replace(pathMatch.Groups[1].Value, "_");
+            _labelJSON.val = "[Script] " + pathMatch.Groups[1].Value;
+            _commandNameJSON.val = "Script_" + _sanitizePattern.Replace(pathMatch.Groups[1].Value, "_");
             return;
         }
         _labelJSON.val = $"?{val}";
@@ -67,7 +70,7 @@ public class PluginReference
 
     public JSONStorableAction CreateBinding()
     {
-        return new JSONStorableAction(_labelJSON.val, Invoke);
+        return new JSONStorableAction(_commandNameJSON.val, Invoke);
     }
 
     private void Invoke()
@@ -92,6 +95,7 @@ public class PluginReference
     {
         var jc = new JSONClass();
         _labelJSON.StoreJSON(jc);
+        _commandNameJSON.StoreJSON(jc);
         _pluginJSON.StoreJSON(jc);
         return jc;
     }
@@ -99,6 +103,7 @@ public class PluginReference
     public void RestoreFromJSON(JSONClass jc)
     {
         _labelJSON.RestoreFromJSON(jc);
+        _commandNameJSON.RestoreFromJSON(jc);
         _pluginJSON.RestoreFromJSON(jc);
     }
 }
