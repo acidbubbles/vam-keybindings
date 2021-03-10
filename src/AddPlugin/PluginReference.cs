@@ -15,6 +15,7 @@ public class PluginReference
     public readonly UnityEvent onChange = new UnityEvent();
     public readonly UnityEvent onRemove = new UnityEvent();
     public bool hasValue => !string.IsNullOrEmpty(_pluginJSON.val);
+    public string commandName => _commandNameJSON.val;
 
     private readonly JSONStorableUrl _pluginJSON = new JSONStorableUrl("PluginUrl", null, "cs|cslist|dll", "Custom/Scripts");
     private readonly JSONStorableString _labelJSON = new JSONStorableString("Label", null);
@@ -27,7 +28,7 @@ public class PluginReference
     {
         _plugin = plugin;
         _selectButton = plugin.CreateButton("Browse...");
-        _labelJSON.setCallbackFunction = val => _selectButton.label = _labelJSON.val ?? "Browse...";
+        _labelJSON.setCallbackFunction = val => _selectButton.label = string.IsNullOrEmpty(_labelJSON.val) ? "Browse..." : _labelJSON.val;
         _pluginJSON.beginBrowseWithObjectCallback = jsu => { jsu.shortCuts = FileManagerSecure.GetShortCutsForDirectory("Custom/Scripts", true, true, true, true); };
         _pluginJSON.setCallbackFunction = val =>
         {
@@ -66,6 +67,14 @@ public class PluginReference
             return;
         }
         _labelJSON.val = $"?{val}";
+        _commandNameJSON.val = _sanitizePattern.Replace(val, "_");
+    }
+
+    public void Clear()
+    {
+        _pluginJSON.val = "";
+        _labelJSON.val = "";
+        _commandNameJSON.val = "";
     }
 
     public JSONStorableAction CreateBinding()
