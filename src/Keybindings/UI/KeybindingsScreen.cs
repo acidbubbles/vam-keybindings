@@ -67,7 +67,7 @@ public class KeybindingsScreen : MonoBehaviour
         importTitle.fontSize = 32;
         importTitle.alignment = TextAnchor.MiddleCenter;
 
-        var importSubtitle = prefabManager.CreateText(transform, "<i>Import an existing scheme, and use 'Make default' to save your current mappings.</i>");
+        var importSubtitle = prefabManager.CreateText(transform, "<i>Import an existing scheme, and use 'Save' to keep your current shortcuts.</i>");
         importSubtitle.alignment = TextAnchor.UpperCenter;
         importSubtitle.GetComponent<LayoutElement>().preferredHeight = 70;
 
@@ -86,8 +86,8 @@ public class KeybindingsScreen : MonoBehaviour
         var exportBtn = prefabManager.CreateButton(toolbarGo.transform, "Export");
         exportBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.OpenExportDialog(); } });
 
-        var makeDefaultBtn = prefabManager.CreateButton(toolbarGo.transform, "Make default");
-        makeDefaultBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.ExportDefault(); } });
+        var saveBtn = prefabManager.CreateButton(toolbarGo.transform, "Save");
+        saveBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.ExportDefault(); } });
 
         prefabManager.CreateSpacer(transform, 10f);
 
@@ -96,9 +96,9 @@ public class KeybindingsScreen : MonoBehaviour
         keybindingsTitle.alignment = TextAnchor.MiddleCenter;
 
         var keybindingsSubtitle = prefabManager.CreateText(transform, @"
-You can configure custom trigger shortcuts in the CustomCommands plugin.
 Commands with an <color=blue>asterisk</color> can be bound to joysticks and mouse axis.
-Mouse movements require a modifier key. Move in the other direction to reverse.".Trim());
+Mouse movements require a modifier key. Move in the other direction to reverse.
+To clear a binding, click on one and then click outside.".Trim());
         keybindingsSubtitle.alignment = TextAnchor.UpperCenter;
         keybindingsSubtitle.GetComponent<LayoutElement>().preferredHeight = 100;
 
@@ -306,11 +306,16 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
         {
             if (isRecording) return;
             if (commandInvoker is IActionCommandInvoker)
+            {
                 _setKeybindingCoroutine = StartCoroutine(RecordKeys(bindingBtn, commandInvoker, bindingBtn.buttonColor, slot));
+                bindingBtn.label = "Type your shortcut...";
+            }
             else if (commandInvoker is IAnalogCommandInvoker)
+            {
                 _setKeybindingCoroutine = StartCoroutine(RecordAnalog(bindingBtn, commandInvoker, bindingBtn.buttonColor, slot));
+                bindingBtn.label = "Axis or 2 keys...";
+            }
             bindingBtn.buttonColor = new Color(0.9f, 0.6f, 0.65f);
-            bindingBtn.label = "Recording...";
         });
         var bindingLayout = bindingBtn.GetComponent<LayoutElement>();
         bindingLayout.minWidth = 300f;
@@ -365,7 +370,7 @@ Mouse movements require a modifier key. Move in the other direction to reverse."
                 var binding = new KeyChord(keyUp, ctrlDown, altDown, shiftDown);
                 if (leftKeybinding.key == KeyCode.None)
                 {
-                    btn.label = "1/2...";
+                    btn.label = "Type other direction...";
                     leftKeybinding = binding;
                     continue;
                 }
