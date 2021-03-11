@@ -429,7 +429,7 @@ To clear a binding, click on one and then click outside.".Trim());
                     throw new InvalidOperationException("Unknown slot " + conflictMap.slot);
             }
 
-            SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
+            SuperController.LogMessage($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
         }
 
         analogMapManager.maps.Add(map);
@@ -498,7 +498,7 @@ To clear a binding, click on one and then click outside.".Trim());
                     else
                         throw new InvalidOperationException("Unknown slot " + conflictMap.slot);
                 }
-                SuperController.LogError($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
+                SuperController.LogMessage($"Keybindings: Reassigned binding from {conflictMap.commandName} to {commandInvoker.commandName}");
             }
             keyMapManager.maps.Add(new KeyMap(bindings, commandInvoker.commandName, slot));
             keyMapManager.RebuildTree();
