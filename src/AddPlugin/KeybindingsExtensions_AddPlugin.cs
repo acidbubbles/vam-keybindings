@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MVR.FileManagementSecure;
 using SimpleJSON;
 using UnityEngine;
 
 // ReSharper disable once InconsistentNaming
 public class KeybindingsExtensions_AddPlugin : MVRScript
 {
+    private static readonly string _configPath = SuperController.singleton.savesDir + @"\PluginData\keybindingextensions_addplugin.config";
+
     private readonly List<PluginReference> _plugins = new List<PluginReference>();
-    private bool _loading;
-    private bool _loaded;
+    private bool _pauseListChangedEvent;
 
     public override void Init()
     {
@@ -22,8 +23,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
             return;
         }
 
-        SuperController.singleton.StartCoroutine(DeferredInit());
-
         var addButton = CreateButton("+ Add Plugin");
         addButton.buttonColor = Color.green;
         addButton.button.onClick.AddListener(() => AddPlugin());
@@ -34,17 +33,20 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         {
             try
             {
-                _loading = true;
+                _pauseListChangedEvent = true;
                 foreach (var plugin in _plugins)
                     plugin.onRemove.Invoke();
             }
             finally
             {
                 _plugins.Clear();
-                _loading = false;
+                _pauseListChangedEvent = false;
                 OnPluginsListChanged();
             }
         });
+
+        if (FileManagerSecure.FileExists(_configPath))
+            RestoreFromJSON(LoadJSON(_configPath).AsObject);
     }
 
     public override void InitUI()
@@ -58,13 +60,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
         leftRect.anchorMax = new Vector2(0.85f, 1f);
         rightRect.anchorMin = new Vector2(0.85f, 1f);
-    }
-
-    private IEnumerator DeferredInit()
-    {
-        yield return new WaitForEndOfFrame();
-        if (this == null) yield break;
-        if (!_loaded) containingAtom.RestoreFromLast(this);
     }
 
     private PluginReference AddPlugin()
@@ -118,7 +113,7 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         base.RestoreFromJSON(jc, restorePhysical, restoreAppearance, presetAtoms, setMissingToDefault);
         try
         {
-            _loading = true;
+            _pauseListChangedEvent = true;
             var pluginsJSON = jc["Plugins"].AsArray;
             if (pluginsJSON.Count == 0) return;
             foreach (JSONNode pluginJSON in pluginsJSON)
@@ -126,7 +121,7 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
                 var plugin = AddPlugin();
                 plugin.RestoreFromJSON(pluginJSON.AsObject);
             }
-            OnPluginsListChanged();
+            transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
         }
         catch (Exception exc)
         {
@@ -134,8 +129,7 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         }
         finally
         {
-            _loading = false;
-            _loaded = true;
+            _pauseListChangedEvent = false;
         }
     }
 
@@ -145,8 +139,11 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
 
     private void OnPluginsListChanged()
     {
-        if (_loading) return;
+        if (_pauseListChangedEvent) return;
         transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
+
+        FileManagerSecure.CreateDirectory(@"Saves\PluginData");
+        SaveJSON(GetJSON(), _configPath);
     }
 
     public void OnDestroy()
