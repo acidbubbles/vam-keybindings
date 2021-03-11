@@ -5,11 +5,9 @@
         if (tabName == null) return;
 
         sc.SelectController(selectedAtom.mainController);
-        sc.SetActiveUI("SelectedOptions");
+        sc.activeUI = SuperController.ActiveUI.SelectedOptions;
 
         sc.ShowMainHUD();
-
-        // TODO: Wait for the UI to be available
 
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
         if (selector == null) return;

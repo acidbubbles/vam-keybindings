@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 using MVR.FileManagementSecure;
 using SimpleJSON;
 using UnityEngine;
@@ -98,6 +99,8 @@ public class PluginReference
         }
         var plugin = pluginManager.CreatePlugin();
         plugin.pluginURLJSON.val = _pluginJSON.val;
+        SuperController.singleton.OpenTab(atom, "Plugins");
+        plugin.scriptControllers[0].script.UITransform.gameObject.SetActive(true);
     }
 
     public JSONNode GetJSON()
