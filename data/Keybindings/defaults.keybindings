@@ -1,5 +1,6 @@
 { 
-   "keybindings" : [ 
+   "version" : "1",
+   "keybindings" : [
       { 
          "chords" : [ 
             { 

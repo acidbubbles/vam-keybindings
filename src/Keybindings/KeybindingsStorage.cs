@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using MVR.FileManagementSecure;
 using SimpleJSON;
 using UnityEngine;
 
 public class KeybindingsStorage
 {
+    private const int _saveVersion = 1;
     private const string _saveExt = "keybindings";
     private const string _saveFolder = "Saves\\PluginData\\Keybindings";
 
@@ -47,6 +50,16 @@ public class KeybindingsStorage
         if (!FileManagerSecure.FileExists(path)) return false;
         var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
         if (jc == null) return false;
+        var version = jc["version"].AsInt;
+        if (version < 1)
+        {
+            // Removed support for ctrl and shift analog bindings
+            var mapsWithShiftOrCtrl = jc["analogMaps"].AsArray.Childs.Where(c => c["leftChord"]["shift"].AsBool || c["rightChord"]["shift"].AsBool || c["leftChord"]["ctrl"].AsBool || c["rightChord"]["ctrl"].AsBool).ToList();
+            if (mapsWithShiftOrCtrl.Count > 0)
+            {
+                SuperController.LogError("Keybindings: Analog key maps with ctrl or shift are not supported. Those keys are not reserved for half-speed and double-speed. Please check your bindings.");
+            }
+        }
         _keyMapManager.RestoreFromJSON(jc["keybindings"]);
         _analogMapManager.RestoreFromJSON(jc["analogMaps"]);
         return true;
@@ -153,6 +166,7 @@ public class KeybindingsStorage
         if (!path.ToLower().EndsWith($".{_saveExt}")) path += $".{_saveExt}";
         var jc = new JSONClass
         {
+            {"version", _saveVersion.ToString(NumberFormatInfo.InvariantInfo)},
             {"keybindings", _keyMapManager.GetJSON()},
             {"analogMaps", _analogMapManager.GetJSON()},
         };
