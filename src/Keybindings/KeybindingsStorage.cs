@@ -134,9 +134,9 @@ public class KeybindingsStorage
         {
             new ShortCut {path = @"Saves\keybindings", displayName = "Custom keybindings"},
         };
-        const string devKeybindingsPath = @"Custom\Scripts\Dev\vam-vimvam\keybindings";
+        const string devKeybindingsPath = @"Custom\Scripts\Dev\vam-keybindings\keybindings";
         if (FileManagerSecure.DirectoryExists(devKeybindingsPath))
-            shortCuts.Add(new ShortCut {path = devKeybindingsPath, displayName = "Built-in keybindings"});
+            shortCuts.Add(new ShortCut {path = devKeybindingsPath, displayName = "Dev keybindings"});
         fileBrowserUI.shortCuts = shortCuts;
         fileBrowserUI.SetTextEntry(true);
         fileBrowserUI.Show(path =>
