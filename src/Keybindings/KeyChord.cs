@@ -3,6 +3,104 @@ using System.Text;
 using SimpleJSON;
 using UnityEngine;
 
+public static class KeyChordUtils
+{
+    public static bool IsValid(KeyCode key)
+    {
+        if (!SuperController.singleton.isOVR) return true;
+        if (key < KeyCode.JoystickButton0 || key > KeyCode.Joystick8Button19) return true;
+        if (OVRInput.GetActiveController() == OVRInput.Controller.Gamepad) return true;
+        return false;
+    }
+}
+
+public struct AnalogKeyChord
+{
+    public static readonly AnalogKeyChord empty = new AnalogKeyChord(KeyCode.None, false);
+
+    // This is not thread safe
+    private static readonly StringBuilder _sb = new StringBuilder();
+
+    public readonly bool alt;
+    public readonly KeyCode key;
+
+    public AnalogKeyChord(KeyCode key, bool alt)
+    {
+        this.key = key;
+        this.alt = alt;
+    }
+
+    public bool IsDown()
+    {
+        if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
+
+        if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
+
+        if (!KeyChordUtils.IsValid(key)) return false;
+
+        return true;
+    }
+
+    public bool IsActive()
+    {
+        if (key != KeyCode.None && !Input.GetKey(key)) return false;
+
+        if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
+
+        return true;
+    }
+
+    public override string ToString()
+    {
+        if (alt) _sb.Append("Alt+");
+        _sb.Append(key.ToPrettyString());
+        var result = _sb.ToString();
+        _sb.Length = 0;
+        return result;
+    }
+
+    public JSONNode GetJSON()
+    {
+        var jc = new JSONClass
+        {
+            {"key", key.ToString()}
+        };
+
+        if (alt) jc["alt"].AsBool = true;
+
+        return jc;
+    }
+
+    public static AnalogKeyChord FromJSON(JSONNode jsonNode)
+    {
+        return new AnalogKeyChord(
+            (KeyCode) Enum.Parse(typeof(KeyCode), jsonNode["key"].Value),
+            jsonNode["alt"].AsBool
+        );
+    }
+
+    public bool Equals(AnalogKeyChord other)
+    {
+        return alt == other.alt && key == other.key;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        return obj is AnalogKeyChord && Equals((AnalogKeyChord) obj);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hashCode = alt.GetHashCode();
+            hashCode = (hashCode * 397) ^ (int) key;
+            return hashCode;
+        }
+    }
+}
+
 public struct KeyChord
 {
     public static readonly KeyChord empty = new KeyChord(KeyCode.None, false, false, false);
@@ -23,14 +121,6 @@ public struct KeyChord
         this.shift = shift;
     }
 
-    public static bool IsValid(KeyCode key)
-    {
-        if (!SuperController.singleton.isOVR) return true;
-        if (key < KeyCode.JoystickButton0 || key > KeyCode.Joystick8Button19) return true;
-        if (OVRInput.GetActiveController() == OVRInput.Controller.Gamepad) return true;
-        return false;
-    }
-
     public bool IsDown()
     {
         if (key != KeyCode.None && !Input.GetKeyDown(key)) return false;
@@ -39,7 +129,7 @@ public struct KeyChord
         if (alt != (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))) return false;
         if (shift != (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return false;
 
-        if (!IsValid(key)) return false;
+        if (!KeyChordUtils.IsValid(key)) return false;
 
         return true;
     }
