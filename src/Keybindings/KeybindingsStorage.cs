@@ -119,13 +119,13 @@ public class KeybindingsStorage
                 "Global.CycleStack"));
 
         _analogMapManager.maps.Add(
-            new AnalogMap(new AnalogKeyChord(KeyCode.A, false), new AnalogKeyChord(KeyCode.D, false),
+            new AnalogMap(new KeyChord(KeyCode.A, false, false, false), new KeyChord(KeyCode.D, false, false, false),
                 "Camera.Pan_X", 0));
         _analogMapManager.maps.Add(
-            new AnalogMap(new AnalogKeyChord(KeyCode.Z, false), new AnalogKeyChord(KeyCode.X, false),
+            new AnalogMap(new KeyChord(KeyCode.Z, false, false, false), new KeyChord(KeyCode.X, false, false, false),
                 "Camera.Pan_Y", 0));
         _analogMapManager.maps.Add(
-            new AnalogMap(new AnalogKeyChord(KeyCode.W, false), new AnalogKeyChord(KeyCode.S, false),
+            new AnalogMap(new KeyChord(KeyCode.W, false, false, false), new KeyChord(KeyCode.S, false, false, false),
                 "Camera.Pan_Z", 0));
 #endif
     }

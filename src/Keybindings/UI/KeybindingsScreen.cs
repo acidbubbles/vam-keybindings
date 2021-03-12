@@ -15,7 +15,7 @@ public class KeybindingsScreen : MonoBehaviour
         public UIDynamicButton bindingBtn1;
         public UIDynamicButton bindingBtn2;
         public ICommandInvoker invoker;
-        public string commandName => invoker?.commandName;
+        public string commandName => invoker?.commandName ?? null;
     }
 
     public IPrefabManager prefabManager { get; set; }
@@ -337,7 +337,7 @@ To clear a binding, click on one and then click outside.".Trim());
     private IEnumerator RecordAnalog(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
     {
         isRecording = true;
-        var leftKeybinding = AnalogKeyChord.empty;
+        var leftKeybinding = KeyChord.empty;
         while (true)
         {
             yield return 0;
@@ -356,16 +356,18 @@ To clear a binding, click on one and then click outside.".Trim());
             if (Input.GetKeyDown(KeyCode.Escape))
                 break;
 
+            var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+            var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             var keyUp = KeyCodes.bindableKeyCodes.GetCurrentUp();
 
             if (keyUp != KeyCode.None)
             {
-                if (!KeyChordUtils.IsValid(keyUp))
+                if (!KeyChord.IsValid(keyUp))
                     continue;
 
-                var binding = new AnalogKeyChord(keyUp, altDown);
+                var binding = new KeyChord(keyUp, ctrlDown, altDown, shiftDown);
                 if (leftKeybinding.key == KeyCode.None)
                 {
                     btn.label = "Type other direction...";
@@ -389,8 +391,8 @@ To clear a binding, click on one and then click outside.".Trim());
                 if (Mathf.Abs(axisValue) < 0.75f) continue;
                 var key = KeyCodes.bindableKeyCodes.GetCurrent();
                 // We don't want to take over the mouse!
-                if (axisName.StartsWith("Mouse") && key == KeyCode.None && !altDown) continue;
-                var binding = new AnalogKeyChord(key, altDown);
+                if (axisName.StartsWith("Mouse") && key == KeyCode.None && !ctrlDown && !shiftDown && !altDown) continue;
+                var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
                 var map = new AnalogMap(binding, axisName, axisValue < 0, commandInvoker.commandName, slot);
 
                 SaveAnalogMap(commandInvoker, binding, map);
@@ -402,7 +404,7 @@ To clear a binding, click on one and then click outside.".Trim());
         StopRecording(btn, btnColor, commandInvoker, slot);
     }
 
-    private void SaveAnalogMap(ICommandInvoker commandInvoker, AnalogKeyChord binding, AnalogMap map)
+    private void SaveAnalogMap(ICommandInvoker commandInvoker, KeyChord binding, AnalogMap map)
     {
         var previousMap = analogMapManager.maps.FirstOrDefault(m => m.commandName == commandInvoker.commandName);
         if (previousMap != null)
@@ -460,7 +462,7 @@ To clear a binding, click on one and then click outside.".Trim());
             var key = KeyCodes.bindableKeyCodes.GetCurrentDown();
             if (key == KeyCode.None) continue;
 
-            if (!KeyChordUtils.IsValid(key)) continue;
+            if (!KeyChord.IsValid(key)) continue;
 
             var ctrlDown = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             var altDown = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);

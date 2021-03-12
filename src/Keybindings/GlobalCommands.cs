@@ -420,7 +420,7 @@ public class GlobalCommands
         {
             if (uid == null) continue;
             if (!uid.StartsWith($"plugin#")) continue;
-            var prefixEndIndex = uid.IndexOf("_", StringComparison.Ordinal);
+            var prefixEndIndex = uid.IndexOf("_");
             if (prefixEndIndex == -1) continue;
             var prefix = uid.Substring(0, prefixEndIndex);
             if (prefix == lastPrefix) continue;

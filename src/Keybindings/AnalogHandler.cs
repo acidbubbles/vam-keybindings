@@ -33,10 +33,6 @@ public class AnalogHandler
             {
                 map.isActive = true;
                 if (map.reversed) axisValue = -axisValue;
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    axisValue *= 2f;
-                else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-                    axisValue *= 0.5f;
                 _remoteCommandsManager.UpdateValue(map.commandName, axisValue);
             }
             else if (axisValue == 0)

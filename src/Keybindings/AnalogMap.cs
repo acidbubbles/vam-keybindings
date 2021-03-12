@@ -4,11 +4,11 @@ using UnityEngine;
 public class AnalogMap :  IMap
 {
     public bool isAxis { get; set; }
-    public AnalogKeyChord chord { get; set; }
+    public KeyChord chord { get; set; }
     public string axisName { get; set; }
     public bool reversed { get; set; }
-    public AnalogKeyChord leftChord { get; set; }
-    public AnalogKeyChord rightChord { get; set; }
+    public KeyChord leftChord { get; set; }
+    public KeyChord rightChord { get; set; }
     public string commandName { get; set; }
     public bool isActive { get; set; }
     public int slot { get; set; }
@@ -17,11 +17,11 @@ public class AnalogMap :  IMap
     {
     }
 
-    public AnalogMap(AnalogKeyChord chord, string axisName, bool reversed, string commandName, int slot = 0)
+    public AnalogMap(KeyChord chord, string axisName, bool reversed, string commandName, int slot = 0)
     {
         isAxis = true;
-        leftChord = AnalogKeyChord.empty;
-        rightChord = AnalogKeyChord.empty;
+        leftChord = KeyChord.empty;
+        rightChord = KeyChord.empty;
         this.chord = chord;
         this.axisName = axisName;
         this.commandName = commandName;
@@ -29,10 +29,10 @@ public class AnalogMap :  IMap
         this.slot = slot;
     }
 
-    public AnalogMap(AnalogKeyChord leftChord, AnalogKeyChord rightChord, string commandName, int slot = 0)
+    public AnalogMap(KeyChord leftChord, KeyChord rightChord, string commandName, int slot = 0)
     {
         isAxis = false;
-        chord = AnalogKeyChord.empty;
+        chord = KeyChord.empty;
         axisName = null;
         reversed = false;
         this.leftChord = leftChord;
@@ -82,14 +82,14 @@ public class AnalogMap :  IMap
 
             if (isAxis)
             {
-                chord = AnalogKeyChord.FromJSON(mapJSON["chord"]);
+                chord = KeyChord.FromJSON(mapJSON["chord"]);
                 axisName = mapJSON["axis"].Value;
                 reversed = mapJSON["reversed"].Value == "true";
             }
             else
             {
-                leftChord = AnalogKeyChord.FromJSON(mapJSON["leftChord"]);
-                rightChord = AnalogKeyChord.FromJSON(mapJSON["rightChord"]);
+                leftChord = KeyChord.FromJSON(mapJSON["leftChord"]);
+                rightChord = KeyChord.FromJSON(mapJSON["rightChord"]);
             }
         }
         catch (System.Exception e)
