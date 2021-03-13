@@ -14,6 +14,7 @@ public class KeybindingsStorage
     private readonly MVRScript _plugin;
     private readonly KeyMapManager _keyMapManager;
     private readonly IAnalogMapManager _analogMapManager;
+    private readonly string _defaultKeybindingsFile = SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings";
 
     public KeybindingsStorage(MVRScript plugin, KeyMapManager keyMapManager, IAnalogMapManager analogMapManager)
     {
@@ -79,7 +80,7 @@ public class KeybindingsStorage
 
     public void ImportDefaults()
     {
-        if (Import(false, SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings")) return;
+        if (Import(false, _defaultKeybindingsFile)) return;
         CreateDefaults();
     }
 
@@ -129,6 +130,8 @@ public class KeybindingsStorage
         _keyMapManager.maps.Add(
             new KeyMap(new[] {new KeyChord(KeyCode.C, false, false, false)},
                 "Global.CycleStack"));
+
+        _keyMapManager.RebuildTree();
 
         _analogMapManager.maps.Add(
             new AnalogMap(new KeyChord(KeyCode.A, false, false, false), new KeyChord(KeyCode.D, false, false, false),
@@ -197,6 +200,6 @@ public class KeybindingsStorage
     public void ExportDefault()
     {
         FileManagerSecure.CreateDirectory(_saveFolder);
-        Export(SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings");
+        Export(_defaultKeybindingsFile);
     }
 }
