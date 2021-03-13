@@ -24,8 +24,11 @@ public class GlobalCommands
     private JSONStorableFloat _cameraOrbitY;
     private JSONStorableFloat _cameraDollyZoom;
     private JSONStorableFloat _cameraPanX;
+    private JSONStorableFloat _cameraPanXFast;
     private JSONStorableFloat _cameraPanY;
+    private JSONStorableFloat _cameraPanYFast;
     private JSONStorableFloat _cameraPanZ;
+    private JSONStorableFloat _cameraPanZFast;
 
     public GlobalCommands(JSONStorable owner, Atom containingAtom, ISelectionHistoryManager selectionHistoryManager, RemoteCommandsManager remoteCommandsManager)
     {
@@ -247,8 +250,11 @@ public class GlobalCommands
         CreateAction("Camera", "FocusMoveOnSelectedController", () => SuperController.singleton.FocusOnSelectedController(false));
         CreateAction("Camera", "ResetFocusPoint", () => SuperController.singleton.ResetFocusPoint());
         _cameraPanX = CreateAnalog("Camera", "Pan_X");
+        _cameraPanXFast = CreateAnalog("Camera", "Pan_X.Fast");
         _cameraPanY = CreateAnalog("Camera", "Pan_Y");
+        _cameraPanYFast = CreateAnalog("Camera", "Pan_Y.Fast");
         _cameraPanZ = CreateAnalog("Camera", "Pan_Z");
+        _cameraPanZFast = CreateAnalog("Camera", "Pan_Z.Fast");
         _cameraOrbitX = CreateAnalog("Camera", "Orbit_X");
         _cameraOrbitY = CreateAnalog("Camera", "Orbit_Y");
         _cameraDollyZoom = CreateAnalog("Camera", "DollyZoom");
@@ -328,8 +334,11 @@ public class GlobalCommands
         if (_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * NormalizedMoveMultiplier());
         if (_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * NormalizedMoveMultiplier());
         if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
-        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
+        if (_cameraPanXFast.val != 0) SuperController.singleton.CameraPan(_cameraPanXFast.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f);
+        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
+        if (_cameraPanYFast.val != 0) SuperController.singleton.CameraPan(_cameraPanYFast.val, SuperController.singleton.MonitorCenterCamera.transform.up * 2f);
         if (_cameraPanZ.val != 0) SuperController.singleton.CameraPan(_cameraPanZ.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
+        if (_cameraPanZFast.val != 0) SuperController.singleton.CameraPan(_cameraPanZFast.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f);
         if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val * NormalizedMoveMultiplier());
         if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val * NormalizedMoveMultiplier());
         if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val * NormalizedMoveMultiplier());

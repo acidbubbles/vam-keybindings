@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class KeybindingsStorage
 {
-    private const int _saveVersion = 1;
+    private const int _saveVersion = 2;
     private const string _saveExt = "keybindings";
     private const string _saveFolder = "Saves\\PluginData\\Keybindings";
 
@@ -51,17 +51,29 @@ public class KeybindingsStorage
         var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
         if (jc == null) return false;
         var version = jc["version"].AsInt;
-        if (version < 1)
-        {
-            // Removed support for ctrl and shift analog bindings
-            var mapsWithShiftOrCtrl = jc["analogMaps"].AsArray.Childs.Where(c => c["leftChord"]["shift"].AsBool || c["rightChord"]["shift"].AsBool || c["leftChord"]["ctrl"].AsBool || c["rightChord"]["ctrl"].AsBool).ToList();
-            if (mapsWithShiftOrCtrl.Count > 0)
-            {
-                SuperController.LogError("Keybindings: Analog key maps with ctrl or shift are not supported. Those keys are not reserved for half-speed and double-speed. Please check your bindings.");
-            }
-        }
         _keyMapManager.RestoreFromJSON(jc["keybindings"]);
         _analogMapManager.RestoreFromJSON(jc["analogMaps"]);
+        if (version < 2)
+        {
+            if (_analogMapManager.maps.Any(m => m.commandName == "Camera.Pan_X" && m.slot == 0 && m.leftChord.Equals(new KeyChord(KeyCode.A, false, false, false))))
+            {
+                _analogMapManager.maps.Add(
+                    new AnalogMap(new KeyChord(KeyCode.A, false, false, true), new KeyChord(KeyCode.D, false, false, true),
+                        "Camera.Pan_X.Fast", 0));
+            }
+            if (_analogMapManager.maps.Any(m => m.commandName == "Camera.Pan_Y" && m.slot == 0 && m.leftChord.Equals(new KeyChord(KeyCode.Z, false, false, false))))
+            {
+                _analogMapManager.maps.Add(
+                    new AnalogMap(new KeyChord(KeyCode.Z, false, false, true), new KeyChord(KeyCode.X, false, false, true),
+                        "Camera.Pan_Y.Fast", 0));
+            }
+            if (_analogMapManager.maps.Any(m => m.commandName == "Camera.Pan_Z" && m.slot == 0 && m.leftChord.Equals(new KeyChord(KeyCode.W, false, false, false))))
+            {
+                _analogMapManager.maps.Add(
+                    new AnalogMap(new KeyChord(KeyCode.W, false, false, true), new KeyChord(KeyCode.S, false, false, true),
+                        "Camera.Pan_Z.Fast", 0));
+            }
+        }
         return true;
     }
 
@@ -122,11 +134,20 @@ public class KeybindingsStorage
             new AnalogMap(new KeyChord(KeyCode.A, false, false, false), new KeyChord(KeyCode.D, false, false, false),
                 "Camera.Pan_X", 0));
         _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.A, false, false, true), new KeyChord(KeyCode.D, false, false, true),
+                "Camera.Pan_X.Fast", 0));
+        _analogMapManager.maps.Add(
             new AnalogMap(new KeyChord(KeyCode.Z, false, false, false), new KeyChord(KeyCode.X, false, false, false),
                 "Camera.Pan_Y", 0));
         _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.Z, false, false, true), new KeyChord(KeyCode.X, false, false, true),
+                "Camera.Pan_Y.Fast", 0));
+        _analogMapManager.maps.Add(
             new AnalogMap(new KeyChord(KeyCode.W, false, false, false), new KeyChord(KeyCode.S, false, false, false),
                 "Camera.Pan_Z", 0));
+        _analogMapManager.maps.Add(
+            new AnalogMap(new KeyChord(KeyCode.W, false, false, true), new KeyChord(KeyCode.S, false, false, true),
+                "Camera.Pan_Z.Fast", 0));
 #endif
     }
 

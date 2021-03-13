@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 
 public interface IPrefabManager
 {
+    bool ready { get; }
     Font font { get; }
     Transform triggerActionsParent { get; }
     RectTransform triggerActionsPrefab { get; }
@@ -22,6 +23,7 @@ public interface IPrefabManager
 
 public class PrefabManager : IPrefabManager
 {
+    public bool ready => buttonPrefab != null && togglePrefab != null;
     public Font font { get; private set; }
     public Transform triggerActionsParent { get; set; }
     public RectTransform triggerActionsPrefab { get; private set; }

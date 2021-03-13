@@ -51,6 +51,7 @@ public class KeybindingsScreen : MonoBehaviour
     public void Initialize()
     {
         if (_initialized) return;
+        if (!prefabManager.ready) return;
         _initialized = true;
 
         var optionsTitle = prefabManager.CreateText(transform, "<b>Options</b>");
