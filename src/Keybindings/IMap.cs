@@ -1,6 +1,6 @@
 ﻿public interface IMap
 {
-    string commandName { get; set; }
+    string commandName { get; }
     int slot { get; }
     string GetPrettyString();
 }

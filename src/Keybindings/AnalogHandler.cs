@@ -4,11 +4,13 @@ public class AnalogHandler
 {
     private readonly RemoteCommandsManager _remoteCommandsManager;
     private readonly AnalogMapManager _analogMapManager;
+    private readonly IKeybindingsSettings _settings;
 
-    public AnalogHandler(RemoteCommandsManager remoteCommandsManager, AnalogMapManager analogMapManager)
+    public AnalogHandler(RemoteCommandsManager remoteCommandsManager, AnalogMapManager analogMapManager, IKeybindingsSettings settings)
     {
         _remoteCommandsManager = remoteCommandsManager;
         _analogMapManager = analogMapManager;
+        _settings = settings;
     }
 
     public void Update()
@@ -31,6 +33,12 @@ public class AnalogHandler
 
             if (axisValue != 0)
             {
+                if (map.isMouse)
+                {
+                    if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
+                        continue;
+                    axisValue *= _settings.mouseSensitivityJSON.val;
+                }
                 map.isActive = true;
                 if (map.reversed) axisValue = -axisValue;
                 _remoteCommandsManager.UpdateValue(map.commandName, axisValue);

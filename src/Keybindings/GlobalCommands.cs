@@ -20,6 +20,9 @@ public class GlobalCommands
     private JSONStorableFloat _rotateX;
     private JSONStorableFloat _rotateY;
     private JSONStorableFloat _rotateZ;
+    private JSONStorableFloat _rotateCameraX;
+    private JSONStorableFloat _rotateCameraY;
+    private JSONStorableFloat _rotateCameraZ;
     private JSONStorableFloat _cameraOrbitX;
     private JSONStorableFloat _cameraOrbitY;
     private JSONStorableFloat _cameraDollyZoom;
@@ -243,6 +246,9 @@ public class GlobalCommands
         _moveCameraX = CreateAnalog("Move", "Move_RelativeToCamera_X");
         _moveCameraY = CreateAnalog("Move", "Move_RelativeToCamera_Y");
         _moveCameraZ = CreateAnalog("Move", "Move_RelativeToCamera_Z");
+        _rotateCameraX = CreateAnalog("Move", "Rotate_RelativeToCamera_X");
+        _rotateCameraY = CreateAnalog("Move", "Rotate_RelativeToCamera_Y");
+        _rotateCameraZ = CreateAnalog("Move", "Rotate_RelativeToCamera_Z");
 
         // Camera
         CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
@@ -333,6 +339,9 @@ public class GlobalCommands
         if (_rotateX.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.X, _rotateX.val * NormalizedMoveMultiplier());
         if (_rotateY.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Y, _rotateY.val * NormalizedMoveMultiplier());
         if (_rotateZ.val != 0) SuperController.singleton.GetSelectedController()?.RotateAxis(FreeControllerV3.RotateAxisnames.Z, _rotateZ.val * NormalizedMoveMultiplier());
+        if (_rotateCameraX.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraX.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.right);
+        if (_rotateCameraY.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraY.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.up);
+        if (_rotateCameraZ.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraZ.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.forward);
         if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
         if (_cameraPanXFast.val != 0) SuperController.singleton.CameraPan(_cameraPanXFast.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f);
         if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
@@ -342,6 +351,13 @@ public class GlobalCommands
         if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val * NormalizedMoveMultiplier());
         if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val * NormalizedMoveMultiplier());
         if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val * NormalizedMoveMultiplier());
+    }
+
+    private static void RotateController(FreeControllerV3 controller, float val, Vector3 axis)
+    {
+        // ReSharper disable Unity.NoNullPropagation
+        controller?.control?.Rotate(axis, val * 3f, Space.World);
+        // ReSharper restore Unity.NoNullPropagation
     }
 
     private static float NormalizedMoveMultiplier(float multiplier = 1f)

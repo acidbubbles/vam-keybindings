@@ -2,20 +2,14 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public interface IKeybindingsSettings
-{
-    JSONStorableBool showKeyPressesJSON { get; }
-}
-
 public interface IKeybindingsModeSelector
 {
     void EnterNormalMode();
 }
 
-public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKeybindingsModeSelector
+public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsModeSelector
 {
-    public JSONStorableBool showKeyPressesJSON { get; private set; }
-
+    private KeybindingsSettings _settings;
     private PrefabManager _prefabManager;
     private KeyMapManager _keyMapManager;
     private AnalogMapManager _analogMapManager;
@@ -42,19 +36,18 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
             return;
         }
 
-        showKeyPressesJSON = new JSONStorableBool("ShowKeypresses", false);
-
+        _settings = new KeybindingsSettings();
         _prefabManager = new PrefabManager();
         _keyMapManager = new KeyMapManager();
         _analogMapManager = new AnalogMapManager();
         _selectionHistoryManager = new SelectionHistoryManager();
         _remoteCommandsManager = new RemoteCommandsManager(this, _selectionHistoryManager);
         _globalCommands = new GlobalCommands(this, containingAtom, _selectionHistoryManager, _remoteCommandsManager);
-        _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager);
+        _storage = new KeybindingsStorage(this, _keyMapManager, _analogMapManager, _settings);
         _overlayReference = new KeybindingsOverlayReference();
 
-        _analogHandler = new AnalogHandler(_remoteCommandsManager, _analogMapManager);
-        _normalModeHandler = new NormalModeHandler(this, this, _keyMapManager, _overlayReference, _remoteCommandsManager);
+        _analogHandler = new AnalogHandler(_remoteCommandsManager, _analogMapManager, _settings);
+        _normalModeHandler = new NormalModeHandler(this, _settings, _keyMapManager, _overlayReference, _remoteCommandsManager);
         _findModeHandler = new FindModeHandler(this, _remoteCommandsManager, _overlayReference);
 
         SuperController.singleton.StartCoroutine(_prefabManager.LoadUIAssets());
@@ -86,12 +79,12 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsSettings, IKe
         var active = go.activeInHierarchy;
         if (active) go.SetActive(false);
         _ui = go.AddComponent<KeybindingsScreen>();
+        _ui.settings = _settings;
         _ui.prefabManager = _prefabManager;
         _ui.keyMapManager = _keyMapManager;
         _ui.analogMapManager = _analogMapManager;
         _ui.remoteCommandsManager = _remoteCommandsManager;
         _ui.storage = _storage;
-        _ui.settings = this;
         _ui.Configure();
         if (active) go.SetActive(true);
 

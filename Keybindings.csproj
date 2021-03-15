@@ -88,6 +88,7 @@
     <Compile Include="src\Keybindings\FindModeHandler.cs" />
     <Compile Include="src\Keybindings\IMap.cs" />
     <Compile Include="src\Keybindings\IModeHandler.cs" />
+    <Compile Include="src\Keybindings\KeybindingsSettings.cs" />
     <Compile Include="src\Keybindings\KeybindingsStorage.cs" />
     <Compile Include="src\Keybindings\NormalModeHandler.cs" />
     <Compile Include="src\Keybindings\PluginUISpy.cs" />

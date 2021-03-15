@@ -75,8 +75,8 @@ public class KeybindingsScreen : MonoBehaviour
         var toolbarGo = new GameObject();
         toolbarGo.transform.SetParent(transform, false);
 
-        var group = toolbarGo.AddComponent<HorizontalLayoutGroup>();
-        group.spacing = 20;
+        var toolbarGroup = toolbarGo.AddComponent<HorizontalLayoutGroup>();
+        toolbarGroup.spacing = 20;
 
         var importBtn = prefabManager.CreateButton(toolbarGo.transform, "Import (overwrite)");
         importBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.OpenImportDialog(true); } });
@@ -89,6 +89,17 @@ public class KeybindingsScreen : MonoBehaviour
 
         var saveBtn = prefabManager.CreateButton(toolbarGo.transform, "Save");
         saveBtn.button.onClick.AddListener(() => { if (!isRecording) { storage.ExportDefault(); } });
+
+        prefabManager.CreateSpacer(transform, 10f);
+
+        var sensitivityGo = new GameObject();
+        sensitivityGo.transform.SetParent(transform, false);
+
+        var sensitivityGroup = sensitivityGo.AddComponent<HorizontalLayoutGroup>();
+        sensitivityGroup.spacing = 20;
+
+        var sensitivitySlider = prefabManager.CreateSlider(sensitivityGo.transform, "Mouse sensitivity");
+        settings.mouseSensitivityJSON.slider = sensitivitySlider.slider;
 
         prefabManager.CreateSpacer(transform, 10f);
 

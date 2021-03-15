@@ -14,13 +14,15 @@ public class KeybindingsStorage
     private readonly MVRScript _plugin;
     private readonly KeyMapManager _keyMapManager;
     private readonly IAnalogMapManager _analogMapManager;
+    private readonly IKeybindingsSettings _settings;
     private readonly string _defaultKeybindingsFile = SuperController.singleton.savesDir + @"\PluginData\Keybindings\defaults.keybindings";
 
-    public KeybindingsStorage(MVRScript plugin, KeyMapManager keyMapManager, IAnalogMapManager analogMapManager)
+    public KeybindingsStorage(MVRScript plugin, KeyMapManager keyMapManager, IAnalogMapManager analogMapManager, IKeybindingsSettings settings)
     {
         _plugin = plugin;
         _keyMapManager = keyMapManager;
         _analogMapManager = analogMapManager;
+        _settings = settings;
     }
 
     public void OpenImportDialog(bool clear)
@@ -52,6 +54,7 @@ public class KeybindingsStorage
         var jc = (JSONClass) SuperController.singleton.LoadJSON(path);
         if (jc == null) return false;
         var version = jc["version"].AsInt;
+        _settings.RestoreFromJSON(jc["settings"].AsObject);
         _keyMapManager.RestoreFromJSON(jc["keybindings"]);
         _analogMapManager.RestoreFromJSON(jc["analogMaps"]);
         if (version < 2)
@@ -191,6 +194,7 @@ public class KeybindingsStorage
         var jc = new JSONClass
         {
             {"version", _saveVersion.ToString(NumberFormatInfo.InvariantInfo)},
+            {"settings", _settings.GetJSON()},
             {"keybindings", _keyMapManager.GetJSON()},
             {"analogMaps", _analogMapManager.GetJSON()},
         };

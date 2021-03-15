@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class AnalogMap :  IMap
 {
-    public bool isAxis { get; set; }
-    public KeyChord chord { get; set; }
-    public string axisName { get; set; }
-    public bool reversed { get; set; }
-    public KeyChord leftChord { get; set; }
-    public KeyChord rightChord { get; set; }
-    public string commandName { get; set; }
+    public bool isAxis { get; private set; }
+    public KeyChord chord { get; private set; }
+    public string axisName { get; private set; }
+    public bool reversed { get; private set; }
+    public KeyChord leftChord { get; private set; }
+    public KeyChord rightChord { get; private set; }
+    public string commandName { get; private set; }
+    public int slot { get; private set; }
+    public bool isMouse { get; private set; }
     public bool isActive { get; set; }
-    public int slot { get; set; }
 
     public AnalogMap()
     {
@@ -27,6 +28,7 @@ public class AnalogMap :  IMap
         this.commandName = commandName;
         this.reversed = reversed;
         this.slot = slot;
+        isMouse = axisName?.StartsWith("Mouse") ?? false;
     }
 
     public AnalogMap(KeyChord leftChord, KeyChord rightChord, string commandName, int slot = 0)
@@ -85,6 +87,7 @@ public class AnalogMap :  IMap
                 chord = KeyChord.FromJSON(mapJSON["chord"]);
                 axisName = mapJSON["axis"].Value;
                 reversed = mapJSON["reversed"].Value == "true";
+                isMouse = axisName?.StartsWith("Mouse") ?? false;
             }
             else
             {
