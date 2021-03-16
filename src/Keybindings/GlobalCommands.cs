@@ -302,6 +302,8 @@ public class GlobalCommands
         CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
 
         CreateAction("Packages", "RescanAddonPackages", () => SuperController.singleton.RescanPackages());
+        CreateAction("Packages", "OpenPackageBuilder", () => SuperController.singleton.OpenPackageBuilder());
+        CreateAction("Packages", "OpenPackageManager", () => SuperController.singleton.OpenPackageManager());
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // TODO: Find a few useful examples for this
