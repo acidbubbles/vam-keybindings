@@ -300,6 +300,8 @@ public class GlobalCommands
         CreateAction("Settings", "HandModel_SphereKinematic", () => SelectHandModel("SphereKinematic", false));
         CreateAction("Settings", "HandModel_Male1", () => SelectHandModel("Male1", true));
         CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
+
+        CreateAction("Packages", "RescanAddonPackages", () => SuperController.singleton.RescanPackages());
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // TODO: Find a few useful examples for this
