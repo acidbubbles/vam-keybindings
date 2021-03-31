@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using MeshVR;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.UI;
@@ -300,6 +301,14 @@ public class GlobalCommands
         CreateAction("Settings", "HandModel_SphereKinematic", () => SelectHandModel("SphereKinematic", false));
         CreateAction("Settings", "HandModel_Male1", () => SelectHandModel("Male1", true));
         CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
+        CreateAction("Settings", "Toggle_HandCollisions", () => UserPreferences.singleton.motionHandModelControl.ToggleCollision());
+
+        CreateAction("Leap", "Toggle_AllowPinchGrab", () => SuperController.singleton.leapHandModelControl.allowPinchGrab = !SuperController.singleton.leapHandModelControl.allowPinchGrab);
+        CreateAction("Leap", "Enable_AllowPinchGrab", () => SuperController.singleton.leapHandModelControl.allowPinchGrab = true);
+        CreateAction("Leap", "Disable_AllowPinchGrab", () => SuperController.singleton.leapHandModelControl.allowPinchGrab = false);
+        CreateAction("Leap", "Toggle_LeapMotion", () => GlobalSceneOptions.singleton.disableLeap = !GlobalSceneOptions.singleton.disableLeap);
+        CreateAction("Leap", "Enable_LeapMotion", () => GlobalSceneOptions.singleton.disableLeap = false);
+        CreateAction("Leap", "Disable_LeapMotion", () => GlobalSceneOptions.singleton.disableLeap = true);
 
         CreateAction("Packages", "RescanAddonPackages", () => SuperController.singleton.RescanPackages());
         CreateAction("Packages", "OpenPackageBuilder", () => SuperController.singleton.OpenPackageBuilder());
