@@ -198,6 +198,7 @@ public class GlobalCommands
         CreateAction("Add", "Misc_WebBrowser", () => SuperController.singleton.AddAtomByType("WebBrowser", true, true, true));
         CreateAction("Add", "Misc_WebPanel", () => SuperController.singleton.AddAtomByType("WebPanel", true, true, true));
         CreateAction("Add", "People_Person", () => SuperController.singleton.AddAtomByType("Person", true, true, true));
+        CreateAction("Add", "Props_SimSheet", () => SuperController.singleton.AddAtomByType("SimSheet", true, true, true));
         CreateAction("Add", "Reflective_Glass", () => SuperController.singleton.AddAtomByType("Glass", true, true, true));
         CreateAction("Add", "Reflective_ReflectiveSlate", () => SuperController.singleton.AddAtomByType("ReflectiveSlate", true, true, true));
         CreateAction("Add", "Reflective_ReflectiveWoodPanel", () => SuperController.singleton.AddAtomByType("ReflectiveWoodPanel", true, true, true));
