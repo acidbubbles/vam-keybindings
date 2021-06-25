@@ -119,6 +119,11 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
             {
                 var plugin = AddPlugin();
                 plugin.RestoreFromJSON(pluginJSON.AsObject);
+                if (!plugin.hasValue)
+                {
+                    plugin.Unregister();
+                    _plugins.Remove(plugin);
+                }
             }
             transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
         }
