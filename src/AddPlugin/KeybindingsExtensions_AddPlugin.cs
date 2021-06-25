@@ -94,7 +94,10 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
             {
                 var pluginsJSON = new JSONArray();
                 foreach (var plugin in _plugins)
+                {
+                    if (!plugin.hasValue) continue;
                     pluginsJSON.Add(plugin.GetJSON());
+                }
                 json["Plugins"] = pluginsJSON;
                 needsStore = true;
             }
