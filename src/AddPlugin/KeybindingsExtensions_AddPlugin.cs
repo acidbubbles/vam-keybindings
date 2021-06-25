@@ -69,7 +69,6 @@ public class KeybindingsExtensions_AddPlugin : MVRScript
         {
             if (_plugins.Where(p => p.hasValue).GroupBy(p => p.commandName).Any(g => g.Count() > 1))
             {
-                SuperController.LogError($"Keybindings: Plugin {plugin.commandName} cannot be registered twice");
                 plugin.Clear();
             }
             OnPluginsListChanged();
