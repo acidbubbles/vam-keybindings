@@ -251,6 +251,7 @@ public class GlobalCommands
         _rotateCameraX = CreateAnalog("Move", "Rotate_RelativeToCamera_X");
         _rotateCameraY = CreateAnalog("Move", "Rotate_RelativeToCamera_Y");
         _rotateCameraZ = CreateAnalog("Move", "Rotate_RelativeToCamera_Z");
+        CreateAction("Move", "MoveToCameraRaycastHit", MoveToCameraRaycastHit);
 
         // Camera
         CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
@@ -581,5 +582,21 @@ public class GlobalCommands
             clone.PostRestore();
         }
         clone.collisionEnabled = false;
+    }
+
+    private static void MoveToCameraRaycastHit()
+    {
+        var controller = SuperController.singleton.GetSelectedController();
+        if (ReferenceEquals(controller, null)) return;
+
+        var cameraTransform = SuperController.singleton.centerCameraTarget.transform;
+        var cameraForward = cameraTransform.forward;
+        var cameraPosition = cameraTransform.position;
+        var distance = 1.8f;
+        RaycastHit hit;
+        if (Physics.Raycast(cameraPosition, cameraForward, out hit, 10f))
+            distance = hit.distance;
+
+        controller.control.position = cameraPosition + cameraForward * distance;
     }
 }
