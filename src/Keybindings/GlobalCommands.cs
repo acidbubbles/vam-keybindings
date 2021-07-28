@@ -252,6 +252,7 @@ public class GlobalCommands
         _rotateCameraY = CreateAnalog("Move", "Rotate_RelativeToCamera_Y");
         _rotateCameraZ = CreateAnalog("Move", "Rotate_RelativeToCamera_Z");
         CreateAction("Move", "MoveToCameraRaycastHit", MoveToCameraRaycastHit);
+        CreateAction("Move", "MoveAndAlignToCamera", MoveAndAlignToCamera);
 
         // Camera
         CreateAction("Camera", "Toggle_FreeMoveMouse", SuperController.singleton.ToggleModeFreeMoveMouse);
@@ -582,6 +583,15 @@ public class GlobalCommands
             clone.PostRestore();
         }
         clone.collisionEnabled = false;
+    }
+
+    private static void MoveAndAlignToCamera()
+    {
+        var controller = SuperController.singleton.GetSelectedController();
+        if (ReferenceEquals(controller, null)) return;
+
+        var cameraTransform = SuperController.singleton.centerCameraTarget.transform;
+        controller.control.SetPositionAndRotation(cameraTransform.position, cameraTransform.rotation);
     }
 
     private static void MoveToCameraRaycastHit()
