@@ -7,7 +7,7 @@
         sc.SelectController(selectedAtom.mainController);
         sc.activeUI = SuperController.ActiveUI.SelectedOptions;
 
-        sc.ShowMainHUD();
+        sc.ShowMainHUDAuto();
 
         var selector = selectedAtom.gameObject.GetComponentInChildren<UITabSelector>(true);
         if (selector == null) return;

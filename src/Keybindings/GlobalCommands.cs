@@ -438,7 +438,7 @@ public class GlobalCommands
 
     private static void OpenMainTab(string tabName)
     {
-        SuperController.singleton.ShowMainHUD();
+        SuperController.singleton.ShowMainHUDAuto();
         SuperController.singleton.SetActiveUI("MainMenu");
         if (tabName != null)
             SuperController.singleton.SetMainMenuTab(tabName);
