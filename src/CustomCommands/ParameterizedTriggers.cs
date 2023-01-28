@@ -109,7 +109,7 @@ public class ParameterizedTriggers
             .Select(id => _script.containingAtom.GetStorableByID(id))
             .OfType<MVRScript>()
             .Where(s => s.storeId.Contains(val))
-            .Where(s => !ReferenceEquals(s, this)))
+            .Where(s => !ReferenceEquals(s, _script)))
         {
             _script.containingAtom.RestoreFromLast(script);
         }

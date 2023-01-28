@@ -1,5 +1,4 @@
-﻿src/Shared/CommandSettings.cs
-src/Shared/ICommandsInvoker.cs
+﻿src/Shared/ICommandsInvoker.cs
 src/Shared/ICommandsProvider.cs
 src/Shared/PrefabManager.cs
 src/Shared/SuperControllerExtensions.cs
@@ -34,5 +33,5 @@ src/Keybindings/NormalModeHandler.cs
 src/Keybindings/PluginUISpy.cs
 src/Keybindings/RemoteCommandsManager.cs
 src/Keybindings/SelectionHistoryManager.cs
-src/Keybindings/Settings.cs
+src/Keybindings/Constants.cs
 src/Keybindings/SuperControllerExtensions.cs

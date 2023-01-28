@@ -359,11 +359,11 @@ public class GlobalCommands
         if (_rotateCameraY.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraY.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.up);
         if (_rotateCameraZ.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraZ.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.forward);
         if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
-        if (_cameraPanXFast.val != 0) SuperController.singleton.CameraPan(_cameraPanXFast.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f);
+        if (_cameraPanXFast.val != 0) SuperController.singleton.CameraPan(_cameraPanXFast.val, -SuperController.singleton.MonitorCenterCamera.transform.right * (NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f));
         if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
         if (_cameraPanYFast.val != 0) SuperController.singleton.CameraPan(_cameraPanYFast.val, SuperController.singleton.MonitorCenterCamera.transform.up * 2f);
         if (_cameraPanZ.val != 0) SuperController.singleton.CameraPan(_cameraPanZ.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
-        if (_cameraPanZFast.val != 0) SuperController.singleton.CameraPan(_cameraPanZFast.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f);
+        if (_cameraPanZFast.val != 0) SuperController.singleton.CameraPan(_cameraPanZFast.val, SuperController.singleton.MonitorCenterCamera.transform.forward * (NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f));
         if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val * NormalizedMoveMultiplier());
         if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val * NormalizedMoveMultiplier());
         if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val * NormalizedMoveMultiplier());
@@ -461,7 +461,7 @@ public class GlobalCommands
         {
             if (uid == null) continue;
             if (!uid.StartsWith($"plugin#")) continue;
-            var prefixEndIndex = uid.IndexOf("_");
+            var prefixEndIndex = uid.IndexOf("_", StringComparison.Ordinal);
             if (prefixEndIndex == -1) continue;
             var prefix = uid.Substring(0, prefixEndIndex);
             if (prefix == lastPrefix) continue;
@@ -510,7 +510,7 @@ public class GlobalCommands
         SuperController.singleton.SelectController(atoms[index - 1].mainController);
     }
 
-    private void SelectNextAtom(string type = null)
+    private static void SelectNextAtom(string type = null)
     {
         var atoms = SuperController.singleton
             .GetAtoms()

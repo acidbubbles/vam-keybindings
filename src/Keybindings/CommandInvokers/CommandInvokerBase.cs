@@ -5,7 +5,7 @@
     public string ns { get; }
     public string localName { get; }
 
-    public CommandInvokerBase(JSONStorable storable, string ns, string localName)
+    protected CommandInvokerBase(JSONStorable storable, string ns, string localName)
     {
         this.storable = storable;
         this.ns = ns;

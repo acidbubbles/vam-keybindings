@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class KeyMapTreeNode
 {
@@ -19,4 +18,4 @@ public class KeyMapTreeNode
         result = null;
         return false;
     }
-};
+}

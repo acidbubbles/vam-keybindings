@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityObject = UnityEngine.Object;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public abstract class TriggerCommandBase : TriggerHandler
 {
     private readonly IPrefabManager _prefabManager;

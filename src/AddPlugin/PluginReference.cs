@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using MVR.FileManagementSecure;
 using SimpleJSON;
 using UnityEngine;

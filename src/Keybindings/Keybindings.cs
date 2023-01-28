@@ -89,7 +89,7 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsModeSelector
         if (active) go.SetActive(true);
 
         var overlay = KeybindingsOverlay.CreateOverlayGameObject(_prefabManager);
-        overlay.autoClear = Settings.TimeoutLen;
+        overlay.autoClear = Constants.TimeoutLen;
         _overlayReference.value = overlay;
         // overlay.Append("Keybindings ready!");
     }

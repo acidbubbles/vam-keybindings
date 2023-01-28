@@ -148,7 +148,7 @@ public class RemoteCommandsManager
                     {
                         switch (setting.Key)
                         {
-                            case CommandSettings.NamespaceKey:
+                            case Constants.NamespaceKey:
                                 commandNamespace = setting.Value;
                                 break;
                             default:

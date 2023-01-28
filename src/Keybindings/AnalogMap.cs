@@ -45,10 +45,9 @@ public class AnalogMap :  IMap
 
     public string GetPrettyString()
     {
-        if(isAxis)
-            return $"{chord}{(chord.key == KeyCode.None ? "" : "+")}{axisName}{(reversed ? " (reverse)" : "")}";
-        else
-            return $"{leftChord}/{rightChord}";
+        return isAxis
+            ? $"{chord}{(chord.key == KeyCode.None ? "" : "+")}{axisName}{(reversed ? " (reverse)" : "")}"
+            : $"{leftChord}/{rightChord}";
     }
 
     public JSONClass GetJSON()

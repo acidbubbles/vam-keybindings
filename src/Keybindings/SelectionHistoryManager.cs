@@ -12,7 +12,7 @@ public class SelectionHistoryManager : ISelectionHistoryManager
 {
     private int _lastValidCheck = Time.frameCount;
     private readonly List<Atom> _history = new List<Atom>();
-    public readonly Dictionary<Atom, MVRScript> _latestScriptPerAtom = new Dictionary<Atom, MVRScript>();
+    private readonly Dictionary<Atom, MVRScript> _latestScriptPerAtom = new Dictionary<Atom, MVRScript>();
 
     public IList<Atom> history
     {

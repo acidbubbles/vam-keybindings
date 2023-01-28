@@ -1,5 +1,4 @@
-﻿using System;
-using SimpleJSON;
+﻿using SimpleJSON;
 using UnityEngine.Events;
 
 public interface ICustomCommand

@@ -44,7 +44,7 @@ public class FindModeHandler : IModeHandler
         overlay.input.text = "";
         overlay.input.DeactivateInputField();
         EventSystem.current.SetSelectedGameObject(null);
-        overlay.autoClear = Settings.TimeoutLen;
+        overlay.autoClear = Constants.TimeoutLen;
         overlay.Set("");
     }
 

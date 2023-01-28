@@ -1,5 +1,4 @@
-﻿using System;
-using SimpleJSON;
+﻿using SimpleJSON;
 using UnityEngine.Events;
 
 public class DebugCommand : ICustomCommand
@@ -7,20 +6,10 @@ public class DebugCommand : ICustomCommand
     public const string Type = "debug";
     public string type => Type;
     public string name { get; private set; }
-    public object bindable { get; } = null;
+    public object bindable => null;
     public string displayName => $"<b>DEBUG</b> <i>{name}</i> '{_message}'";
 
     private string _message;
-
-    public DebugCommand()
-    {
-    }
-
-    public DebugCommand(string message)
-    {
-        _message = message;
-        name = Guid.NewGuid().ToString();
-    }
 
     public void Validate()
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class KeyCodes
 {
-    private static readonly Dictionary<KeyCode, string> _keyCodeToCharMap = new Dictionary<KeyCode, string>()
+    private static readonly Dictionary<KeyCode, string> _keyCodeToCharMap = new Dictionary<KeyCode, string>
     {
         {KeyCode.None, ""},
         {KeyCode.A, "a"},
@@ -83,8 +83,7 @@ public static class KeyCodes
         {KeyCode.BackQuote, "`"},
     };
 
-    private static readonly KeyCode[] _specialKeyCodes = new[]
-    {
+    private static readonly KeyCode[] _specialKeyCodes = {
         KeyCode.None,
         KeyCode.LeftControl,
         KeyCode.RightControl,
@@ -103,11 +102,6 @@ public static class KeyCodes
 
     public static readonly KeyCode[] bindableKeyCodes = ((KeyCode[]) Enum.GetValues(typeof(KeyCode)))
         .Except(_specialKeyCodes)
-        .ToArray();
-
-    public static readonly KeyCode[] textKeyCodes = new KeyCode[0]
-        .Concat(Enumerable.Range((int) KeyCode.A, KeyCode.Z - KeyCode.A).Select(i => (KeyCode) i))
-        .Concat(Enumerable.Range((int) KeyCode.Alpha0, KeyCode.Alpha9 - KeyCode.Alpha0).Select(i => (KeyCode) i))
         .ToArray();
 
     public static KeyCode GetCurrent(this KeyCode[] keyCodes)

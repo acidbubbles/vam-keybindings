@@ -228,9 +228,9 @@ To clear a binding, click on one and then click outside.".Trim());
         {
             var rowGroup = new List<CommandBindingRow>();
             _rowGroups.Add(rowGroup);
-            AddGroupRow(rowGroup, $"[unloaded] {@group.Key}");
+            AddGroupRow(rowGroup, $"[unloaded] {group.Key}");
 
-            foreach (var command in @group)
+            foreach (var command in group)
             {
                 AddEditRow(rowGroup, command);
                 unloadedCommands.Remove(command.commandName);
@@ -344,7 +344,22 @@ To clear a binding, click on one and then click outside.".Trim());
         _setKeybindingCoroutine = null;
     }
 
-    private static readonly string[] _knownAxisNames = new[] {"Mouse X", "Mouse Y", "Mouse ScrollWheel", "LeftStickX", "LeftStickY", "RightStickX", "RightStickY", "Triggers", "DPadX", "DPadY", "Axis6", "Axis7", "Axis8"};
+    private static readonly string[] _knownAxisNames =
+    {
+        "Mouse X",
+        "Mouse Y",
+        "Mouse ScrollWheel",
+        "LeftStickX",
+        "LeftStickY",
+        "RightStickX",
+        "RightStickY",
+        "Triggers",
+        "DPadX",
+        "DPadY",
+        "Axis6",
+        "Axis7",
+        "Axis8"
+    };
 
     private IEnumerator RecordAnalog(UIDynamicButton btn, ICommandInvoker commandInvoker, Color btnColor, int slot)
     {
@@ -386,7 +401,8 @@ To clear a binding, click on one and then click outside.".Trim());
                     leftKeybinding = binding;
                     continue;
                 }
-                else if (keyUp == leftKeybinding.key)
+
+                if (keyUp == leftKeybinding.key)
                 {
                     continue;
                 }
@@ -482,7 +498,7 @@ To clear a binding, click on one and then click outside.".Trim());
             var binding = new KeyChord(key, ctrlDown, altDown, shiftDown);
             setKeybindingList.Add(binding);
             btn.label = setKeybindingList.GetKeyChordsAsString();
-            expire = Time.unscaledTime + Settings.TimeoutLen;
+            expire = Time.unscaledTime + Constants.TimeoutLen;
         }
         SaveKeyMap(setKeybindingList, commandInvoker, slot);
         StopRecording(btn, btnColor, commandInvoker, slot);

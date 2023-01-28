@@ -125,7 +125,7 @@ public class NormalModeHandler : IModeHandler
 
     private IEnumerator TimeoutCoroutine()
     {
-        yield return new WaitForSecondsRealtime(Settings.TimeoutLen);
+        yield return new WaitForSecondsRealtime(Constants.TimeoutLen);
         if (_current == null) yield break;
         try
         {

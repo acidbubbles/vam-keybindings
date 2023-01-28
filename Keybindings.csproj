@@ -94,7 +94,6 @@
     <Compile Include="src\Keybindings\PluginUISpy.cs" />
     <Compile Include="src\Keybindings\SelectionHistoryManager.cs" />
     <Compile Include="src\Keybindings\SuperControllerExtensions.cs" />
-    <Compile Include="src\Shared\CommandSettings.cs" />
     <Compile Include="src\Shared\ICommandsProvider.cs" />
     <Compile Include="src\Shared\ICommandsInvoker.cs" />
     <Compile Include="src\Shared\PrefabManager.cs" />
@@ -110,7 +109,7 @@
     <Compile Include="src\Keybindings\KeyMapManager.cs" />
     <Compile Include="src\Keybindings\Overlays\KeybindingsOverlay.cs" />
     <Compile Include="src\Keybindings\RemoteCommandsManager.cs" />
-    <Compile Include="src\Keybindings\Settings.cs" />
+    <Compile Include="src\Keybindings\Constants.cs" />
     <Compile Include="src\Keybindings\Keybindings.cs" />
     <Compile Include="src\Keybindings\UI\KeybindingsScreen.cs" />
     <Compile Include="src\Shared\SuperControllerExtensions.cs" />
