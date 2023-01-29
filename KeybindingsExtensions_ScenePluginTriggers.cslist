@@ -1,0 +1,3 @@
+﻿src/Shared/ICommandsInvoker.cs
+src/ScenePluginTriggers/KeybindingsExtensions_ScenePluginTriggers.cs
+src/ScenePluginTriggers/PluginTriggerBinding.cs

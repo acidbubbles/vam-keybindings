@@ -64,6 +64,7 @@
     <Content Include="data\Keybindings\acidbubbles.keybindings" />
     <Content Include="data\Keybindings\defaults.keybindings" />
     <Content Include="KeybindingExtensions_AddPlugin.cslist" />
+    <Content Include="KeybindingsExtensions_ScenePluginTriggers.cslist" />
     <Content Include="Keybindings.cslist" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +95,8 @@
     <Compile Include="src\Keybindings\PluginUISpy.cs" />
     <Compile Include="src\Keybindings\SelectionHistoryManager.cs" />
     <Compile Include="src\Keybindings\SuperControllerExtensions.cs" />
+    <Compile Include="src\ScenePluginTriggers\KeybindingsExtensions_ScenePluginTriggers.cs" />
+    <Compile Include="src\ScenePluginTriggers\PluginTriggerBinding.cs" />
     <Compile Include="src\Shared\ICommandsProvider.cs" />
     <Compile Include="src\Shared\ICommandsInvoker.cs" />
     <Compile Include="src\Shared\PrefabManager.cs" />
