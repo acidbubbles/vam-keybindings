@@ -24,7 +24,11 @@ public class PluginTriggerActionBinding : PluginTriggerBinding
 
             var selected = SuperController.singleton.GetSelectedAtom();
             var target = _targets.FirstOrDefault(t => t.storable.containingAtom == selected);
-            if (target == null) return;
+            if (target == null)
+            {
+                SuperController.LogError($"Keybindings/ScenePluginTriggers More than one atom found with binding {name}. Select the desired atom first.");
+                return;
+            }
             target.actionCallback.Invoke();
         });
     }
@@ -52,7 +56,11 @@ public class PluginTriggerBoolBinding : PluginTriggerBinding
 
             var selected = SuperController.singleton.GetSelectedAtom();
             var target = _targets.FirstOrDefault(t => t.storable.containingAtom == selected);
-            if (target == null) return;
+            if (target == null)
+            {
+                SuperController.LogError($"Keybindings/ScenePluginTriggers More than one atom found with binding {name}. Select the desired atom first.");
+                return;
+            }
             target.val = !target.val;
         });
     }
@@ -60,6 +68,19 @@ public class PluginTriggerBoolBinding : PluginTriggerBinding
     public void Add(JSONStorableBool param)
     {
         _targets.Add(param);
+    }
+}
+
+public class PluginTriggerMissingBinding : PluginTriggerBinding
+{
+    public override JSONStorableAction action { get; }
+
+    public PluginTriggerMissingBinding(string name)
+    {
+        action = new JSONStorableAction(name, () =>
+        {
+            SuperController.LogError($"Keybindings/ScenePluginTriggers There was no atoms with binding {name}. You can try refreshing with [ScenePluginTriggers.RefreshList].");
+        });
     }
 }
 

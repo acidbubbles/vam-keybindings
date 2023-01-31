@@ -19,6 +19,7 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
         "RestoreAllFromDefaults",
         "RestorePhysicsFromDefaults",
         "RestoreAppearanceFromDefaults",
+        "RestorePhysicalFromDefaults",
         "RestoreAllFromStore1",
         "RestorePhysicsFromStore1",
         "RestoreAppearanceFromStore1",
@@ -30,16 +31,19 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
         "RestoreAppearanceFromStore3",
     };
 
-    private readonly JSONStorableAction _refresh;
+    private readonly JSONStorableAction _refreshBinding;
+    private readonly JSONStorableAction _settingsBinding;
     private readonly Dictionary<string, PluginTriggerActionBinding> _actions = new Dictionary<string, PluginTriggerActionBinding>();
     private readonly Dictionary<string, PluginTriggerBoolBinding> _booleans = new Dictionary<string, PluginTriggerBoolBinding>();
+    private readonly Dictionary<string, PluginTriggerMissingBinding> _missing = new Dictionary<string, PluginTriggerMissingBinding>();
     private readonly JSONStorableString _enabledNamesJSON = new JSONStorableString("EnabledPluginTriggersList", "");
     private readonly List<string> _enabledNames = new List<string>();
     private readonly List<UIDynamic> _spacers = new List<UIDynamic>();
 
     public KeybindingsExtensions_ScenePluginTriggers()
     {
-        _refresh = new JSONStorableAction("RefreshList", UpdateList);
+        _refreshBinding = new JSONStorableAction("RefreshList", UpdateList);
+        _settingsBinding = new JSONStorableAction("Settings", OpenSettings);
     }
 
     public override void Init()
@@ -52,6 +56,10 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
             return;
         }
 
+        CreateTextField(new JSONStorableString("", "This screen lists all plugins in the current scene. Toggle the ones you want to add the Keybindings (requires the main Keybindings plugin). You can then map then to a shortcut, or call them using fuzzy finding."));
+
+        CreateButton("Refresh").button.onClick.AddListener(() => Invoke(nameof(UpdateList), 0));
+
         _enabledNamesJSON.setCallbackFunction = val =>
         {
             _enabledNames.Clear();
@@ -62,6 +70,10 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
             RestoreFromJSON(LoadJSON(_configPath).AsObject);
 
         Invoke(nameof(UpdateList), 0);
+
+        SuperController.singleton.onAtomRemovedHandlers += OnAtomRemoved;
+        SuperController.singleton.onSceneLoadedHandlers += OnSceneLoaded;
+        SuperController.singleton.onSubSceneLoadedHandlers += OnSubsceneLoaded;
     }
 
     public override void InitUI()
@@ -81,6 +93,9 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
         foreach (var boolean in _booleans)
             RemoveToggle(boolean.Value.enabledJSON);
         _booleans.Clear();
+        foreach (var m in _missing)
+            RemoveToggle(m.Value.enabledJSON);
+        _missing.Clear();
 
         foreach (var atom in SuperController.singleton.GetAtoms())
         {
@@ -89,7 +104,7 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
                 if (!storable.name.StartsWith("plugin#")) continue;
                 var storableNameUnderscoreIndex = storable.name.IndexOf("_", StringComparison.Ordinal);
                 if (storableNameUnderscoreIndex == -1) continue;
-                var storableName = storable.name.Substring(storableNameUnderscoreIndex);
+                var storableName = storable.name.Substring(storableNameUnderscoreIndex + 1);
 
                 CreateTitle(storableName);
 
@@ -135,7 +150,13 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
                 CreateTitle("Not present in the scene");
                 missing = true;
             }
+
             CreateEnabledToggle(ns, ns);
+            var a = new PluginTriggerMissingBinding(ns)
+            {
+                enabledJSON = CreateEnabledToggle($"{ns} (Missing)", ns)
+            };
+            _missing.Add(ns, a);
         }
 
         transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderAvailable), this, SendMessageOptions.DontRequireReceiver);
@@ -175,7 +196,20 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
 
     private static string GetName(string storable, string name)
     {
-        return storable + "_" + name;
+        return $"{storable}_{name}";
+    }
+
+    private void OpenSettings()
+    {
+        SuperController.singleton.SetActiveUI("MainMenu");
+        SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
+
+        var pluginsPanel = UITransform.parent;
+        for (var i = 0; i < pluginsPanel.childCount; i++)
+        {
+            var pluginPanel = pluginsPanel.GetChild(i);
+            UITransform.gameObject.SetActive(pluginPanel == UITransform);
+        }
     }
 
     public void OnBindingsListRequested(ICollection<object> bindings)
@@ -184,17 +218,38 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
         {
             {"Namespace", "ScenePluginTriggers"}
         });
-        bindings.Add(_refresh);
+        bindings.Add(_refreshBinding);
+        bindings.Add(_settingsBinding);
         foreach (var binding in _actions)
             if (_enabledNames.Contains(binding.Key))
                 bindings.Add(binding.Value.action);
         foreach (var binding in _booleans)
             if (_enabledNames.Contains(binding.Key))
                 bindings.Add(binding.Value.action);
+        foreach (var binding in _missing)
+            bindings.Add(binding.Value.action);
+    }
+
+    private void OnSubsceneLoaded(SubScene subscene)
+    {
+        Invoke(nameof(UpdateList), 0);
+    }
+
+    private void OnSceneLoaded()
+    {
+        Invoke(nameof(UpdateList), 0);
+    }
+
+    private void OnAtomRemoved(Atom atom)
+    {
+        Invoke(nameof(UpdateList), 0);
     }
 
     public void OnDestroy()
     {
+        SuperController.singleton.onAtomRemovedHandlers -= OnAtomRemoved;
+        SuperController.singleton.onSceneLoadedHandlers -= OnSceneLoaded;
+        SuperController.singleton.onSubSceneLoadedHandlers -= OnSubsceneLoaded;
         transform.parent.parent.BroadcastMessage(nameof(IActionsInvoker.OnActionsProviderDestroyed), this, SendMessageOptions.DontRequireReceiver);
     }
 
