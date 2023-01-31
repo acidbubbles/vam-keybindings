@@ -215,7 +215,13 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsModeSelector
     {
         SuperController.singleton.SetActiveUI("MainMenu");
         SuperController.singleton.SetMainMenuTab("TabSessionPlugins");
-        UITransform.gameObject.SetActive(true);
+
+        var pluginsPanel = UITransform.parent;
+        for (var i = 0; i < pluginsPanel.childCount; i++)
+        {
+            var pluginPanel = pluginsPanel.GetChild(i);
+            UITransform.gameObject.SetActive(pluginPanel == UITransform);
+        }
     }
 
     private void ReloadPlugin()
