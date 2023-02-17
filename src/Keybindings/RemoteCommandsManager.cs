@@ -138,6 +138,8 @@ public class RemoteCommandsManager
         var first = true;
         foreach (var binding in bindings)
         {
+            if (binding == null) continue;
+
             if (first)
             {
                 first = false;
