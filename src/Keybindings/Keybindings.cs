@@ -207,6 +207,13 @@ public class Keybindings : MVRScript, IActionsInvoker, IKeybindingsModeSelector
         _remoteCommandsManager.Remove(storable);
     }
 
+    public void InvokeKeybindingsAction(string commandName)
+    {
+        if (!_valid) return;
+        var action = _remoteCommandsManager.actionCommands.FirstOrDefault(c => c.commandName == name);
+        action?.Invoke();
+    }
+
     #endregion
 
     #region Built-in commands

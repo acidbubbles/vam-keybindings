@@ -88,6 +88,12 @@ Supported storables:
 - `JSONStorableBool` will be set to true on key down, and false on key up
 - `JSONStorableFloat` will receive values between -1 and 1 for joysticks, or the mouse position delta. You should check for their current value in `Update()`.
 
+It is possible to invoke a Keybindings. Please only use this for commands initiated by the user with the intent of invoking those bindings. For example, do NOT use this in a scene.
+
+```c#
+SuperController.singleton.BroadcastMessage("InvokeKeybindingsAction", "Namespace.CommandName", SendMessageOptions.DontRequireReceiver);
+```
+
 ## Credits
 
 - [LFE](https://github.com/lfe999) who made the original Keyboard Shortcuts plugin and provided his insight
