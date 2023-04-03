@@ -358,15 +358,53 @@ public class GlobalCommands
         if (_rotateCameraX.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraX.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.right);
         if (_rotateCameraY.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraY.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.up);
         if (_rotateCameraZ.val != 0) RotateController(SuperController.singleton.GetSelectedController(), _rotateCameraZ.val * NormalizedMoveMultiplier(), SuperController.singleton.centerCameraTarget.transform.forward);
-        if (_cameraPanX.val != 0) SuperController.singleton.CameraPan(_cameraPanX.val, -SuperController.singleton.MonitorCenterCamera.transform.right * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
-        if (_cameraPanXFast.val != 0) SuperController.singleton.CameraPan(_cameraPanXFast.val, -SuperController.singleton.MonitorCenterCamera.transform.right * (NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f));
-        if (_cameraPanY.val != 0) SuperController.singleton.CameraPan(_cameraPanY.val, SuperController.singleton.MonitorCenterCamera.transform.up);
-        if (_cameraPanYFast.val != 0) SuperController.singleton.CameraPan(_cameraPanYFast.val, SuperController.singleton.MonitorCenterCamera.transform.up * 2f);
-        if (_cameraPanZ.val != 0) SuperController.singleton.CameraPan(_cameraPanZ.val, SuperController.singleton.MonitorCenterCamera.transform.forward * NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier));
-        if (_cameraPanZFast.val != 0) SuperController.singleton.CameraPan(_cameraPanZFast.val, SuperController.singleton.MonitorCenterCamera.transform.forward * (NormalizedMoveMultiplier(SuperController.singleton.freeMoveMultiplier) * 3f));
         if (_cameraDollyZoom.val != 0) SuperController.singleton.CameraDollyZoom(_cameraDollyZoom.val * NormalizedMoveMultiplier());
         if (_cameraOrbitX.val != 0) SuperController.singleton.CameraOrbitX(_cameraOrbitX.val * NormalizedMoveMultiplier());
         if (_cameraOrbitY.val != 0) SuperController.singleton.CameraOrbitY(_cameraOrbitY.val * NormalizedMoveMultiplier());
+        ProcessKeyboardFreeNavigation();
+    }
+
+    /// <summary>
+    /// From SuperController
+    /// </summary>
+    private void ProcessKeyboardFreeNavigation()
+    {
+        if (_cameraPanZ.val == 0 && _cameraPanX.val == 0 && _cameraPanY.val == 0 && _cameraPanZFast.val == 0 && _cameraPanXFast.val == 0 && _cameraPanYFast.val == 0)
+            return;
+
+        var lookCamera = SuperController.singleton.lookCamera;
+        var navigationRig = SuperController.singleton.navigationRig;
+
+        var rigHeightUpdated = false;
+        Vector2 movement;
+        movement.x = 0.0f;
+        movement.y = 0.0f;
+        var speed = SuperController.singleton.freeMoveMultiplier * SuperController.singleton.worldScale;
+        movement.y += (_cameraPanZ.val + (_cameraPanZFast.val * 3f)) * speed;
+        movement.x += (_cameraPanX.val + (_cameraPanXFast.val * 3f)) * speed;
+        if (movement.y != 0.0)
+        {
+            rigHeightUpdated = true;
+            var translate = Vector3.ProjectOnPlane(lookCamera.transform.forward, navigationRig.up);
+            translate.Normalize();
+            navigationRig.position += translate * (movement.y * Time.unscaledDeltaTime);
+        }
+        if (movement.x != 0.0)
+        {
+            rigHeightUpdated = true;
+            var translate = Vector3.ProjectOnPlane(lookCamera.transform.right, navigationRig.up);
+            translate.Normalize();
+            navigationRig.position += translate * (movement.x * Time.unscaledDeltaTime);
+        }
+        var movementY = (_cameraPanY.val + (_cameraPanYFast.val * 3f)) * speed;
+        if (movementY != 0.0)
+        {
+            rigHeightUpdated = true;
+            SuperController.singleton.playerHeightAdjust += movementY * 0.5f * Time.unscaledDeltaTime;
+        }
+        if (!rigHeightUpdated)
+            return;
+        SuperController.singleton.AdjustNavigationRigHeight();
     }
 
     private static void RotateController(FreeControllerV3 controller, float val, Vector3 axis)
