@@ -174,8 +174,8 @@ public class GlobalCommands
         CreateAction("Atom", "Toggle_OnOff", () => OnSelectedAtom(atom => atom.ToggleOn()));
         CreateAction("Atom", "On", () => OnSelectedAtom(atom => atom.SetOn(true)));
         CreateAction("Atom", "Off", () => OnSelectedAtom(atom => atom.SetOn(false)));
-        CreateAction("Atom", "EnableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
-        CreateAction("Atom", "DisableCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
+        CreateAction("Atom", "Enable_Collisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
+        CreateAction("Atom", "Disable_Collisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
         CreateAction("Atom", "ToggleCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = !atom.collisionEnabled));
 
         // Add atom
@@ -326,6 +326,8 @@ public class GlobalCommands
         CreateAction("Settings", "HandModel_SphereKinematic", () => SelectHandModel("SphereKinematic", false));
         CreateAction("Settings", "HandModel_Male1", () => SelectHandModel("Male1", true));
         CreateAction("Settings", "HandModel_Male2", () => SelectHandModel("Male2", true));
+        CreateAction("Settings", "Enable_HandCollisions", () => UserPreferences.singleton.motionHandModelControl.useCollision = true);
+        CreateAction("Settings", "Disable_HandCollisions", () => UserPreferences.singleton.motionHandModelControl.useCollision = false);
         CreateAction("Settings", "Toggle_HandCollisions", () => UserPreferences.singleton.motionHandModelControl.ToggleCollision());
 
         CreateAction("Leap", "Toggle_AllowPinchGrab", () => SuperController.singleton.leapHandModelControl.allowPinchGrab = !SuperController.singleton.leapHandModelControl.allowPinchGrab);
