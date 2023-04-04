@@ -271,6 +271,26 @@ public class GlobalCommands
         _cameraOrbitY = CreateAnalog("Camera", "Orbit_Y");
         _cameraDollyZoom = CreateAnalog("Camera", "DollyZoom");
 
+        // WindowCamera
+        Action<Action<CameraControl>> onWindowCamera = (fn) =>
+        {
+            var windowCamera = SuperController.singleton.GetAtomByUid("WindowCamera");
+            if (windowCamera == null)
+            {
+                SuperController.LogError("Keybindings: WindowCamera not found");
+                return;
+            }
+            var cameraControl = windowCamera.GetStorableByID("CameraControl") as CameraControl;
+            if (cameraControl == null)
+            {
+                SuperController.LogError("Keybindings: WindowCamera atom did not have a CameraControl");
+                return;
+            }
+            fn(cameraControl);
+        };
+        CreateAction("WindowCamera", "Toggle_CameraViewInHud", () => onWindowCamera(c => c.showHUDView = !c.showHUDView));
+        CreateAction("WindowCamera", "Toggle_CameraOn", () => onWindowCamera(c => c.SetBoolParamValue("cameraOn", !c.GetBoolParamValue("cameraOn"))));
+
         // Logging
         CreateAction("Logs", "ClearMessageLog", SuperController.singleton.ClearMessages);
         CreateAction("Logs", "OpenMessageLog", SuperController.singleton.OpenMessageLogPanel);
