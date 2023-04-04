@@ -59,6 +59,7 @@ public class GlobalCommands
         CreateAction("Global", "Toggle_Targets", SuperController.singleton.ToggleTargetsOnWithButton);
         CreateAction("Global", "CycleStack", SuperController.singleton.ProcessTargetSelectionCycleSelectMouse);
         CreateAction("Global", "Exit", SuperController.singleton.Quit);
+        CreateAction("Global", "HardReset", SuperController.singleton.HardReset);
 
         // Monitor
         CreateAction("Monitor", "Toggle_MainMonitor", SuperController.singleton.ToggleMainMonitor);
