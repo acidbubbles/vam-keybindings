@@ -261,6 +261,7 @@ public class GlobalCommands
         CreateAction("Camera", "FocusOnSelectedController", () => SuperController.singleton.FocusOnSelectedController());
         CreateAction("Camera", "FocusMoveOnSelectedController", () => SuperController.singleton.FocusOnSelectedController(false));
         CreateAction("Camera", "ResetFocusPoint", () => SuperController.singleton.ResetFocusPoint());
+        CreateAction("Camera", "MoveToSceneLoadPosition", () => SuperController.singleton.MoveToSceneLoadPosition());
         _cameraPanX = CreateAnalog("Camera", "Pan_X");
         _cameraPanXFast = CreateAnalog("Camera", "Pan_X.Fast");
         _cameraPanY = CreateAnalog("Camera", "Pan_Y");
@@ -340,6 +341,7 @@ public class GlobalCommands
         CreateAction("Packages", "RescanAddonPackages", () => SuperController.singleton.RescanPackages());
         CreateAction("Packages", "OpenPackageBuilder", () => SuperController.singleton.OpenPackageBuilder());
         CreateAction("Packages", "OpenPackageManager", () => SuperController.singleton.OpenPackageManager());
+
         // TODO: Got permission from LFE to check out what he thought off, take a look and make sure to double-credit him! :)
 
         // TODO: Find a few useful examples for this
@@ -358,6 +360,14 @@ public class GlobalCommands
     {
         var atom = SuperController.singleton.GetSelectedAtom();
         if (atom == null) return;
+        fn(atom);
+    }
+
+    private static void OnSelectedAtom(string type, Action<Atom> fn)
+    {
+        var atom = SuperController.singleton.GetSelectedAtom();
+        if (atom == null) return;
+        if (atom.type != type) return;
         fn(atom);
     }
 
