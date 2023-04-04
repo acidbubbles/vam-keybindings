@@ -381,7 +381,7 @@ public class GlobalCommands
         movement.x = 0.0f;
         movement.y = 0.0f;
         var speed = SuperController.singleton.freeMoveMultiplier * SuperController.singleton.worldScale;
-        movement.y += (_cameraPanZ.val + (_cameraPanZFast.val * 3f)) * speed;
+        movement.y += (_cameraPanZ.val + (_cameraPanZFast.val * 3f)) * -speed;
         movement.x += (_cameraPanX.val + (_cameraPanXFast.val * 3f)) * speed;
         if (movement.y != 0.0)
         {
