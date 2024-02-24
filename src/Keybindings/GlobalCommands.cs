@@ -175,7 +175,7 @@ public class GlobalCommands
         CreateAction("Atom", "On", () => OnSelectedAtom(atom => atom.SetOn(true)));
         CreateAction("Atom", "Off", () => OnSelectedAtom(atom => atom.SetOn(false)));
         CreateAction("Atom", "Enable_Collisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
-        CreateAction("Atom", "Disable_Collisions", () => OnSelectedAtom(atom => atom.collisionEnabled = true));
+        CreateAction("Atom", "Disable_Collisions", () => OnSelectedAtom(atom => atom.collisionEnabled = false));
         CreateAction("Atom", "ToggleCollisions", () => OnSelectedAtom(atom => atom.collisionEnabled = !atom.collisionEnabled));
 
         // Add atom
