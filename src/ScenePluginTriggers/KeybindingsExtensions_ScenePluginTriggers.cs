@@ -101,6 +101,7 @@ public class KeybindingsExtensions_ScenePluginTriggers : MVRScript
         {
             foreach (var storable in atom.GetStorableIDs().Select(id => atom.GetStorableByID(id)))
             {
+                if (storable == null) continue;
                 if (!storable.name.StartsWith("plugin#")) continue;
                 var storableNameUnderscoreIndex = storable.name.IndexOf("_", StringComparison.Ordinal);
                 if (storableNameUnderscoreIndex == -1) continue;

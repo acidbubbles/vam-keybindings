@@ -252,7 +252,7 @@ public class RemoteCommandsManager
             var commandToRemove = new List<string>();
             foreach (var commandInvokers in _actionCommandsByName)
             {
-                commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
+                commandInvokers.Value.Remove(commandInvokers.Value.FirstOrDefault(v => v.storable == storable));
                 if (commandInvokers.Value.Count == 0)
                     commandToRemove.Add(commandInvokers.Key);
             }
@@ -268,7 +268,7 @@ public class RemoteCommandsManager
             var commandToRemove = new List<string>();
             foreach (var commandInvokers in _analogCommandsByName)
             {
-                commandInvokers.Value.Remove(commandInvokers.Value.SingleOrDefault(v => v.storable == storable));
+                commandInvokers.Value.Remove(commandInvokers.Value.FirstOrDefault(v => v.storable == storable));
                 if (commandInvokers.Value.Count == 0)
                     commandToRemove.Add(commandInvokers.Key);
             }
